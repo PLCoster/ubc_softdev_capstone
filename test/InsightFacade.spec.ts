@@ -193,7 +193,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     it("removeDataset: Should remove the courses dataset successfully after it has been added", async () => {
         const id: string = "courses";
-        const expectedCode = 200;
+        const expectedCode = 204;
         let response: InsightResponse;
 
         try {
@@ -207,7 +207,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     it("removeDataset: Should return an error when asked to remove non-existent dataset", async () => {
         const id: string = "courses";
-        const expectedCode = 400;
+        const expectedCode = 404;
         let response: InsightResponse;
 
         try {
