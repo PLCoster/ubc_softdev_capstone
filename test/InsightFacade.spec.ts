@@ -246,6 +246,7 @@ describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
         singleentry: "./test/data/single_entry.zip",
+        twoentries: "./test/data/two_entries.zip",
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
