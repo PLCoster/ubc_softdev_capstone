@@ -219,6 +219,25 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response).to.have.key("error");
         }
     });
+
+    it("addDataset: Should return an error when asked to add a dataset with incorrect kind given", async () => {
+        const id: string = "courses";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response).to.have.key("error");
+        }
+    });
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.
