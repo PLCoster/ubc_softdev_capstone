@@ -1,0 +1,14 @@
+{
+    "title": "SELECT pass FROM singleentry",
+    "query": "In courses dataset singleentry, find all entries; show Pass.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "singleentry_pass": 23
+                }
+            ]
+        }
+    }
+}

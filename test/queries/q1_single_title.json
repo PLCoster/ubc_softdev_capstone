@@ -1,0 +1,14 @@
+{
+    "title": "SELECT title FROM singleentry",
+    "query": "In courses dataset singleentry, find all entries; show Title.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "singleentry_title": "teach adult"
+                }
+            ]
+        }
+    }
+}

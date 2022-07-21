@@ -1,0 +1,14 @@
+{
+    "title": "SELECT department FROM singleentry",
+    "query": "In courses dataset singleentry, find all entries; show Department.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "singleentry_dept": "adhe"
+                }
+            ]
+        }
+    }
+}

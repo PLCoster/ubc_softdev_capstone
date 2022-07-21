@@ -1,0 +1,14 @@
+{
+    "title": "SELECT audit FROM singleentry",
+    "query": "In courses dataset singleentry, find all entries; show Audit.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "singleentry_audit": 0
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "title": "SELECT average FROM singleentry",
+    "query": "In courses dataset singleentry, find all entries; show Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "singleentry_avg": 86.65
+                }
+            ]
+        }
+    }
+}
