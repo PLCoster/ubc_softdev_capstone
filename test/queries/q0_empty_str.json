@@ -1,0 +1,10 @@
+{
+    "title": "An empty string query",
+    "query": "",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

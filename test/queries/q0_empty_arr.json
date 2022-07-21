@@ -1,0 +1,10 @@
+{
+    "title": "An invalid empty array",
+    "query": [],
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "title": "An invalid empty object query",
+    "query": {},
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
