@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Criteria String - cannot contain \"*\"",
+    "query": "In courses dataset twoentries, find entries whose Instructor includes \"d*ve\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

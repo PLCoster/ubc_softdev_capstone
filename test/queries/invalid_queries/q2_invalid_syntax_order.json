@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Order Syntax",
+    "query": "In courses dataset twoentries, find all entries; show Audit; sort by Audit.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

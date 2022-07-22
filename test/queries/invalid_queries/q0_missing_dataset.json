@@ -1,0 +1,10 @@
+{
+    "title": "A query on a non-existent dataset",
+    "query": "In courses dataset nonexistent, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "title": "Invalid numerical Criteria syntax - should be 'equal to' or 'greater than', not 'greater to'",
+    "query": "In courses dataset twoentries, find entries whose Pass is greater to 10; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

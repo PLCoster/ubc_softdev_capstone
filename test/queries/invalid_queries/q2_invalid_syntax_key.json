@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Key Syntax - non-existant Key name",
+    "query": "In courses dataset twoentries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Subject and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
