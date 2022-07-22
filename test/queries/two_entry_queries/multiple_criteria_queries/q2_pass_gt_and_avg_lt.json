@@ -1,0 +1,22 @@
+{
+    "title": "SELECT * FROM twoentries, WHERE pass > 10 AND avg < 85, ORDER BY id ASC",
+    "query": "In courses dataset twoentries, find entries whose Pass is greater than 10 and Average is less than 85; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "twoentries_audit": 10,
+                    "twoentries_avg": 80.13,
+                    "twoentries_dept": "phar",
+                    "twoentries_fail": 25,
+                    "twoentries_id": "454",
+                    "twoentries_instructor": "carr, roxane",
+                    "twoentries_pass": 221,
+                    "twoentries_title": "ped geri drg thp",
+                    "twoentries_uuid": "83080"
+                }
+            ]
+        }
+    }
+}
