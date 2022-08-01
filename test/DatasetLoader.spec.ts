@@ -14,6 +14,7 @@ describe("DatasetLoader loadDataset", function () {
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        singleentry: "./test/data/single_entry.zip",
         empty: "./test/data/empty.zip",
         invalid_format: "./test/data/invalid_format.zip",
     };
@@ -110,7 +111,67 @@ describe("DatasetLoader loadDataset", function () {
         }
     });
 
-    // it("loadDataset: Should return an error when no dataset id is given", async () => {});
+    it("loadDataset: Should return an error when no dataset id is given", async () => {
+        const id: string = null;
+        const expectedCode = 400;
+        const errorStr = `DatasetLoader.loadDataset ERROR: Invalid Dataset Id Given: ${id}`;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                null,
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset: Should return an error when no dataset content is given", async () => {
+        const id: string = "singleentry";
+        const expectedCode = 400;
+        const errorStr = `DatasetLoader.loadDataset ERROR: No dataset content given: ${""}`;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                "",
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset: Should successfully load a valid dataset (single_entry.zip)", async () => {
+        const id: string = "singleentry";
+        const expectedCode: number = 204;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
 
     // it("loadDataset: Should return an error when asked to load an id that has already been loaded", async () => {});
 });
