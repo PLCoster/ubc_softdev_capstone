@@ -40,22 +40,15 @@ describe("InsightFacade Add/Remove Dataset", function () {
             for (const [id, path] of Object.entries(datasetsToLoad)) {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
-            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map(
-                (buf, i) => {
-                    return {
-                        [Object.keys(datasetsToLoad)[i]]:
-                            buf.toString("base64"),
-                    };
-                }
-            );
+            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
+                return {
+                    [Object.keys(datasetsToLoad)[i]]: buf.toString("base64"),
+                };
+            });
             datasets = Object.assign({}, ...loadedDatasets);
             expect(Object.keys(datasets)).to.have.length.greaterThan(0);
         } catch (err) {
-            expect.fail(
-                "",
-                "",
-                `Failed to read one or more datasets. ${JSON.stringify(err)}`
-            );
+            expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
 
         try {
@@ -85,11 +78,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -103,11 +92,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -121,11 +106,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -140,11 +121,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -159,11 +136,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -178,11 +151,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         } catch (err) {
             response = err;
         } finally {
@@ -226,11 +195,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let response: InsightResponse;
 
         try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Rooms
-            );
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
         } catch (err) {
             response = err;
         } finally {
@@ -262,13 +227,7 @@ describe("InsightFacade PerformQuery", () => {
             testQueries = await TestUtil.readTestQueries();
             expect(testQueries).to.have.length.greaterThan(0);
         } catch (err) {
-            expect.fail(
-                "",
-                "",
-                `Failed to read one or more test queries. ${JSON.stringify(
-                    err
-                )}`
-            );
+            expect.fail("", "", `Failed to read one or more test queries. ${JSON.stringify(err)}`);
         }
 
         try {
@@ -286,52 +245,30 @@ describe("InsightFacade PerformQuery", () => {
             for (const [id, path] of Object.entries(datasetsToQuery)) {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
-            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map(
-                (buf, i) => {
-                    return {
-                        [Object.keys(datasetsToQuery)[i]]:
-                            buf.toString("base64"),
-                    };
-                }
-            );
+            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
+                return {
+                    [Object.keys(datasetsToQuery)[i]]: buf.toString("base64"),
+                };
+            });
             expect(loadedDatasets).to.have.length.greaterThan(0);
 
             const responsePromises: Array<Promise<InsightResponse>> = [];
-            const datasets: { [id: string]: string } = Object.assign(
-                {},
-                ...loadedDatasets
-            );
+            const datasets: { [id: string]: string } = Object.assign({}, ...loadedDatasets);
             for (const [id, content] of Object.entries(datasets)) {
-                responsePromises.push(
-                    insightFacade.addDataset(
-                        id,
-                        content,
-                        InsightDatasetKind.Courses
-                    )
-                );
+                responsePromises.push(insightFacade.addDataset(id, content, InsightDatasetKind.Courses));
             }
 
             // This try/catch is a hack to let your dynamic tests execute enough the addDataset method fails.
             // In D1, you should remove this try/catch to ensure your datasets load successfully before trying
             // to run you queries.
             try {
-                const responses: InsightResponse[] = await Promise.all(
-                    responsePromises
-                );
-                responses.forEach((response) =>
-                    expect(response.code).to.equal(204)
-                );
+                const responses: InsightResponse[] = await Promise.all(responsePromises);
+                responses.forEach((response) => expect(response.code).to.equal(204));
             } catch (err) {
-                Log.warn(
-                    `Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`
-                );
+                Log.warn(`Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`);
             }
         } catch (err) {
-            expect.fail(
-                "",
-                "",
-                `Failed to read one or more datasets. ${JSON.stringify(err)}`
-            );
+            expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
     });
 
@@ -365,12 +302,8 @@ describe("InsightFacade PerformQuery", () => {
                             expect(response.body).to.have.property("error");
                         } else {
                             expect(response.body).to.have.property("result");
-                            const expectedResult = (
-                                test.response.body as InsightResponseSuccessBody
-                            ).result;
-                            const actualResult = (
-                                response.body as InsightResponseSuccessBody
-                            ).result;
+                            const expectedResult = (test.response.body as InsightResponseSuccessBody).result;
+                            const actualResult = (response.body as InsightResponseSuccessBody).result;
                             expect(actualResult).to.deep.equal(expectedResult);
                         }
                     }
@@ -399,22 +332,15 @@ describe("InsightFacade List Datasets", function () {
             for (const [id, path] of Object.entries(datasetsToLoad)) {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
-            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map(
-                (buf, i) => {
-                    return {
-                        [Object.keys(datasetsToLoad)[i]]:
-                            buf.toString("base64"),
-                    };
-                }
-            );
+            const loadedDatasets = (await Promise.all(loadDatasetPromises)).map((buf, i) => {
+                return {
+                    [Object.keys(datasetsToLoad)[i]]: buf.toString("base64"),
+                };
+            });
             datasets = Object.assign({}, ...loadedDatasets);
             expect(Object.keys(datasets)).to.have.length.greaterThan(0);
         } catch (err) {
-            expect.fail(
-                "",
-                "",
-                `Failed to read one or more datasets. ${JSON.stringify(err)}`
-            );
+            expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
 
         try {
@@ -466,17 +392,9 @@ describe("InsightFacade List Datasets", function () {
         let response: InsightResponse;
 
         try {
-            await insightFacade.addDataset(
-                idValid,
-                datasets[idValid],
-                InsightDatasetKind.Courses
-            );
+            await insightFacade.addDataset(idValid, datasets[idValid], InsightDatasetKind.Courses);
 
-            await insightFacade.addDataset(
-                idInvalid,
-                datasets[idInvalid],
-                InsightDatasetKind.Courses
-            );
+            await insightFacade.addDataset(idInvalid, datasets[idInvalid], InsightDatasetKind.Courses);
 
             response = await insightFacade.listDatasets();
         } catch (err) {
