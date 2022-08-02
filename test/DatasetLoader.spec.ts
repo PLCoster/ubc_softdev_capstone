@@ -332,4 +332,68 @@ describe("DatasetLoader Tests", function () {
             expect(actualResult).to.deep.equal(expectedResult);
         }
     });
+
+    it("deleteDataset: Should return an error when trying to delete unloaded datasets", async () => {
+        const id = "unloadeddataset";
+        const expectedCode: number = 404;
+        const expectedErrorStr = `DatasetLoader.deleteDataset ERROR: Dataset with id ${id} not found`;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.deleteDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualError = (response.body as InsightResponseErrorBody)
+                .error;
+            expect(actualError).to.equal(expectedErrorStr);
+        }
+    });
+
+    it("deleteDataset: Should successfully delete a loaded dataset", async () => {
+        const id = "courses";
+        const expectedCode: number = 204;
+        const expectedResultStr = `Dataset with id ${id} was successfully deleted`;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.deleteDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResultStr);
+        }
+    });
+
+    it("getLoadedDatasets: Should return updated InsightDatasets when datasets have been deleted", async () => {
+        const expectedCode: number = 200;
+        const idkCourses = InsightDatasetKind.Courses;
+        const expectedResult: InsightDataset[] = [
+            { id: "singleentry", kind: idkCourses, numRows: 1 },
+            { id: "twoentries", kind: idkCourses, numRows: 2 },
+            { id: "courseslarge", kind: idkCourses, numRows: 64612 },
+        ];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.getLoadedDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.be.instanceof(Array);
+            // singleentry, twoentries, courseslarge remain
+            expect(actualResult).to.have.lengthOf(3);
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
 });
