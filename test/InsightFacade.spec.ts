@@ -468,17 +468,23 @@ describe("InsightFacade List Datasets", function () {
         let response: InsightResponse;
 
         try {
+            // Add a Valid Dataset
             await insightFacade.addDataset(
                 idValid,
                 datasets[idValid],
                 InsightDatasetKind.Courses,
             );
 
-            await insightFacade.addDataset(
-                idInvalid,
-                datasets[idInvalid],
-                InsightDatasetKind.Courses,
-            );
+            // Add an Invalid Dataset
+            try {
+                await insightFacade.addDataset(
+                    idInvalid,
+                    datasets[idInvalid],
+                    InsightDatasetKind.Courses,
+                );
+            } catch (err) {
+                // Error is expected here
+            }
 
             response = await insightFacade.listDatasets();
         } catch (err) {
