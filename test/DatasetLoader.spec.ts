@@ -15,7 +15,9 @@ describe("DatasetLoader loadDataset", function () {
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        courseslarge: "./test/data/courses_large.zip",
         singleentry: "./test/data/single_entry.zip",
+        twoentries: "./test/data/two_entries.zip",
         empty: "./test/data/empty.zip",
         invalid_format: "./test/data/invalid_format.zip",
     };
@@ -184,6 +186,66 @@ describe("DatasetLoader loadDataset", function () {
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
         const expectedResult = [id, kind, 1];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
+
+    it("loadDataset: Should successfully load a small valid COURSES dataset (two_entries.zip)", async () => {
+        const id: string = "twoentries";
+        const kind = InsightDatasetKind.Courses;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 2];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
+
+    it("loadDataset: Should successfully load the standard valid COURSES dataset (courses.zip)", async () => {
+        const id: string = "courses";
+        const kind = InsightDatasetKind.Courses;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 49044];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
+
+    it("loadDataset: Should successfully load the expanded valid COURSES dataset (courses_large.zip)", async () => {
+        const id: string = "courseslarge";
+        const kind = InsightDatasetKind.Courses;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 64612];
         let response: InsightResponse;
 
         try {

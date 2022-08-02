@@ -31,6 +31,7 @@ export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
 
     constructor() {
+        Log.trace("DatasetLoader::init()");
         this.loadedInsightDatasets = {};
     }
 
@@ -48,11 +49,7 @@ export default class DatasetLoader {
                 if (kind === InsightDatasetKind.Courses) {
                     const processedCoursesData: InsightCourseDataObject[] =
                         await this.loadCoursesDataset(id, content);
-                    Log.trace(
-                        `Fully processed Dataset: ${JSON.stringify(
-                            processedCoursesData,
-                        )}`,
-                    );
+
                     // Add the dataset to loaded datasets:
                     this.loadedInsightDatasets[id] = {
                         id,
