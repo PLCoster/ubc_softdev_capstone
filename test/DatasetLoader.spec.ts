@@ -6,11 +6,12 @@ import {
     InsightResponseSuccessBody,
     InsightResponseErrorBody,
     InsightDatasetKind,
+    InsightDataset,
 } from "../src/controller/IInsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
 
-describe("DatasetLoader loadDataset", function () {
+describe("DatasetLoader Tests", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
@@ -70,6 +71,28 @@ describe("DatasetLoader loadDataset", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    it("getLoadedDatasets: Should return a Promise when called", () => {
+        expect(datasetLoader.getLoadedDatasets()).to.be.an("promise");
+    });
+
+    it("getLoadedDatasets: Should return no datasets when none have been added", async () => {
+        const expectedCode: number = 200;
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.getLoadedDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.be.instanceof(Array);
+            expect(actualResult).to.have.lengthOf(0);
+        }
     });
 
     it("loadDataset: Should return a Promise when called", () => {
@@ -261,5 +284,52 @@ describe("DatasetLoader loadDataset", function () {
         }
     });
 
-    // it("loadDataset: Should return an error when asked to load an id that has already been loaded", async () => {});
+    it("loadDataset: Should return an error when asked to load an id that has already been loaded", async () => {
+        const id: string = "courses";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+        const errorStr = `DatasetLoader.loadDataset ERROR: Dataset with ID '${id}' has already been loaded`;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("getLoadedDatasets: Should return InsightDatasets when datasets have been added", async () => {
+        const expectedCode: number = 200;
+        const idkCourses = InsightDatasetKind.Courses;
+        const expectedResult: InsightDataset[] = [
+            { id: "singleentry", kind: idkCourses, numRows: 1 },
+            { id: "twoentries", kind: idkCourses, numRows: 2 },
+            { id: "courses", kind: idkCourses, numRows: 49044 },
+            { id: "courseslarge", kind: idkCourses, numRows: 64612 },
+        ];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.getLoadedDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.be.instanceof(Array);
+            // singleentry, twoentries, courses, courseslarge have been added
+            expect(actualResult).to.have.lengthOf(4);
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
 });
