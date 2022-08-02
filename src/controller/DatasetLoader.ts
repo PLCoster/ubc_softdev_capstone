@@ -84,6 +84,16 @@ export default class DatasetLoader {
         });
     }
 
+    // Returns InsightDataset(s) for all currently loaded datasets
+    public getLoadedDatasets(): Promise<InsightResponse> {
+        return Promise.resolve({
+            code: 200,
+            body: {
+                result: Object.values(this.loadedInsightDatasets),
+            },
+        });
+    }
+
     // Check that dataset kind is valid (D1 - Rooms dataset kind is not valid)
     private validateDatasetKind(kind: InsightDatasetKind) {
         if (
@@ -186,6 +196,13 @@ export default class DatasetLoader {
                         processedCoursesData.push(courseData);
                     });
                 });
+
+                // If there are no valid course sections after processing the dataset, return an error:
+                if (processedCoursesData.length === 0) {
+                    throw new Error(
+                        "DatasetLoader.loadDataset ERROR: Given dataset contains no valid course sections",
+                    );
+                }
 
                 // Resolve the promise with the processed course dataset:
                 return processedCoursesData;
