@@ -34,6 +34,6 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public listDatasets(): Promise<InsightResponse> {
-        return Promise.reject({ code: -1, body: null });
+        return this.datasetLoader.getLoadedDatasets();
     }
 }
