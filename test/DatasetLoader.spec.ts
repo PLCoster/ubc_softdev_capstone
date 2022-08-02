@@ -3,6 +3,7 @@ import { expect } from "chai";
 import DatasetLoader from "../src/controller/DatasetLoader";
 import {
     InsightResponse,
+    InsightResponseSuccessBody,
     InsightResponseErrorBody,
     InsightDatasetKind,
 } from "../src/controller/IInsightFacade";
@@ -178,21 +179,23 @@ describe("DatasetLoader loadDataset", function () {
         }
     });
 
-    it("loadDataset: Should successfully load a valid COURSES dataset (single_entry.zip)", async () => {
+    it("loadDataset: Should successfully load a tiny valid COURSES dataset (single_entry.zip)", async () => {
         const id: string = "singleentry";
+        const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
+        const expectedResult = [id, kind, 1];
         let response: InsightResponse;
 
         try {
-            response = await datasetLoader.loadDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses,
-            );
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
         } catch (err) {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
         }
     });
 

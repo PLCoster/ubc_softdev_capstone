@@ -28,10 +28,10 @@ const coursesColNumToQueryKeyTranslator: Array<
 ];
 
 export default class DatasetLoader {
-    private loadedDatasets: { [key: string]: InsightDataset };
+    private loadedInsightDatasets: { [key: string]: InsightDataset };
 
     constructor() {
-        this.loadedDatasets = {};
+        this.loadedInsightDatasets = {};
     }
 
     public loadDataset(
@@ -53,6 +53,26 @@ export default class DatasetLoader {
                             processedCoursesData,
                         )}`,
                     );
+                    // Add the dataset to loaded datasets:
+                    this.loadedInsightDatasets[id] = {
+                        id,
+                        kind,
+                        numRows: processedCoursesData.length,
+                    };
+
+                    Log.trace(
+                        `Course InsightDataset: ${JSON.stringify(
+                            this.loadedInsightDatasets[id],
+                        )}`,
+                    );
+
+                    // Return success response including dataset info
+                    return resolve({
+                        code: 204,
+                        body: {
+                            result: [id, kind, processedCoursesData.length],
+                        },
+                    });
                 }
             } catch (err) {
                 return reject({
@@ -85,7 +105,7 @@ export default class DatasetLoader {
             throw new Error(
                 `DatasetLoader.loadDataset ERROR: Invalid Dataset Id Given: ${id}`,
             );
-        } else if (this.loadedDatasets.hasOwnProperty(id)) {
+        } else if (this.loadedInsightDatasets.hasOwnProperty(id)) {
             throw new Error(
                 `DatasetLoader.loadDataset ERROR: Dataset with ID '${id}' has already been loaded`,
             );
@@ -102,7 +122,10 @@ export default class DatasetLoader {
     }
 
     // Load in a courses dataset from Base64Encoded Zip file: !!!
-    private loadCoursesDataset(id: string, content: string): Promise<any> {
+    private loadCoursesDataset(
+        id: string,
+        content: string,
+    ): Promise<InsightCourseDataObject[]> {
         const zip = new JSZip();
 
         // Unzip the zipped data folder using JSZip
