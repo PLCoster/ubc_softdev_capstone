@@ -1,8 +1,31 @@
+import * as JSZip from "jszip";
+
 import {
     InsightResponse,
     InsightDataset,
     InsightDatasetKind,
 } from "./IInsightFacade";
+import Log from "../Util";
+
+interface InsightCourseDataObject {
+    [key: string]: string | number;
+}
+
+const identity = (arg: string): string => arg;
+
+const coursesColNumToQueryKeyTranslator: Array<
+    [number, string, (arg1: string, ...args: any[]) => string | number]
+> = [
+    [0, "title", identity],
+    [1, "uuid", identity],
+    [2, "instructor", identity],
+    [3, "audit", parseFloat],
+    [5, "id", identity],
+    [6, "pass", parseFloat],
+    [7, "fail", parseFloat],
+    [8, "avg", parseFloat],
+    [9, "dept", identity],
+];
 
 export default class DatasetLoader {
     private loadedDatasets: { [key: string]: InsightDataset };
@@ -16,12 +39,21 @@ export default class DatasetLoader {
         content: string,
         kind: InsightDatasetKind,
     ): Promise<InsightResponse> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 // Validate the dataset kind, id and content
                 this.validateDatasetKind(kind);
                 this.validateDatasetId(id);
                 this.validateDatasetContent(content);
+                if (kind === InsightDatasetKind.Courses) {
+                    const processedCoursesData: InsightCourseDataObject[] =
+                        await this.loadCoursesDataset(id, content);
+                    Log.trace(
+                        `Fully processed Dataset: ${JSON.stringify(
+                            processedCoursesData,
+                        )}`,
+                    );
+                }
             } catch (err) {
                 return reject({
                     code: 400,
@@ -67,5 +99,76 @@ export default class DatasetLoader {
                 `DatasetLoader.loadDataset ERROR: No dataset content given: ${content}`,
             );
         }
+    }
+
+    // Load in a courses dataset from Base64Encoded Zip file: !!!
+    private loadCoursesDataset(id: string, content: string): Promise<any> {
+        const zip = new JSZip();
+
+        // Unzip the zipped data folder using JSZip
+        return zip
+            .loadAsync(content, { base64: true })
+            .then((zipData) => {
+                // Each file in the courses folder produces its own promise when processed
+                const csvFileTextPromises: Array<Promise<string>> = [];
+
+                zipData
+                    .folder("courses")
+                    .forEach(
+                        (relativePath: string, file: JSZip.JSZipObject) => {
+                            if (relativePath.endsWith(".csv")) {
+                                csvFileTextPromises.push(file.async("text"));
+                            }
+                        },
+                    );
+
+                // If we have no valid files in a "courses" folder, invalid dataset
+                if (csvFileTextPromises.length === 0) {
+                    throw new Error(
+                        "DatasetLoader.loadDataset ERROR: Given dataset contained no csv files in 'courses' folder",
+                    );
+                }
+
+                // Once we have all the text content of the csv files, process it
+                return Promise.all(csvFileTextPromises);
+            })
+            .then((fileTextArr: string[]) => {
+                // Process data from each csvFile returned by Promise.all:
+                const processedCoursesData: InsightCourseDataObject[] = [];
+
+                fileTextArr.forEach((fileStr: string) => {
+                    fileStr.split("\r\n").forEach((rowString, index) => {
+                        // Skip first row of each csv file (column header)
+                        if (index === 0) {
+                            return;
+                        }
+
+                        // Check that this row contains the correct number of columns
+                        const rowEntries = rowString.split("|");
+                        const numCols = rowEntries.length;
+
+                        if (![10, 11].includes(numCols)) {
+                            return;
+                        }
+
+                        // Process this row into a dataset object, and add it to data array:
+                        const courseData: InsightCourseDataObject = {};
+
+                        coursesColNumToQueryKeyTranslator.forEach(
+                            ([colNum, queryKey, parseFunc]) => {
+                                const objectKey: string = `${id}_${queryKey}`;
+                                courseData[objectKey] = parseFunc(
+                                    rowEntries[colNum],
+                                );
+                            },
+                        );
+
+                        processedCoursesData.push(courseData);
+                    });
+                });
+
+                // Resolve the promise with the processed course dataset:
+                return processedCoursesData;
+            });
     }
 }

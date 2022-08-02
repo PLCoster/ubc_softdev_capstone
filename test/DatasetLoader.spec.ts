@@ -155,7 +155,30 @@ describe("DatasetLoader loadDataset", function () {
         }
     });
 
-    it("loadDataset: Should successfully load a valid dataset (single_entry.zip)", async () => {
+    it("loadDataset: Should return an error when dataset contains no courses folder (empty.zip)", async () => {
+        const id: string = "empty";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+        const errorStr =
+            "DatasetLoader.loadDataset ERROR: Given dataset contained no csv files in 'courses' folder";
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset: Should successfully load a valid COURSES dataset (single_entry.zip)", async () => {
         const id: string = "singleentry";
         const expectedCode: number = 204;
         let response: InsightResponse;
