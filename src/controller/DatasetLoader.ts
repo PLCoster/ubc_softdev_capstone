@@ -84,6 +84,29 @@ export default class DatasetLoader {
         });
     }
 
+    // Deletes a given dataset if it is loaded, otherwise returns an error
+    public deleteDataset(id: string): Promise<InsightResponse> {
+        return new Promise((resolve, reject) => {
+            if (this.loadedInsightDatasets.hasOwnProperty(id)) {
+                delete this.loadedInsightDatasets[id];
+
+                return resolve({
+                    code: 204,
+                    body: {
+                        result: `Dataset with id ${id} was successfully deleted`,
+                    },
+                });
+            } else {
+                return reject({
+                    code: 404,
+                    body: {
+                        error: `DatasetLoader.deleteDataset ERROR: Dataset with id ${id} not found`,
+                    },
+                });
+            }
+        });
+    }
+
     // Returns InsightDataset(s) for all currently loaded datasets
     public getLoadedDatasets(): Promise<InsightResponse> {
         return Promise.resolve({
