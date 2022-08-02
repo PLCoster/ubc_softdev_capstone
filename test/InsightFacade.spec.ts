@@ -131,7 +131,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 
@@ -150,7 +150,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 
@@ -169,7 +169,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 
@@ -188,7 +188,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 
@@ -217,7 +217,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 
@@ -236,7 +236,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response).to.have.key("error");
+            expect(response.body).to.have.property("error");
         }
     });
 });
@@ -450,7 +450,7 @@ describe("InsightFacade List Datasets", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.key("result");
+            expect(response.body).to.have.property("result");
 
             if ("result" in response.body) {
                 const body: InsightResponseSuccessBody = response.body;
@@ -485,7 +485,7 @@ describe("InsightFacade List Datasets", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.key("result");
+            expect(response.body).to.have.property("result");
 
             if ("result" in response.body) {
                 const body: InsightResponseSuccessBody = response.body;
@@ -512,7 +512,7 @@ describe("InsightFacade List Datasets", function () {
             response = err;
         } finally {
             expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.key("result");
+            expect(response.body).to.have.property("result");
 
             if ("result" in response.body) {
                 const body: InsightResponseSuccessBody = response.body;
