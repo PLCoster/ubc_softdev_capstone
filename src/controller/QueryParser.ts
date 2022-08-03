@@ -1,4 +1,5 @@
 import { IFilter, ALLFilter } from "./filters";
+import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
 const columnNameRE =
     /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
@@ -15,6 +16,10 @@ const datasetRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
 const filterRE = /^(?<ALL>find all entries)*$/;
 
+const orderRE = new RegExp(
+    `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
+);
+
 const displayRE = new RegExp(
     `(((${columnNameRE.source}), )+(${columnNameRE.source}) and (${columnNameRE.source}))|((${columnNameRE.source}) and (${columnNameRE.source}))|(${columnNameRE.source})`,
 );
@@ -26,47 +31,54 @@ const queryRE = new RegExp(
 export default class QueryParser {
     public parseQuery(queryStr: string) {
         // Split query string into major components
-        const querySections = queryStr.split(";");
+        const queryMatchObj = queryStr.match(queryRE);
 
-        let datasetFiltersStr: string;
-        let displayStr: string;
-        let orderStr: string;
-
-        if (querySections.length === 2) {
-            [datasetFiltersStr, displayStr] = querySections;
-        } else if (querySections.length === 3) {
-            [datasetFiltersStr, displayStr, orderStr] = querySections;
-        } else {
-            this.rejectQuery(`Invalid Query Format`);
+        if (!queryMatchObj) {
+            this.rejectQuery(`Invalid Query String Format`);
         }
 
-        // Further separate DATASET from FILTER(S) components
-        const datasetFiltersStrArr = datasetFiltersStr.split(",");
+        console.log(queryMatchObj);
 
-        if (datasetFiltersStrArr.length !== 2) {
-            this.rejectQuery(`Invalid Query Format`);
-        }
+        const {
+            groups: {
+                DATASET: datasetStr,
+                FILTER: filterStr,
+                DISPLAY: displayStr,
+                ORDER: orderStr,
+            },
+        } = queryMatchObj;
 
-        const [datasetStr, filtersStr] = datasetFiltersStrArr;
-
-        console.log("SECTIONS: ", datasetFiltersStr, displayStr, orderStr);
-        console.log("DATASETFILTERS: ", datasetStr, filtersStr);
-        console.log("Display: ", displayStr);
+        console.log("DATASET: ", datasetStr);
+        console.log("FILTER ", filterStr);
+        console.log("DISPLAY: ", displayStr);
         console.log("Order: ", orderStr);
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
-        const { filters } = this.parseFilters(filtersStr);
-        const { display } = this.parseDisplay(displayStr, id);
+        const filter = this.parseFilters(filterStr);
+        const display = this.parseDisplay(displayStr, id);
 
-        const queryAST = { id, kind, filters, display };
+        const queryAST: InsightQueryAST = {
+            id,
+            kind,
+            filter,
+            display,
+            order: null,
+        };
+
+        if (orderStr) {
+            queryAST.order = this.parseOrder(orderStr, id, display);
+        }
 
         console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
     }
 
     // Extracts Dataset INPUT(id) and KIND from query string
-    private parseDataset(datasetStr: string) {
+    private parseDataset(datasetStr: string): {
+        id: string;
+        kind: InsightDatasetKind;
+    } {
         const datasetMatchObj = datasetStr.match(datasetRE);
 
         if (!datasetMatchObj) {
@@ -75,9 +87,15 @@ export default class QueryParser {
             );
         }
 
-        const {
-            groups: { INPUT: id, KIND: kind },
-        } = datasetMatchObj;
+        const id: string = datasetMatchObj.groups.INPUT;
+        const kind = datasetMatchObj.groups.KIND as InsightDatasetKind;
+
+        // !!! D1 - do not accept rooms Dataset Kind:
+        if (kind === InsightDatasetKind.Rooms) {
+            this.rejectQuery(
+                "Invalid Query Format - DATASET KIND cannot be rooms for D1",
+            );
+        }
 
         // Ensure that dataset id does not contain underscore char
         if (id.includes("_")) {
@@ -91,28 +109,23 @@ export default class QueryParser {
 
     // Extracts FILTER(s) from query string, builds AST for filters:
     private parseFilters(filterStr: string) {
-        if (filterStr === " find all entries") {
-            return { filters: new ALLFilter() };
+        if (filterStr === "find all entries") {
+            return new ALLFilter();
         }
 
         // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
-        return { filters: new ALLFilter() };
+        return new ALLFilter();
     }
 
     // Extracts DISPLAY from query string:
-    private parseDisplay(displayStr: string, id: string) {
-        if (!displayStr.startsWith(" show ")) {
-            this.rejectQuery("Invalid Query Format - bad DISPLAY section");
-        }
-
-        const displayColNames = displayStr.slice(6, -1).split(/, | /);
+    private parseDisplay(displayStr: string, id: string): string[] {
+        const displayColNames = displayStr.split(/, | /);
         const numCols = displayColNames.length;
 
-        const displayCols = new Set();
+        const displayCols = new Set<string>();
 
         displayColNames.forEach((colName, index) => {
             // Check multiple column display syntax is correct:
-            // !!! try doing this with REGEX instead?
             if (numCols > 1 && index === numCols - 2) {
                 if (colName !== "and") {
                     this.rejectQuery(
@@ -138,11 +151,20 @@ export default class QueryParser {
             );
         }
 
-        return { display: Array.from(displayCols) };
+        return Array.from(displayCols);
     }
 
     // Extracts ORDER from query string
-    private parseOrder(orderStr: string) {}
+    private parseOrder(
+        orderStr: string,
+        id: string,
+        displayCols: string[],
+    ): [string, string] {
+        const orderMatchObj = orderStr.match(orderRE);
+
+        console.log("ORDERMATCHOBJ: ", orderMatchObj);
+        return ["ASC", `${id}_${orderMatchObj.groups.COLNAME}`];
+    }
 
     private rejectQuery(message: string) {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
@@ -151,7 +173,7 @@ export default class QueryParser {
 
 const testParser = new QueryParser();
 testParser.parseQuery(
-    "In courses dataset singleentry, find all entries; show Audit; sort in ascending order by Audit.",
+    "In courses dataset singleentry, find all entries; show Audit, Pass and Fail; sort in ascending order by Audit.",
 );
 
 console.log("DONE");
