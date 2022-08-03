@@ -7,6 +7,16 @@ export default class DatasetQuerier {
         queryAST: InsightQueryAST,
         dataset: InsightCourseDataObject[],
     ): InsightCourseDataObject[] {
-        return [];
+        // Apply the filter to the dataset, then extract the desired columns and sort
+        const filteredData = dataset
+            .filter(queryAST.filter.matches)
+            .map((courseSection: InsightCourseDataObject) => {
+                const selectedColData: InsightCourseDataObject = {};
+                queryAST.display.forEach((colName: string) => {
+                    selectedColData[colName] = courseSection[colName];
+                });
+                return selectedColData;
+            });
+        return filteredData;
     }
 }
