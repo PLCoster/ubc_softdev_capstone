@@ -33,7 +33,7 @@ const queryRE = new RegExp(
 
 const queryColumnStrToKeyStr: { [key: string]: string } = {
     Audit: "audit",
-    Average: "average",
+    Average: "avg",
     Department: "dept",
     Fail: "fail",
     ID: "id",
@@ -178,7 +178,27 @@ export default class QueryParser {
     ): [string, string] {
         const orderMatchObj = orderStr.match(orderRE);
 
-        // console.log("ORDERMATCHOBJ: ", orderMatchObj);
+        const orderKey = `${id}_${
+            queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]
+        }`;
+
+        const ordering =
+            orderMatchObj.groups.DIRECTION === "ascending" ? "ASC" : "DESC";
+
+        // !!! D1 Only ASC order is valid:
+        if (ordering === "DESC") {
+            this.rejectQuery(
+                `Invalid Query Format: D1 queries can only accept ascending ordering`,
+            );
+        }
+
+        // Check query semantics - we can only sort by a column that is being displayed:
+        if (!displayCols.includes(orderKey)) {
+            this.rejectQuery(
+                `Invalid Query Format: Invalid ORDER semantics - column ${ordering} not selected in DISPLAY`,
+            );
+        }
+
         return ["ASC", `${id}_${orderMatchObj.groups.COLNAME}`];
     }
 
