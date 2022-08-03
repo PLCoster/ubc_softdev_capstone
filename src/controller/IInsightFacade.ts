@@ -1,3 +1,5 @@
+import { IFilter } from "./filters";
+
 /*
  * This is the primary high-level API for the project. In this folder there should be:
  * A class called InsightFacade, this should be in a file called InsightFacade.ts.
@@ -29,6 +31,14 @@ export interface InsightDataset {
 
 export interface InsightCourseDataObject {
     [key: string]: string | number;
+}
+
+export interface InsightQueryAST {
+    id: string;
+    kind: InsightDatasetKind;
+    filter: IFilter;
+    display: string[];
+    order: [string, string] | null;
 }
 
 export interface IInsightFacade {
