@@ -1,5 +1,9 @@
 import { expect, assert } from "chai";
 
+import {
+    InsightDatasetKind,
+    InsightQueryAST,
+} from "../src/controller/IInsightFacade";
 import QueryParser from "../src/controller/QueryParser";
 import { IFilter, ALLFilter } from "../src/controller/filters";
 import Log from "../src/Util";
@@ -22,11 +26,12 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Should successfully parse a simple query (all entries, 1 col, no sorting)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit.";
-        const expectedAST = {
+        const expectedAST: InsightQueryAST = {
             id: "courses",
-            kind: "courses",
-            filters: new ALLFilter(),
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
             display: ["courses_Audit"],
+            order: null,
         };
         let actualAST;
 
