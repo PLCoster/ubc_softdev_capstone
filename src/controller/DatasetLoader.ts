@@ -26,6 +26,7 @@ const coursesColNumToQueryKeyTranslator: Array<
 
 export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
+    private datasets: { [key: string]: InsightCourseDataObject[] };
 
     constructor() {
         Log.trace("DatasetLoader::init()");
@@ -47,15 +48,18 @@ export default class DatasetLoader {
                     const processedCoursesData: InsightCourseDataObject[] =
                         await this.loadCoursesDataset(id, content);
 
-                    // Add the dataset to loaded datasets:
+                    // Add the dataset summary to loaded Insight datasets:
                     this.loadedInsightDatasets[id] = {
                         id,
                         kind,
                         numRows: processedCoursesData.length,
                     };
 
+                    // Store the dataset itself for querying
+                    this.datasets[id] = processedCoursesData;
+
                     Log.trace(
-                        `Course InsightDataset: ${JSON.stringify(
+                        `Course InsightDataset Loaded: ${JSON.stringify(
                             this.loadedInsightDatasets[id],
                         )}`,
                     );
@@ -86,6 +90,7 @@ export default class DatasetLoader {
         return new Promise((resolve, reject) => {
             if (this.loadedInsightDatasets.hasOwnProperty(id)) {
                 delete this.loadedInsightDatasets[id];
+                delete this.datasets[id];
 
                 return resolve({
                     code: 204,
@@ -103,6 +108,12 @@ export default class DatasetLoader {
             }
         });
     }
+
+    // Returns requested dataset, if it is already loaded, otherwise throws an error
+    // public getDataset(
+    //     id: string,
+    //     kind: InsightDatasetKind,
+    // ): InsightCourseDataObject[] {}
 
     // Returns InsightDataset(s) for all currently loaded datasets
     public getLoadedDatasets(): Promise<InsightResponse> {
