@@ -1,0 +1,10 @@
+{
+    "title": "(D1 - INVALID) SELECT * FROM twoentries, ORDER BY id DSC",
+    "query": "In courses dataset twoentries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in descending order by ID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

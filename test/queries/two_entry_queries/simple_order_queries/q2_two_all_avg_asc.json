@@ -1,6 +1,6 @@
 {
-    "title": "SELECT * FROM twoentries, ORDER BY id DSC",
-    "query": "In courses dataset twoentries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in descending order by ID.",
+    "title": "SELECT * FROM twoentries, ORDER BY avg ASC",
+    "query": "In courses dataset twoentries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by Average.",
     "response": {
         "code": 200,
         "body": {
