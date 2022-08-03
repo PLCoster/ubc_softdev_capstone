@@ -31,6 +31,7 @@ export default class DatasetLoader {
     constructor() {
         Log.trace("DatasetLoader::init()");
         this.loadedInsightDatasets = {};
+        this.datasets = {};
     }
 
     public loadDataset(
@@ -110,10 +111,25 @@ export default class DatasetLoader {
     }
 
     // Returns requested dataset, if it is already loaded, otherwise throws an error
-    // public getDataset(
-    //     id: string,
-    //     kind: InsightDatasetKind,
-    // ): InsightCourseDataObject[] {}
+    public getDataset(
+        id: string,
+        kind: InsightDatasetKind,
+    ): InsightCourseDataObject[] {
+        if (!this.datasets.hasOwnProperty(id)) {
+            throw new Error(
+                `DatasetLoader.getDataset ERROR: Dataset with ID ${id} not found`,
+            );
+        }
+
+        // Ensure loaded dataset kind matches kind specified in query
+        if (this.loadedInsightDatasets[id].kind !== kind) {
+            throw new Error(
+                `DatasetLoader.getDataset ERROR: Dataset with ID ${id} queried with incorrect KIND ${kind}`,
+            );
+        }
+
+        return this.datasets[id];
+    }
 
     // Returns InsightDataset(s) for all currently loaded datasets
     public getLoadedDatasets(): Promise<InsightResponse> {
