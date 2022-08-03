@@ -128,7 +128,10 @@ export default class DatasetLoader {
             );
         }
 
-        return this.datasets[id];
+        // Return a COPY of the dataset to avoid possibility of mutation:
+        return this.datasets[id].map(
+            (courseSection: InsightCourseDataObject) => ({ ...courseSection }),
+        );
     }
 
     // Returns InsightDataset(s) for all currently loaded datasets
