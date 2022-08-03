@@ -13,12 +13,14 @@ const datasetRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
 const filterRE = /^(?<ALL>find all entries)*$/;
 
-class QueryParser {
+export default class QueryParser {
     public parseQuery(queryStr: string) {
         // Split query string into major components
         const querySections = queryStr.split(";");
 
-        let datasetFiltersStr, displayStr, orderStr;
+        let datasetFiltersStr: string;
+        let displayStr: string;
+        let orderStr: string;
 
         if (querySections.length === 2) {
             [datasetFiltersStr, displayStr] = querySections;
@@ -45,8 +47,9 @@ class QueryParser {
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
         const { filters } = this.parseFilters(filtersStr);
+        const { display } = this.parseDisplay(displayStr, id);
 
-        const queryAST = { id, kind, filters };
+        const queryAST = { id, kind, filters, display };
 
         console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
@@ -76,7 +79,7 @@ class QueryParser {
         return { id, kind };
     }
 
-    // Extracts FILTER(s) from query string:
+    // Extracts FILTER(s) from query string, builds AST for filters:
     private parseFilters(filterStr: string) {
         if (filterStr === " find all entries") {
             return { filters: "ALL" };
@@ -84,6 +87,49 @@ class QueryParser {
 
         // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
         return { filters: "ALL" };
+    }
+
+    // Extracts DISPLAY from query string:
+    private parseDisplay(displayStr: string, id: string) {
+        if (!displayStr.startsWith(" show ")) {
+            this.rejectQuery("Invalid Query Format - bad DISPLAY section");
+        }
+
+        const displayColNames = displayStr.slice(6, -1).split(/, | /);
+        const numCols = displayColNames.length;
+
+        console.log(displayColNames);
+        const displayCols = new Set();
+
+        displayColNames.forEach((colName, index) => {
+            // Check multiple column display syntax is correct:
+            // !!! try doing this with REGEX instead?
+            if (numCols > 1 && index === numCols - 2) {
+                if (colName !== "and") {
+                    this.rejectQuery(
+                        "Invalid Query Format - bad DISPLAY section syntax",
+                    );
+                }
+                return;
+            }
+
+            // Check Column Name is valid, if not throw error:
+            if (!columnNameRE.test(colName)) {
+                this.rejectQuery(
+                    `Invalid Query Format - invalid DISPLAY section COLUMN NAME ${colName}`,
+                );
+            }
+            displayCols.add(`${id}_${colName}`);
+        });
+
+        // If we have no column names, to display then throw an error:
+        if (!displayCols.size) {
+            this.rejectQuery(
+                `Invalid Query Format - invalid DISPLAY section, no column names specified`,
+            );
+        }
+
+        return { display: Array.from(displayCols) };
     }
 
     private rejectQuery(message: string) {
