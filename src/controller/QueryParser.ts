@@ -11,6 +11,8 @@ const stringOPRE =
 
 const datasetRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
+const filterRE = /^(?<ALL>find all entries)*$/;
+
 class QueryParser {
     public parseQuery(queryStr: string) {
         // Split query string into major components
@@ -42,11 +44,12 @@ class QueryParser {
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
-        const WHERE = this.parseFilters(filtersStr);
+        const { filters } = this.parseFilters(filtersStr);
 
-        const queryAST = { id, kind };
+        const queryAST = { id, kind, filters };
 
         console.log("FINAL QUERY AST: ", queryAST);
+        return queryAST;
     }
 
     // Extracts Dataset INPUT(id) and KIND from query string
@@ -75,7 +78,12 @@ class QueryParser {
 
     // Extracts FILTER(s) from query string:
     private parseFilters(filterStr: string) {
-        console.log("FILTERSTRING: ", filterStr);
+        if (filterStr === " find all entries") {
+            return { filters: "ALL" };
+        }
+
+        // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
+        return { filters: "ALL" };
     }
 
     private rejectQuery(message: string) {
