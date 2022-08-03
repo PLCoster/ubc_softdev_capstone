@@ -23,14 +23,14 @@ describe("QueryParser Tests", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    it("parseQuery: Should successfully parse a simple query (all entries, 1 col, no sorting)", () => {
+    it("parseQuery: Should successfully parse a simple query (SELECT audit FROM courses)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit.";
         const expectedAST: InsightQueryAST = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
-            display: ["courses_Audit"],
+            display: ["courses_audit"],
             order: null,
         };
         let actualAST;
