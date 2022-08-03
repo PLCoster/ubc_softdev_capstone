@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/tslint/config */
+/* eslint-disable no-console */
+import { auditLogger } from "restify";
 import { IFilter, ALLFilter } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
@@ -28,6 +31,18 @@ const queryRE = new RegExp(
     `^(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+), (?<FILTER>find all entries|find entries whose *); show (?<DISPLAY>${displayRE.source})(; (?<ORDER>sort in ascending order by (${columnNameRE.source})))?[.]$`,
 );
 
+const queryColumnStrToKeyStr: { [key: string]: string } = {
+    Audit: "audit",
+    Average: "average",
+    Department: "dept",
+    Fail: "fail",
+    ID: "id",
+    Instructor: "instructor",
+    Pass: "pass",
+    Title: "title",
+    UUID: "uuid",
+};
+
 export default class QueryParser {
     public parseQuery(queryStr: string) {
         // Split query string into major components
@@ -37,7 +52,7 @@ export default class QueryParser {
             this.rejectQuery(`Invalid Query String Format`);
         }
 
-        console.log(queryMatchObj);
+        // console.log(queryMatchObj);
 
         const {
             groups: {
@@ -48,10 +63,10 @@ export default class QueryParser {
             },
         } = queryMatchObj;
 
-        console.log("DATASET: ", datasetStr);
-        console.log("FILTER ", filterStr);
-        console.log("DISPLAY: ", displayStr);
-        console.log("Order: ", orderStr);
+        // console.log("DATASET: ", datasetStr);
+        // console.log("FILTER ", filterStr);
+        // console.log("DISPLAY: ", displayStr);
+        // console.log("Order: ", orderStr);
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
@@ -70,7 +85,7 @@ export default class QueryParser {
             queryAST.order = this.parseOrder(orderStr, id, display);
         }
 
-        console.log("FINAL QUERY AST: ", queryAST);
+        // console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
     }
 
@@ -114,6 +129,7 @@ export default class QueryParser {
         }
 
         // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
+        this.rejectQuery("COMPLEX FILTERS NOT YET SUPPORTED");
         return new ALLFilter();
     }
 
@@ -141,7 +157,7 @@ export default class QueryParser {
                     `Invalid Query Format - invalid DISPLAY section COLUMN NAME ${colName}`,
                 );
             }
-            displayCols.add(`${id}_${colName}`);
+            displayCols.add(`${id}_${queryColumnStrToKeyStr[colName]}`);
         });
 
         // If we have no column names, to display then throw an error:
@@ -162,7 +178,7 @@ export default class QueryParser {
     ): [string, string] {
         const orderMatchObj = orderStr.match(orderRE);
 
-        console.log("ORDERMATCHOBJ: ", orderMatchObj);
+        // console.log("ORDERMATCHOBJ: ", orderMatchObj);
         return ["ASC", `${id}_${orderMatchObj.groups.COLNAME}`];
     }
 
@@ -171,9 +187,9 @@ export default class QueryParser {
     }
 }
 
-const testParser = new QueryParser();
-testParser.parseQuery(
-    "In courses dataset singleentry, find all entries; show Audit, Pass and Fail; sort in ascending order by Audit.",
-);
+// const testParser = new QueryParser();
+// testParser.parseQuery(
+//     "In courses dataset singleentry, find all entries; show Audit, Pass and Fail; sort in ascending order by Audit.",
+// );
 
-console.log("DONE");
+// console.log("DONE");
