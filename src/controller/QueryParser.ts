@@ -15,6 +15,14 @@ const datasetRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
 const filterRE = /^(?<ALL>find all entries)*$/;
 
+const displayRE = new RegExp(
+    `(((${columnNameRE.source}), )+(${columnNameRE.source}) and (${columnNameRE.source}))|((${columnNameRE.source}) and (${columnNameRE.source}))|(${columnNameRE.source})`,
+);
+
+const queryRE = new RegExp(
+    `^(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+), (?<FILTER>find all entries|find entries whose *); show (?<DISPLAY>${displayRE.source})(; (?<ORDER>sort in ascending order by (${columnNameRE.source})))?[.]$`,
+);
+
 export default class QueryParser {
     public parseQuery(queryStr: string) {
         // Split query string into major components
@@ -41,10 +49,10 @@ export default class QueryParser {
 
         const [datasetStr, filtersStr] = datasetFiltersStrArr;
 
-        // console.log("SECTIONS: ", datasetFiltersStr, displayStr, orderStr);
-        // console.log("DATASETFILTERS: ", datasetStr, filtersStr);
-        // console.log("Display: ", displayStr);
-        // console.log("Order: ", orderStr);
+        console.log("SECTIONS: ", datasetFiltersStr, displayStr, orderStr);
+        console.log("DATASETFILTERS: ", datasetStr, filtersStr);
+        console.log("Display: ", displayStr);
+        console.log("Order: ", orderStr);
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
@@ -53,7 +61,7 @@ export default class QueryParser {
 
         const queryAST = { id, kind, filters, display };
 
-        // console.log("FINAL QUERY AST: ", queryAST);
+        console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
     }
 
@@ -100,7 +108,6 @@ export default class QueryParser {
         const displayColNames = displayStr.slice(6, -1).split(/, | /);
         const numCols = displayColNames.length;
 
-        // console.log(displayColNames);
         const displayCols = new Set();
 
         displayColNames.forEach((colName, index) => {
@@ -134,14 +141,17 @@ export default class QueryParser {
         return { display: Array.from(displayCols) };
     }
 
+    // Extracts ORDER from query string
+    private parseOrder(orderStr: string) {}
+
     private rejectQuery(message: string) {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
     }
 }
 
-// const testParser = new QueryParser();
-// testParser.parseQuery(
-//     "In courses dataset singleentry, find all entries; show Audit.",
-// );
+const testParser = new QueryParser();
+testParser.parseQuery(
+    "In courses dataset singleentry, find all entries; show Audit; sort in ascending order by Audit.",
+);
 
-// console.log("DONE");
+console.log("DONE");
