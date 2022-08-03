@@ -1,3 +1,5 @@
+import { IFilter, ALLFilter } from "./filters";
+
 const columnNameRE =
     /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
 
@@ -39,10 +41,10 @@ export default class QueryParser {
 
         const [datasetStr, filtersStr] = datasetFiltersStrArr;
 
-        console.log("SECTIONS: ", datasetFiltersStr, displayStr, orderStr);
-        console.log("DATASETFILTERS: ", datasetStr, filtersStr);
-        console.log("Display: ", displayStr);
-        console.log("Order: ", orderStr);
+        // console.log("SECTIONS: ", datasetFiltersStr, displayStr, orderStr);
+        // console.log("DATASETFILTERS: ", datasetStr, filtersStr);
+        // console.log("Display: ", displayStr);
+        // console.log("Order: ", orderStr);
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
@@ -51,7 +53,7 @@ export default class QueryParser {
 
         const queryAST = { id, kind, filters, display };
 
-        console.log("FINAL QUERY AST: ", queryAST);
+        // console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
     }
 
@@ -82,11 +84,11 @@ export default class QueryParser {
     // Extracts FILTER(s) from query string, builds AST for filters:
     private parseFilters(filterStr: string) {
         if (filterStr === " find all entries") {
-            return { filters: "ALL" };
+            return { filters: new ALLFilter() };
         }
 
         // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
-        return { filters: "ALL" };
+        return { filters: new ALLFilter() };
     }
 
     // Extracts DISPLAY from query string:
@@ -98,7 +100,7 @@ export default class QueryParser {
         const displayColNames = displayStr.slice(6, -1).split(/, | /);
         const numCols = displayColNames.length;
 
-        console.log(displayColNames);
+        // console.log(displayColNames);
         const displayCols = new Set();
 
         displayColNames.forEach((colName, index) => {
@@ -137,9 +139,9 @@ export default class QueryParser {
     }
 }
 
-const testParser = new QueryParser();
-testParser.parseQuery(
-    "In courses dataset singleentry, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
-);
+// const testParser = new QueryParser();
+// testParser.parseQuery(
+//     "In courses dataset singleentry, find all entries; show Audit.",
+// );
 
-console.log("DONE");
+// console.log("DONE");
