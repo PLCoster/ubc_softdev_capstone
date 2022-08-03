@@ -3,18 +3,26 @@ import {
     IInsightFacade,
     InsightResponse,
     InsightDatasetKind,
+    InsightCourseDataObject,
+    InsightQueryAST,
 } from "./IInsightFacade";
 import DatasetLoader from "./DatasetLoader";
+import QueryParser from "./QueryParser";
+import DatasetQuerier from "./DatasetQuerier";
 
 /**
  * This is the main programmatic entry point for the project.
  */
 export default class InsightFacade implements IInsightFacade {
     private datasetLoader: DatasetLoader;
+    private queryParser: QueryParser;
+    private datasetQuerier: DatasetQuerier;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetLoader = new DatasetLoader();
+        this.queryParser = new QueryParser();
+        this.datasetQuerier = new DatasetQuerier();
     }
 
     public addDataset(
@@ -30,7 +38,30 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: string): Promise<InsightResponse> {
-        return Promise.reject({ code: -1, body: null });
+        return new Promise((resolve, reject) => {
+            // Parse the query, get the relevant dataset and then apply query to data
+            try {
+                const queryAST: InsightQueryAST =
+                    this.queryParser.parseQuery(query);
+                const dataset: InsightCourseDataObject[] =
+                    this.datasetLoader.getDataset(queryAST.id, queryAST.kind);
+                const requestedData: InsightCourseDataObject[] =
+                    this.datasetQuerier.applyQuery(queryAST, dataset);
+                return resolve({
+                    code: 200,
+                    body: {
+                        result: requestedData,
+                    },
+                });
+            } catch (err) {
+                return reject({
+                    code: 400,
+                    body: {
+                        error: `InsightFacade.performQuery ERROR: ${err.message}`,
+                    },
+                });
+            }
+        });
     }
 
     public listDatasets(): Promise<InsightResponse> {
