@@ -27,8 +27,11 @@ export interface InsightDataset {
     numRows: number;
 }
 
-export interface IInsightFacade {
+export interface InsightCourseDataObject {
+    [key: string]: string | number;
+}
 
+export interface IInsightFacade {
     /**
      * Add a dataset to UBCInsight.
      *
@@ -58,7 +61,11 @@ export interface IInsightFacade {
      * is invalid or if it was added more than once with the same id.
      *
      */
-    addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse>;
+    addDataset(
+        id: string,
+        content: string,
+        kind: InsightDatasetKind,
+    ): Promise<InsightResponse>;
 
     /**
      * Remove a dataset from UBCInsight.

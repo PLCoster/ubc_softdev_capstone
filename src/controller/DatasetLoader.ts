@@ -4,12 +4,9 @@ import {
     InsightResponse,
     InsightDataset,
     InsightDatasetKind,
+    InsightCourseDataObject,
 } from "./IInsightFacade";
 import Log from "../Util";
-
-interface InsightCourseDataObject {
-    [key: string]: string | number;
-}
 
 const identity = (arg: string): string => arg;
 
