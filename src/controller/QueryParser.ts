@@ -6,6 +6,7 @@ import {
     GTFilter,
     LTFilter,
     INCFilter,
+    BEGFilter,
     NOTFilter,
 } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
@@ -147,6 +148,16 @@ const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
     },
     "does not include": {
         filter: INCFilter,
+        valueParser: stringValueParser,
+        negation: true,
+    },
+    "begins with": {
+        filter: BEGFilter,
+        valueParser: stringValueParser,
+        negation: false,
+    },
+    "does not begin with": {
+        filter: BEGFilter,
         valueParser: stringValueParser,
         negation: true,
     },
