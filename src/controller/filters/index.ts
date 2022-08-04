@@ -9,5 +9,6 @@ export * from "./GTFilter";
 export * from "./LTFilter";
 
 export * from "./INCFilter";
+export * from "./BEGFilter";
 
 export * from "./NOTFilter";
