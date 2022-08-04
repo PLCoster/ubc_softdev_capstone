@@ -21,6 +21,6 @@ export class INCFilter implements IFilter {
     }
 
     public toString(): string {
-        return `${this.columnKey} === ${this.columnValue}`;
+        return `${this.columnKey} INCLUDES ${this.columnValue}`;
     }
 }
