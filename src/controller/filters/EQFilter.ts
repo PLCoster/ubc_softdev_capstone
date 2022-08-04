@@ -2,7 +2,8 @@ import { IFilter } from "./IFilter";
 import { InsightCourseDataObject } from "../IInsightFacade";
 
 /**
- * A filter that returns true for all InsightCourseDataObjects with column value equal to specified value
+ * A NUMBER or STRING filter that returns true for all InsightCourseDataObjects
+ * with column value equal to specified value
  * - equivalent to 'COLNAME (is|is equal to) VALUE' query filter
  */
 export class EQFilter implements IFilter {

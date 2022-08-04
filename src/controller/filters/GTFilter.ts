@@ -2,14 +2,15 @@ import { IFilter } from "./IFilter";
 import { InsightCourseDataObject } from "../IInsightFacade";
 
 /**
- * A filter that returns true for all InsightCourseDataObjects with column value greater than specified value
+ * A NUMBER filter that returns true for all InsightCourseDataObjects
+ * with column value greater than specified value
  * - equivalent to 'COLNAME greater than VALUE' query filter
  */
 export class GTFilter implements IFilter {
     private columnKey: string;
-    private columnValue: string | number;
+    private columnValue: number;
 
-    constructor(columnKey: string, columnValue: number | string) {
+    constructor(columnKey: string, columnValue: number) {
         this.columnKey = columnKey;
         this.columnValue = columnValue;
     }
