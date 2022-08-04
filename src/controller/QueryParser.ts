@@ -1,5 +1,5 @@
 import Log from "../Util";
-import { IFilter, ALLFilter, EQFilter } from "./filters";
+import { IFilter, ALLFilter, EQFilter, NOTFilter } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
 const columnNameRE =
@@ -97,10 +97,20 @@ const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
         valueParser: parseFloat,
         negation: false,
     },
+    "is not equal to": {
+        filter: EQFilter,
+        valueParser: parseFloat,
+        negation: true,
+    },
     "is": {
         filter: EQFilter,
         valueParser: stringValueParser,
         negation: false,
+    },
+    "is not": {
+        filter: EQFilter,
+        valueParser: stringValueParser,
+        negation: true,
     },
 };
 
@@ -312,27 +322,16 @@ export default class QueryParser {
             const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
             const conditionValue = valueParser(value);
 
-            const builtFilter: IFilter = new filter(
-                conditionKey,
-                conditionValue,
-            );
+            let builtFilter: IFilter = new filter(conditionKey, conditionValue);
 
-            Log.trace("Calling Matches on builtFilter");
-            builtFilter.matches({
-                twoentries_title: "teach adult",
-                twoentries_uuid: "17255",
-                twoentries_instructor: "smulders, dave",
-                twoentries_audit: 0,
-                twoentries_id: "327",
-                twoentries_pass: 23,
-                twoentries_fail: 0,
-                twoentries_avg: 86.65,
-                twoentries_dept: "adhe",
-            });
+            // If this filter is a negation, then wrap filter inside a NOT filter:
+            if (negation) {
+                builtFilter = new NOTFilter(builtFilter);
+            }
 
             return builtFilter;
         }
-        Log.trace("COULD NOT BUILD FILTER CORRECTLY");
+
         this.rejectQuery(`NOT YET IMPLEMENTED!`);
         return new ALLFilter();
     }
