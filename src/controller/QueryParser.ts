@@ -5,6 +5,7 @@ import {
     EQFilter,
     GTFilter,
     LTFilter,
+    INCFilter,
     NOTFilter,
 } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
@@ -136,6 +137,16 @@ const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
     },
     "is not": {
         filter: EQFilter,
+        valueParser: stringValueParser,
+        negation: true,
+    },
+    "includes": {
+        filter: INCFilter,
+        valueParser: stringValueParser,
+        negation: false,
+    },
+    "does not include": {
+        filter: INCFilter,
         valueParser: stringValueParser,
         negation: true,
     },
