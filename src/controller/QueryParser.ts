@@ -7,6 +7,7 @@ import {
     LTFilter,
     INCFilter,
     BEGFilter,
+    ENDFilter,
     NOTFilter,
 } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
@@ -158,6 +159,16 @@ const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
     },
     "does not begin with": {
         filter: BEGFilter,
+        valueParser: stringValueParser,
+        negation: true,
+    },
+    "ends with": {
+        filter: ENDFilter,
+        valueParser: stringValueParser,
+        negation: false,
+    },
+    "does not end with": {
+        filter: ENDFilter,
         valueParser: stringValueParser,
         negation: true,
     },
