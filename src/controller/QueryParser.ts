@@ -1,18 +1,44 @@
-import { IFilter, ALLFilter } from "./filters";
+import Log from "../Util";
+import { IFilter, ALLFilter, EQFilter } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
 const columnNameRE =
     /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
 
+const numberColRE = /(?:Average|Pass|Fail|Audit)/;
+
+const numberOPRE = /(?:is (?:not )?(?:greater than|less than|equal to))/;
+
+const numberRE = /(?:(?:-)?(?:[1-9][0-9]*|0)(?:[.][0-9]+)?)/;
+
+const numberFilterRE = RegExp(
+    `(?:${numberColRE.source} ${numberOPRE.source} ${numberRE.source})`,
+);
+
+const stringColRE = /(?:Department|ID|Instructor|Title|UUID)/;
+
+const stringOPRE =
+    /(?:is(?: not)?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
+
+const stringRE = /"(?:[^*"]*)"/;
+
+const stringFilterRE = RegExp(
+    `(?:${stringColRE.source} ${stringOPRE.source} ${stringRE.source})`,
+);
+
+const singleFilterRE = RegExp(
+    `(?:${numberFilterRE.source}|${stringFilterRE.source})`,
+);
+
 const keywordRE =
     /In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose/;
 
-const numberOPRE = /is (?:not )? (?:greater than|less than|equal to) /;
-
-const stringOPRE =
-    /(?:is (?:not )?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
-
 const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
+
+const filterDetailsRE = new RegExp(
+    // tslint:disable-next-line:max-line-length
+    `^(?<COLNAME>${columnNameRE.source}) (?<CONDITION>${numberOPRE.source}|${stringOPRE.source}) (?<VALUE>${numberRE.source}|${stringRE.source})$`,
+);
 
 const sortDirectionColRE = new RegExp(
     `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
@@ -20,26 +46,28 @@ const sortDirectionColRE = new RegExp(
 
 const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+)/;
 
-const filterRE = /(?<FILTER>find all entries|find entries whose *)/;
+const filterRE = new RegExp(
+    `(?<FILTER>find entries whose (?:${singleFilterRE.source} (?:and|or) )*${singleFilterRE.source}|find all entries)`,
+);
 
-const displaySingleRE = new RegExp(`(${columnNameRE.source})`);
+const displaySingleRE = new RegExp(`(?:${columnNameRE.source})`);
 const displayTwoRE = new RegExp(
-    `((${columnNameRE.source}) and (${columnNameRE.source}))`,
+    `(?:(:?${columnNameRE.source}) and (?:${columnNameRE.source}))`,
 );
 const displayMultRE = new RegExp(
-    `(((${columnNameRE.source}), )+(${columnNameRE.source}) and (${columnNameRE.source}))`,
+    `(?:(?:(?:${columnNameRE.source}), )+(?:${columnNameRE.source}) and (?:${columnNameRE.source}))`,
 );
 
 const displayRE = new RegExp(
-    `${displayMultRE.source}|${displayTwoRE.source}|${displaySingleRE.source}`,
+    `(?<DISPLAY>${displayMultRE.source}|${displayTwoRE.source}|${displaySingleRE.source})`,
 );
 
 const orderRE = new RegExp(
-    `(?<ORDER>sort in ascending order by (${columnNameRE.source}))`,
+    `(?<ORDER>sort in (?:ascending|descending) order by (?:${columnNameRE.source}))`,
 );
 
 const queryRE = new RegExp(
-    `^${datasetRE.source}, ${filterRE.source}; show (?<DISPLAY>${displayRE.source})(; ${orderRE.source})?[.]$`,
+    `^${datasetRE.source}, ${filterRE.source}; show ${displayRE.source}(?:; ${orderRE.source})?[.]$`,
 );
 
 const queryColumnStrToKeyStr: { [key: string]: string } = {
@@ -52,6 +80,28 @@ const queryColumnStrToKeyStr: { [key: string]: string } = {
     Pass: "pass",
     Title: "title",
     UUID: "uuid",
+};
+
+interface IFilterInfo {
+    filter: new (...args: any) => IFilter;
+    valueParser: (val: string) => number | string;
+    negation: boolean;
+}
+
+// Helper function that removes quotes around query string value
+const stringValueParser = (val: string) => val.slice(1, -1);
+
+const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
+    "is equal to": {
+        filter: EQFilter,
+        valueParser: parseFloat,
+        negation: false,
+    },
+    "is": {
+        filter: EQFilter,
+        valueParser: stringValueParser,
+        negation: false,
+    },
 };
 
 export default class QueryParser {
@@ -81,7 +131,7 @@ export default class QueryParser {
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
-        const filter = this.parseFilters(filterStr);
+        const filter = this.parseFilters(filterStr, id);
         const display = this.parseDisplay(displayStr, id);
 
         const queryAST: InsightQueryAST = {
@@ -134,14 +184,24 @@ export default class QueryParser {
     }
 
     // Extracts FILTER(s) from query string, builds AST for filters:
-    private parseFilters(filterStr: string) {
+    private parseFilters(filterStr: string, id: string): IFilter {
         if (filterStr === "find all entries") {
             return new ALLFilter();
         }
 
-        // !!! FINISH FILTER PARSING IN NON-SIMPLE CASE
-        this.rejectQuery("COMPLEX FILTERS NOT YET SUPPORTED");
-        return new ALLFilter();
+        // Otherwise at least one query filter is specified
+        // Trim off 'find entries whose ' from start of filterStr
+        filterStr = filterStr.slice(19);
+        // console.log("SLICED FILTER: ", filterStr);
+
+        // Determine number of filters present:
+        const filterOperatorArr = filterStr
+            .split(new RegExp(`(${singleFilterRE.source}|and|or)`))
+            .filter((str) => str.length > 1);
+        // console.log(filterOperatorArr);
+
+        // Build and Return Filter
+        return this.buildFilters(filterOperatorArr, id);
     }
 
     // Extracts DISPLAY from query string:
@@ -216,6 +276,67 @@ export default class QueryParser {
         ];
     }
 
+    // // Builds up the nested filter object based on query filter criteria:
+    private buildFilters(filterOperatorArr: string[], id: string): IFilter {
+        // If we only have a single filter, just build and return that single filter
+        if (filterOperatorArr.length === 1) {
+            return this.buildSingleFilter(filterOperatorArr[0], id);
+        }
+
+        // NEED TO IMPLEMENT MORE COMPLEX FILTER COMBINATIONS:
+        this.rejectQuery("MORE COMPLEX QUERIES NOT YET IMPLEMENTED");
+
+        return new ALLFilter();
+    }
+
+    // Builds and returns a single IFilter based on the filter criteria:
+    private buildSingleFilter(filterStr: string, id: string): IFilter {
+        // Parse relevant information from the filterstring:
+        const filterMatchObj = filterStr.match(filterDetailsRE);
+
+        if (!filterMatchObj) {
+            this.rejectQuery(`Invalid filter syntax: ${filterStr}`);
+        }
+
+        // console.log(filterDetailsRE);
+        // console.log(filterMatchObj);
+
+        const {
+            groups: { COLNAME: colname, CONDITION: condition, VALUE: value },
+        } = filterMatchObj;
+
+        if (condition in filterConditionToIFilterInfo) {
+            const { filter, valueParser, negation } =
+                filterConditionToIFilterInfo[condition];
+
+            const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
+            const conditionValue = valueParser(value);
+
+            const builtFilter: IFilter = new filter(
+                conditionKey,
+                conditionValue,
+            );
+
+            Log.trace("Calling Matches on builtFilter");
+            builtFilter.matches({
+                twoentries_title: "teach adult",
+                twoentries_uuid: "17255",
+                twoentries_instructor: "smulders, dave",
+                twoentries_audit: 0,
+                twoentries_id: "327",
+                twoentries_pass: 23,
+                twoentries_fail: 0,
+                twoentries_avg: 86.65,
+                twoentries_dept: "adhe",
+            });
+
+            return builtFilter;
+        }
+        Log.trace("COULD NOT BUILD FILTER CORRECTLY");
+        this.rejectQuery(`NOT YET IMPLEMENTED!`);
+        return new ALLFilter();
+    }
+
     private rejectQuery(message: string) {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
     }
@@ -223,7 +344,8 @@ export default class QueryParser {
 
 // const testParser = new QueryParser();
 // testParser.parseQuery(
-//     "In courses dataset singleentry, find all entries; show Audit, Pass and Fail; sort in ascending order by Audit.",
+// tslint:disable-next-line:max-line-length
+//     'In courses dataset singleentry, find entries whose Instructor is "edward"; show Audit, Pass and Fail; sort in ascending order by Audit.',
 // );
 
 // console.log("DONE");
