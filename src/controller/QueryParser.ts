@@ -1,5 +1,5 @@
 import Log from "../Util";
-import { IFilter, ALLFilter, EQFilter, NOTFilter } from "./filters";
+import { IFilter, ALLFilter, EQFilter, GTFilter, NOTFilter } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
 const columnNameRE =
@@ -99,6 +99,16 @@ const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
     },
     "is not equal to": {
         filter: EQFilter,
+        valueParser: parseFloat,
+        negation: true,
+    },
+    "is greater than": {
+        filter: GTFilter,
+        valueParser: parseFloat,
+        negation: false,
+    },
+    "is not greater than": {
+        filter: GTFilter,
         valueParser: parseFloat,
         negation: true,
     },
