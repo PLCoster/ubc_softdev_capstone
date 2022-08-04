@@ -2,3 +2,4 @@
 export * from "./IFilter";
 export * from "./ALLFilter";
 export * from "./EQFilter";
+export * from "./NOTFilter";
