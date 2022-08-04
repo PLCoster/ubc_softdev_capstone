@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/tslint/config */
-/* eslint-disable no-console */
-import { auditLogger } from "restify";
 import { IFilter, ALLFilter } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
@@ -15,20 +12,34 @@ const numberOPRE = /is (?:not )? (?:greater than|less than|equal to) /;
 const stringOPRE =
     /(?:is (?:not )?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
 
-const datasetRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
+const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
-const filterRE = /^(?<ALL>find all entries)*$/;
-
-const orderRE = new RegExp(
+const sortDirectionColRE = new RegExp(
     `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
 );
 
+const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+)/;
+
+const filterRE = /(?<FILTER>find all entries|find entries whose *)/;
+
+const displaySingleRE = new RegExp(`(${columnNameRE.source})`);
+const displayTwoRE = new RegExp(
+    `((${columnNameRE.source}) and (${columnNameRE.source}))`,
+);
+const displayMultRE = new RegExp(
+    `(((${columnNameRE.source}), )+(${columnNameRE.source}) and (${columnNameRE.source}))`,
+);
+
 const displayRE = new RegExp(
-    `(((${columnNameRE.source}), )+(${columnNameRE.source}) and (${columnNameRE.source}))|((${columnNameRE.source}) and (${columnNameRE.source}))|(${columnNameRE.source})`,
+    `${displayMultRE.source}|${displayTwoRE.source}|${displaySingleRE.source}`,
+);
+
+const orderRE = new RegExp(
+    `(?<ORDER>sort in ascending order by (${columnNameRE.source}))`,
 );
 
 const queryRE = new RegExp(
-    `^(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+), (?<FILTER>find all entries|find entries whose *); show (?<DISPLAY>${displayRE.source})(; (?<ORDER>sort in ascending order by (${columnNameRE.source})))?[.]$`,
+    `^${datasetRE.source}, ${filterRE.source}; show (?<DISPLAY>${displayRE.source})(; ${orderRE.source})?[.]$`,
 );
 
 const queryColumnStrToKeyStr: { [key: string]: string } = {
@@ -94,7 +105,7 @@ export default class QueryParser {
         id: string;
         kind: InsightDatasetKind;
     } {
-        const datasetMatchObj = datasetStr.match(datasetRE);
+        const datasetMatchObj = datasetStr.match(inputKindRE);
 
         if (!datasetMatchObj) {
             this.rejectQuery(
@@ -176,7 +187,7 @@ export default class QueryParser {
         id: string,
         displayCols: string[],
     ): [string, string] {
-        const orderMatchObj = orderStr.match(orderRE);
+        const orderMatchObj = orderStr.match(sortDirectionColRE);
 
         const orderKey = `${id}_${
             queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]
