@@ -2,10 +2,10 @@ import { IFilter } from "./IFilter";
 import { InsightCourseDataObject } from "../IInsightFacade";
 
 /**
- * A filter that returns true for all InsightCourseDataObjects with column value equal to specified value
- * - equivalent to 'COLNAME (is|is equal to) VALUE' query filter
+ * A filter that returns true for all InsightCourseDataObjects with column value greater than specified value
+ * - equivalent to 'COLNAME greater than VALUE' query filter
  */
-export class EQFilter implements IFilter {
+export class GTFilter implements IFilter {
     private columnKey: string;
     private columnValue: string | number;
 
@@ -15,10 +15,10 @@ export class EQFilter implements IFilter {
     }
 
     public matches(dataObj: InsightCourseDataObject): boolean {
-        return dataObj[this.columnKey] === this.columnValue;
+        return dataObj[this.columnKey] > this.columnValue;
     }
 
     public toString(): string {
-        return `${this.columnKey} === ${this.columnValue}`;
+        return `${this.columnKey} > ${this.columnValue}`;
     }
 }
