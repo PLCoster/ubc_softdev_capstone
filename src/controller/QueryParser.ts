@@ -199,7 +199,10 @@ export default class QueryParser {
             );
         }
 
-        return ["ASC", `${id}_${orderMatchObj.groups.COLNAME}`];
+        return [
+            ordering,
+            `${id}_${queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]}`,
+        ];
     }
 
     private rejectQuery(message: string) {
