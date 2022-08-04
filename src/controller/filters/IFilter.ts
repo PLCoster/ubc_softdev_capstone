@@ -10,4 +10,9 @@ export interface IFilter {
      * @return Boolean indicating whether or not the given course data object passes the filter
      */
     matches(dataObj: InsightCourseDataObject): boolean;
+
+    /**
+     * @return string representation of the entire filter
+     */
+    toString(): string;
 }
