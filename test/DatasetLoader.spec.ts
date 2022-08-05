@@ -1,4 +1,6 @@
-import { expect } from "chai";
+import { expect, assert } from "chai";
+import { promises as fs } from "fs";
+import * as path from "path";
 
 import {
     InsightResponse,
@@ -32,8 +34,8 @@ describe("DatasetLoader Tests", function () {
 
         try {
             const loadDatasetPromises: Array<Promise<Buffer>> = [];
-            for (const [id, path] of Object.entries(datasetsToLoad)) {
-                loadDatasetPromises.push(TestUtil.readFileAsync(path));
+            for (const [id, filePath] of Object.entries(datasetsToLoad)) {
+                loadDatasetPromises.push(TestUtil.readFileAsync(filePath));
             }
             const loadedDatasets = (await Promise.all(loadDatasetPromises)).map(
                 (buf, i) => {
@@ -59,6 +61,18 @@ describe("DatasetLoader Tests", function () {
             Log.error(err);
         } finally {
             expect(datasetLoader).to.be.instanceOf(DatasetLoader);
+        }
+
+        // Delete dataset cache directory before running tests
+        try {
+            const cachePath = datasetLoader.getCachePath();
+            await fs.access(cachePath);
+            // Cache path must exist if no error is thrown, remove it:
+            await fs.rmdir(cachePath, { recursive: true });
+        } catch (err) {
+            // If we get here then the cache directory does not exist
+            // Continue with testing
+            Log.error(`Error when trying to clean cache before tests: ${err}`);
         }
     });
 
@@ -117,7 +131,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: For D1, 'Rooms' dataset kind is invalid, should return an error", async () => {
+    it("loadDataset: !!! For D1, 'Rooms' dataset kind is invalid, should return an error", async () => {
         const expectedCode = 400;
         const errorStr = `DatasetLoader.loadDataset ERROR: Invalid Dataset Kind Given: ${InsightDatasetKind.Rooms}`;
         let response: InsightResponse;
@@ -222,6 +236,14 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.deep.equal(expectedResult);
+
+            // Check the dataset has been cached onto disk
+            const cachePath = datasetLoader.getCachePath();
+            try {
+                await fs.access(path.join(cachePath, `${id}.json`));
+            } catch (err) {
+                assert.fail("Expected cached dataset not found on disk");
+            }
         }
     });
 
@@ -243,6 +265,14 @@ describe("DatasetLoader Tests", function () {
                 .result;
             expect(actualResult).to.deep.equal(expectedResult);
         }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
+        }
     });
 
     it("loadDataset: Should successfully load the standard valid COURSES dataset (courses.zip)", async () => {
@@ -263,6 +293,14 @@ describe("DatasetLoader Tests", function () {
                 .result;
             expect(actualResult).to.deep.equal(expectedResult);
         }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
+        }
     });
 
     it("loadDataset: Should successfully load the expanded valid COURSES dataset (courses_large.zip)", async () => {
@@ -282,6 +320,14 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.deep.equal(expectedResult);
+        }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
         }
     });
 
@@ -304,6 +350,14 @@ describe("DatasetLoader Tests", function () {
             expect(response.body).to.have.own.property("error");
             const actualResult = response.body as InsightResponseErrorBody;
             expect(actualResult.error).to.equal(errorStr);
+        }
+
+        // Check the original dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
         }
     });
 
@@ -369,6 +423,17 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.deep.equal(expectedResultStr);
+        }
+
+        // Check the dataset has been deleted
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+            assert.fail(
+                "Cached dataset found on disk when it should be deleted",
+            );
+        } catch (err) {
+            // We expect to be here if the cache file has successfully been deleted
         }
     });
 
