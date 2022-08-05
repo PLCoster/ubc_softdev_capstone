@@ -1,92 +1,17 @@
-import Log from "../Util";
-import {
-    IFilter,
-    ALLFilter,
-    EQFilter,
-    GTFilter,
-    LTFilter,
-    INCFilter,
-    BEGFilter,
-    ENDFilter,
-    NOTFilter,
-    ANDFilter,
-    ORFilter,
-} from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
-const columnNameRE =
-    /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
+import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
+import Log from "../Util";
 
-const numberColRE = /(?:Average|Pass|Fail|Audit)/;
-
-const numberOPRE = /(?:is (?:not )?(?:greater than|less than|equal to))/;
-
-const numberRE = /(?:(?:-)?(?:[1-9][0-9]*|0)(?:[.][0-9]+)?)/;
-
-const numberFilterRE = RegExp(
-    `(?:${numberColRE.source} ${numberOPRE.source} ${numberRE.source})`,
-);
-
-const stringColRE = /(?:Department|ID|Instructor|Title|UUID)/;
-
-const stringOPRE =
-    /(?:is(?: not)?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
-
-const stringRE = /"(?:[^*"]*)"/;
-
-const stringFilterRE = RegExp(
-    `(?:${stringColRE.source} ${stringOPRE.source} ${stringRE.source})`,
-);
-
-const singleFilterRE = RegExp(
-    `(?:${numberFilterRE.source}|${stringFilterRE.source})`,
-);
-
-const keywordRE =
-    /In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose/;
-
-const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
-
-const filterConditionRE = new RegExp(
-    `(?<CONDITION>${numberOPRE.source}|${stringOPRE.source})`,
-);
-const filterValueRE = new RegExp(
-    `(?<VALUE>${numberRE.source}|${stringRE.source})`,
-);
-
-const filterDetailsRE = new RegExp(
-    `^(?<COLNAME>${columnNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
-);
-
-const sortDirectionColRE = new RegExp(
-    `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
-);
-
-const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+)/;
-
-const filterRE = new RegExp(
-    `(?<FILTER>find entries whose (?:${singleFilterRE.source} (?:and|or) )*${singleFilterRE.source}|find all entries)`,
-);
-
-const displaySingleRE = new RegExp(`(?:${columnNameRE.source})`);
-const displayTwoRE = new RegExp(
-    `(?:(:?${columnNameRE.source}) and (?:${columnNameRE.source}))`,
-);
-const displayMultRE = new RegExp(
-    `(?:(?:(?:${columnNameRE.source}), )+(?:${columnNameRE.source}) and (?:${columnNameRE.source}))`,
-);
-
-const displayRE = new RegExp(
-    `(?<DISPLAY>${displayMultRE.source}|${displayTwoRE.source}|${displaySingleRE.source})`,
-);
-
-const orderRE = new RegExp(
-    `(?<ORDER>sort in (?:ascending|descending) order by (?:${columnNameRE.source}))`,
-);
-
-const queryRE = new RegExp(
-    `^${datasetRE.source}, ${filterRE.source}; show ${displayRE.source}(?:; ${orderRE.source})?[.]$`,
-);
+import {
+    queryRE,
+    inputKindRE,
+    singleFilterRE,
+    columnNameRE,
+    sortDirectionColRE,
+    filterDetailsRE,
+} from "./helpers/queryParserRegExs";
+import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
 
 const queryColumnStrToKeyStr: { [key: string]: string } = {
     Audit: "audit",
@@ -100,89 +25,11 @@ const queryColumnStrToKeyStr: { [key: string]: string } = {
     UUID: "uuid",
 };
 
-interface IFilterInfo {
-    filter: new (...args: any) => IFilter;
-    valueParser: (val: string) => number | string;
-    negation: boolean;
-}
-
-// Helper function that removes quotes around query string value
-const stringValueParser = (val: string) => val.slice(1, -1);
-
-const filterConditionToIFilterInfo: { [key: string]: IFilterInfo } = {
-    "is equal to": {
-        filter: EQFilter,
-        valueParser: parseFloat,
-        negation: false,
-    },
-    "is not equal to": {
-        filter: EQFilter,
-        valueParser: parseFloat,
-        negation: true,
-    },
-    "is greater than": {
-        filter: GTFilter,
-        valueParser: parseFloat,
-        negation: false,
-    },
-    "is not greater than": {
-        filter: GTFilter,
-        valueParser: parseFloat,
-        negation: true,
-    },
-    "is less than": {
-        filter: LTFilter,
-        valueParser: parseFloat,
-        negation: false,
-    },
-    "is not less than": {
-        filter: LTFilter,
-        valueParser: parseFloat,
-        negation: true,
-    },
-    "is": {
-        filter: EQFilter,
-        valueParser: stringValueParser,
-        negation: false,
-    },
-    "is not": {
-        filter: EQFilter,
-        valueParser: stringValueParser,
-        negation: true,
-    },
-    "includes": {
-        filter: INCFilter,
-        valueParser: stringValueParser,
-        negation: false,
-    },
-    "does not include": {
-        filter: INCFilter,
-        valueParser: stringValueParser,
-        negation: true,
-    },
-    "begins with": {
-        filter: BEGFilter,
-        valueParser: stringValueParser,
-        negation: false,
-    },
-    "does not begin with": {
-        filter: BEGFilter,
-        valueParser: stringValueParser,
-        negation: true,
-    },
-    "ends with": {
-        filter: ENDFilter,
-        valueParser: stringValueParser,
-        negation: false,
-    },
-    "does not end with": {
-        filter: ENDFilter,
-        valueParser: stringValueParser,
-        negation: true,
-    },
-};
-
 export default class QueryParser {
+    constructor() {
+        Log.trace("QueryParser::init()");
+    }
+
     public parseQuery(queryStr: string) {
         // Split query string into major components
         const queryMatchObj = queryStr.match(queryRE);
@@ -399,7 +246,7 @@ export default class QueryParser {
         } = filterMatchObj;
 
         const { filter, valueParser, negation } =
-            filterConditionToIFilterInfo[condition];
+            conditionStringToIFilterInfo[condition];
 
         const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
         const conditionValue = valueParser(value);
