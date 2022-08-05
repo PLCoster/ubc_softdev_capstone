@@ -1,0 +1,291 @@
+{
+    "title": "SELECT dept, id, avg WHERE avg > 90 && dept == 'adhe' || avg == 95 ORDER BY avg",
+    "query": "In courses dataset courseslarge, find entries whose Average is greater than 90 and Department is \"adhe\" or Average is equal to 95; show Department, ID and Average; sort in ascending order by Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "329",
+                    "courseslarge_avg": 90.02
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "412",
+                    "courseslarge_avg": 90.16
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 90.17
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "412",
+                    "courseslarge_avg": 90.18
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 90.5
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 90.72
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "329",
+                    "courseslarge_avg": 90.82
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 90.85
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 91.29
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 91.33
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 91.33
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "330",
+                    "courseslarge_avg": 91.48
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "329",
+                    "courseslarge_avg": 92.54
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "329",
+                    "courseslarge_avg": 93.33
+                },
+                {
+                    "courseslarge_dept": "sowk",
+                    "courseslarge_id": "570",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "rhsc",
+                    "courseslarge_id": "501",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "psyc",
+                    "courseslarge_id": "501",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "psyc",
+                    "courseslarge_id": "501",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "obst",
+                    "courseslarge_id": "549",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "nurs",
+                    "courseslarge_id": "424",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "nurs",
+                    "courseslarge_id": "424",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "musc",
+                    "courseslarge_id": "553",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "mtrl",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "mtrl",
+                    "courseslarge_id": "564",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "mtrl",
+                    "courseslarge_id": "564",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "math",
+                    "courseslarge_id": "532",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "math",
+                    "courseslarge_id": "532",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "kin",
+                    "courseslarge_id": "500",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "kin",
+                    "courseslarge_id": "500",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "kin",
+                    "courseslarge_id": "499",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "epse",
+                    "courseslarge_id": "682",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "epse",
+                    "courseslarge_id": "682",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "epse",
+                    "courseslarge_id": "606",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "edcp",
+                    "courseslarge_id": "473",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "edcp",
+                    "courseslarge_id": "473",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "econ",
+                    "courseslarge_id": "516",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "econ",
+                    "courseslarge_id": "516",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "crwr",
+                    "courseslarge_id": "599",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "cpsc",
+                    "courseslarge_id": "589",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "cpsc",
+                    "courseslarge_id": "589",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "cnps",
+                    "courseslarge_id": "535",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "cnps",
+                    "courseslarge_id": "535",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "bmeg",
+                    "courseslarge_id": "597",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "bmeg",
+                    "courseslarge_id": "597",
+                    "courseslarge_avg": 95
+                },
+                {
+                    "courseslarge_dept": "adhe",
+                    "courseslarge_id": "329",
+                    "courseslarge_avg": 96.11
+                }
+            ]
+        }
+    }
+}
