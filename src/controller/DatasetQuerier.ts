@@ -1,7 +1,8 @@
 import { InsightCourseDataObject, InsightQueryAST } from "./IInsightFacade";
+
 import Log from "../Util";
 
-enum OrderDirection {
+export enum OrderDirection {
     asc = "ASC",
     desc = "DESC",
 }

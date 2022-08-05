@@ -1,4 +1,3 @@
-import Log from "../Util";
 import {
     IInsightFacade,
     InsightResponse,
@@ -6,9 +5,11 @@ import {
     InsightCourseDataObject,
     InsightQueryAST,
 } from "./IInsightFacade";
+
 import DatasetLoader from "./DatasetLoader";
 import QueryParser from "./QueryParser";
 import DatasetQuerier from "./DatasetQuerier";
+import Log from "../Util";
 
 /**
  * This is the main programmatic entry point for the project.

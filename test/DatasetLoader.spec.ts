@@ -1,6 +1,5 @@
 import { expect } from "chai";
 
-import DatasetLoader from "../src/controller/DatasetLoader";
 import {
     InsightResponse,
     InsightResponseSuccessBody,
@@ -8,6 +7,8 @@ import {
     InsightDatasetKind,
     InsightDataset,
 } from "../src/controller/IInsightFacade";
+
+import DatasetLoader from "../src/controller/DatasetLoader";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
 

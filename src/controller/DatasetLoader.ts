@@ -1,11 +1,11 @@
-import * as JSZip from "jszip";
-
 import {
     InsightResponse,
     InsightDataset,
     InsightDatasetKind,
     InsightCourseDataObject,
 } from "./IInsightFacade";
+
+import * as JSZip from "jszip";
 import Log from "../Util";
 
 const identity = (arg: string): string => arg;
