@@ -63,9 +63,6 @@ export const queryRE = new RegExp(
     `^${datasetRE.source}, ${filterRE.source}; show ${displayRE.source}(?:; ${orderRE.source})?[.]$`,
 );
 
-const keywordRE =
-    /In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose/;
-
 // RE to extract KIND and INPUT name from DATASET section of query
 export const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
@@ -83,4 +80,12 @@ export const filterDetailsRE = new RegExp(
 // RE to extract DIRECTION and COLNAME from ORDER section of query
 export const sortDirectionColRE = new RegExp(
     `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
+);
+
+// RE for RESERVED strings (INPUT cannot be equal to any of these):
+const keywordRE =
+    /(In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose)/;
+
+export const reservedRE = new RegExp(
+    `^${keywordRE.source}$|^${numberOPRE.source}$|^${stringOPRE.source}$`,
 );
