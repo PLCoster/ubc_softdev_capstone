@@ -68,3 +68,6 @@ src/**/*.map
 test/*.js
 test/*.map
 **/.DS_Store
+
+# Ignore the dataset cache folder:
+.cache/
