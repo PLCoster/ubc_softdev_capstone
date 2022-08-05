@@ -11,6 +11,7 @@ import {
     columnNameRE,
     sortDirectionColRE,
     filterDetailsRE,
+    reservedRE,
 } from "./helpers/queryParserRegExs";
 import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
 
@@ -91,10 +92,10 @@ export default class QueryParser {
             );
         }
 
-        // Ensure that dataset id does not contain underscore char
-        if (id.includes("_")) {
+        // Ensure that dataset id does not contain underscore char or is RESERVED string
+        if (id.includes("_") || reservedRE.test(id)) {
             this.rejectQuery(
-                "Invalid Query Format - DATASET INPUT cannot contain underscore",
+                `Invalid Query Format - DATASET INPUT (${id}) cannot contain underscore or equal RESERVED strings`,
             );
         }
 
