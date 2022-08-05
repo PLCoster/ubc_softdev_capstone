@@ -47,9 +47,15 @@ const keywordRE =
 
 const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
 
+const filterConditionRE = new RegExp(
+    `(?<CONDITION>${numberOPRE.source}|${stringOPRE.source})`,
+);
+const filterValueRE = new RegExp(
+    `(?<VALUE>${numberRE.source}|${stringRE.source})`,
+);
+
 const filterDetailsRE = new RegExp(
-    // tslint:disable-next-line:max-line-length
-    `^(?<COLNAME>${columnNameRE.source}) (?<CONDITION>${numberOPRE.source}|${stringOPRE.source}) (?<VALUE>${numberRE.source}|${stringRE.source})$`,
+    `^(?<COLNAME>${columnNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
 );
 
 const sortDirectionColRE = new RegExp(
@@ -185,8 +191,6 @@ export default class QueryParser {
             this.rejectQuery(`Invalid Query String Format`);
         }
 
-        // console.log(queryMatchObj);
-
         const {
             groups: {
                 DATASET: datasetStr,
@@ -195,11 +199,6 @@ export default class QueryParser {
                 ORDER: orderStr,
             },
         } = queryMatchObj;
-
-        // console.log("DATASET: ", datasetStr);
-        // console.log("FILTER ", filterStr);
-        // console.log("DISPLAY: ", displayStr);
-        // console.log("Order: ", orderStr);
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr);
@@ -218,7 +217,6 @@ export default class QueryParser {
             queryAST.order = this.parseOrder(orderStr, id, display);
         }
 
-        // console.log("FINAL QUERY AST: ", queryAST);
         return queryAST;
     }
 
@@ -396,9 +394,6 @@ export default class QueryParser {
             this.rejectQuery(`Invalid filter syntax: ${filterStr}`);
         }
 
-        // console.log(filterDetailsRE);
-        // console.log(filterMatchObj);
-
         const {
             groups: { COLNAME: colname, CONDITION: condition, VALUE: value },
         } = filterMatchObj;
@@ -423,11 +418,3 @@ export default class QueryParser {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
     }
 }
-
-// const testParser = new QueryParser();
-// testParser.parseQuery(
-// tslint:disable-next-line:max-line-length
-//     'In courses dataset singleentry, find entries whose Instructor is "edward"; show Audit, Pass and Fail; sort in ascending order by Audit.',
-// );
-
-// console.log("DONE");
