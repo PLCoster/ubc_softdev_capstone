@@ -1,4 +1,5 @@
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
+import { OrderDirection } from "./DatasetQuerier";
 
 import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
 import Log from "../Util";
@@ -179,10 +180,12 @@ export default class QueryParser {
         }`;
 
         const ordering =
-            orderMatchObj.groups.DIRECTION === "ascending" ? "ASC" : "DESC";
+            orderMatchObj.groups.DIRECTION === "ascending"
+                ? OrderDirection.asc
+                : OrderDirection.desc;
 
         // !!! D1 Only ASC order is valid:
-        if (ordering === "DESC") {
+        if (ordering === OrderDirection.desc) {
             this.rejectQuery(
                 `Invalid Query Format: D1 queries can only accept ascending ordering`,
             );
@@ -191,7 +194,7 @@ export default class QueryParser {
         // Check query semantics - we can only sort by a column that is being displayed:
         if (!displayCols.includes(orderKey)) {
             this.rejectQuery(
-                `Invalid Query Format: Invalid ORDER semantics - column ${ordering} not selected in DISPLAY`,
+                `Invalid Query Format: Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
             );
         }
 
