@@ -1,3 +1,7 @@
+import * as JSZip from "jszip";
+import { promises as fs } from "fs";
+import * as path from "path";
+
 import {
     InsightResponse,
     InsightDataset,
@@ -5,7 +9,6 @@ import {
     InsightCourseDataObject,
 } from "./IInsightFacade";
 
-import * as JSZip from "jszip";
 import Log from "../Util";
 
 const identity = (arg: string): string => arg;
@@ -27,11 +30,13 @@ const coursesColNumToQueryKeyTranslator: Array<
 export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
     private datasets: { [key: string]: InsightCourseDataObject[] };
+    private cachePath: string;
 
     constructor() {
         Log.trace("DatasetLoader::init()");
         this.loadedInsightDatasets = {};
         this.datasets = {};
+        this.cachePath = path.join(__dirname, "../../.cache/");
     }
 
     public loadDataset(
@@ -65,6 +70,20 @@ export default class DatasetLoader {
                         )}`,
                     );
 
+                    // Cache dataset to disk
+                    try {
+                        // Check if cacheing directory exists:
+                        await fs.access(this.cachePath);
+                    } catch (err) {
+                        // Error is thrown if cache directory does not exist
+                        await fs.mkdir(this.cachePath);
+                    } finally {
+                        await fs.writeFile(
+                            path.join(this.cachePath, `${id}.json`),
+                            JSON.stringify(processedCoursesData),
+                        );
+                    }
+
                     // Return success response including dataset info
                     return resolve({
                         code: 204,
@@ -88,11 +107,24 @@ export default class DatasetLoader {
 
     // Deletes a given dataset if it is loaded, otherwise returns an error
     public deleteDataset(id: string): Promise<InsightResponse> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (this.loadedInsightDatasets.hasOwnProperty(id)) {
                 delete this.loadedInsightDatasets[id];
                 delete this.datasets[id];
 
+                // Cache dataset to disk
+                try {
+                    // Check if cacheing directory exists:
+                    await fs.access(this.cachePath);
+                    // Try to delete the file
+                    await fs.unlink(path.join(this.cachePath, `${id}.json`));
+                } catch (err) {
+                    return reject(
+                        `DatasetLoader.deleteDataset ERROR: Cached Dataset with id ${id} not found in the cache`,
+                    );
+                }
+
+                // Deletion successful
                 return resolve({
                     code: 204,
                     body: {
@@ -142,6 +174,11 @@ export default class DatasetLoader {
                 result: Object.values(this.loadedInsightDatasets),
             },
         });
+    }
+
+    // Returns the path to the cached datasets directory
+    public getCachePath(): string {
+        return this.cachePath;
     }
 
     // Check that dataset kind is valid (D1 - Rooms dataset kind is not valid)
