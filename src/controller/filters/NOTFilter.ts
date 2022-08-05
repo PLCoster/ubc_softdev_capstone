@@ -17,6 +17,6 @@ export class NOTFilter implements IFilter {
     }
 
     public toString(): string {
-        return `NOT(${this.childFilter.toString})`;
+        return `NOT(${this.childFilter.toString()})`;
     }
 }
