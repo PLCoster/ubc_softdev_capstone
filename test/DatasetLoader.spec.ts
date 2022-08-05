@@ -23,7 +23,7 @@ describe("DatasetLoader Tests", function () {
         singleentry: "./test/data/single_entry.zip",
         twoentries: "./test/data/two_entries.zip",
         empty: "./test/data/empty.zip",
-        invalid_format: "./test/data/invalid_format.zip",
+        invalidFormat: "./test/data/invalid_format.zip",
     };
 
     let datasetLoader: DatasetLoader;
@@ -202,6 +202,29 @@ describe("DatasetLoader Tests", function () {
         let response: InsightResponse;
         const errorStr =
             "DatasetLoader.loadDataset ERROR: Given dataset contained no csv files in 'courses' folder";
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset: Should return an error when dataset has no valid sections (invalid_format.zip)", async () => {
+        const id: string = "invalidFormat";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+        const errorStr =
+            "DatasetLoader.loadDataset ERROR: Given dataset contains no valid course sections";
 
         try {
             response = await datasetLoader.loadDataset(
@@ -407,7 +430,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("deleteDataset: Should successfully delete a loaded dataset", async () => {
+    it("deleteDataset: Should successfully delete a loaded dataset (courses.zip)", async () => {
         const id = "courses";
         const expectedCode: number = 204;
         const expectedResultStr = `Dataset with id ${id} was successfully deleted`;
@@ -460,6 +483,34 @@ describe("DatasetLoader Tests", function () {
             // singleentry, twoentries, courseslarge remain
             expect(actualResult).to.have.lengthOf(3);
             expect(actualResult).to.deep.equal(expectedResult);
+        }
+    });
+
+    it("loadDataset: Should successfully re-load a dataset after deletion (courses.zip)", async () => {
+        const id: string = "courses";
+        const kind = InsightDatasetKind.Courses;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 49044];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
         }
     });
 });
