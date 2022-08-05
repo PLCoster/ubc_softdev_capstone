@@ -9,6 +9,8 @@ import {
     BEGFilter,
     ENDFilter,
     NOTFilter,
+    ANDFilter,
+    ORFilter,
 } from "./filters";
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 
@@ -262,16 +264,24 @@ export default class QueryParser {
         // Otherwise at least one query filter is specified
         // Trim off 'find entries whose ' from start of filterStr
         filterStr = filterStr.slice(19);
-        // console.log("SLICED FILTER: ", filterStr);
 
         // Determine number of filters present:
         const filterOperatorArr = filterStr
             .split(new RegExp(`(${singleFilterRE.source}|and|or)`))
             .filter((str) => str.length > 1);
-        // console.log(filterOperatorArr);
+
+        if (!filterOperatorArr.length) {
+            this.rejectQuery(
+                `Invalid Query Format - could not parse FILTER section correctly`,
+            );
+        }
 
         // Build and Return Filter
-        return this.buildFilters(filterOperatorArr, id);
+        return this.buildFilters(
+            filterOperatorArr,
+            id,
+            filterOperatorArr.length - 1,
+        );
     }
 
     // Extracts DISPLAY from query string:
@@ -347,16 +357,34 @@ export default class QueryParser {
     }
 
     // // Builds up the nested filter object based on query filter criteria:
-    private buildFilters(filterOperatorArr: string[], id: string): IFilter {
+    private buildFilters(
+        filterOperatorArr: string[],
+        id: string,
+        currentIndex: number,
+    ): IFilter {
         // If we only have a single filter, just build and return that single filter
-        if (filterOperatorArr.length === 1) {
+        if (currentIndex === 0) {
             return this.buildSingleFilter(filterOperatorArr[0], id);
         }
 
-        // NEED TO IMPLEMENT MORE COMPLEX FILTER COMBINATIONS:
-        this.rejectQuery("MORE COMPLEX QUERIES NOT YET IMPLEMENTED");
+        // Otherwise build left and right filters and combine with logical filter
+        const rightFilter = this.buildSingleFilter(
+            filterOperatorArr[currentIndex],
+            id,
+        );
 
-        return new ALLFilter();
+        const logicalFilter =
+            filterOperatorArr[currentIndex - 1] === "and"
+                ? ANDFilter
+                : ORFilter;
+
+        const leftFilter = this.buildFilters(
+            filterOperatorArr,
+            id,
+            currentIndex - 2,
+        );
+
+        return new logicalFilter(leftFilter, rightFilter);
     }
 
     // Builds and returns a single IFilter based on the filter criteria:
@@ -375,25 +403,20 @@ export default class QueryParser {
             groups: { COLNAME: colname, CONDITION: condition, VALUE: value },
         } = filterMatchObj;
 
-        if (condition in filterConditionToIFilterInfo) {
-            const { filter, valueParser, negation } =
-                filterConditionToIFilterInfo[condition];
+        const { filter, valueParser, negation } =
+            filterConditionToIFilterInfo[condition];
 
-            const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
-            const conditionValue = valueParser(value);
+        const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
+        const conditionValue = valueParser(value);
 
-            let builtFilter: IFilter = new filter(conditionKey, conditionValue);
+        let builtFilter: IFilter = new filter(conditionKey, conditionValue);
 
-            // If this filter is a negation, then wrap filter inside a NOT filter:
-            if (negation) {
-                builtFilter = new NOTFilter(builtFilter);
-            }
-
-            return builtFilter;
+        // If this filter is a negation, then wrap filter inside a NOT filter:
+        if (negation) {
+            builtFilter = new NOTFilter(builtFilter);
         }
 
-        this.rejectQuery(`NOT YET IMPLEMENTED!`);
-        return new ALLFilter();
+        return builtFilter;
     }
 
     private rejectQuery(message: string) {

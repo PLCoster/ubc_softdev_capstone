@@ -12,3 +12,5 @@ export * from "./BEGFilter";
 export * from "./ENDFilter";
 
 export * from "./NOTFilter";
+export * from "./ANDFilter";
+export * from "./ORFilter";
