@@ -37,7 +37,7 @@ export default class QueryParser {
         const queryMatchObj = queryStr.match(queryRE);
 
         if (!queryMatchObj) {
-            this.rejectQuery(`Invalid Query String Format`);
+            this.rejectQuery(`Invalid Query: incorrect query syntax`);
         }
 
         const {
@@ -78,7 +78,7 @@ export default class QueryParser {
 
         if (!datasetMatchObj) {
             this.rejectQuery(
-                "Invalid Query Format - DATASET KIND or INPUT not recognised",
+                "Invalid Query: DATASET KIND or INPUT not recognised",
             );
         }
 
@@ -88,14 +88,14 @@ export default class QueryParser {
         // !!! D1 - do not accept rooms Dataset Kind:
         if (kind === InsightDatasetKind.Rooms) {
             this.rejectQuery(
-                "Invalid Query Format - DATASET KIND cannot be rooms for D1",
+                "Invalid Query: DATASET KIND cannot be rooms for D1",
             );
         }
 
         // Ensure that dataset id does not contain underscore char or is RESERVED string
         if (id.includes("_") || reservedRE.test(id)) {
             this.rejectQuery(
-                `Invalid Query Format - DATASET INPUT (${id}) cannot contain underscore or equal RESERVED strings`,
+                `Invalid Query: DATASET INPUT (${id}) cannot contain underscore or equal RESERVED strings`,
             );
         }
 
@@ -119,7 +119,7 @@ export default class QueryParser {
 
         if (!filterOperatorArr.length) {
             this.rejectQuery(
-                `Invalid Query Format - could not parse FILTER section correctly`,
+                `Invalid Query: could not parse FILTER section correctly`,
             );
         }
 
@@ -142,9 +142,7 @@ export default class QueryParser {
             // Check multiple column display syntax is correct:
             if (numCols > 1 && index === numCols - 2) {
                 if (colName !== "and") {
-                    this.rejectQuery(
-                        "Invalid Query Format - bad DISPLAY section syntax",
-                    );
+                    this.rejectQuery("Invalid Query: bad DISPLAY syntax");
                 }
                 return;
             }
@@ -152,7 +150,7 @@ export default class QueryParser {
             // Check Column Name is valid, if not throw error:
             if (!columnNameRE.test(colName)) {
                 this.rejectQuery(
-                    `Invalid Query Format - invalid DISPLAY section COLUMN NAME ${colName}`,
+                    `Invalid Query: invalid DISPLAY COLUMN NAME ${colName}`,
                 );
             }
             displayCols.add(`${id}_${queryColumnStrToKeyStr[colName]}`);
@@ -161,7 +159,7 @@ export default class QueryParser {
         // If we have no column names, to display then throw an error:
         if (!displayCols.size) {
             this.rejectQuery(
-                `Invalid Query Format - invalid DISPLAY section, no column names specified`,
+                `Invalid Query: invalid DISPLAY, no column names specified`,
             );
         }
 
@@ -188,14 +186,14 @@ export default class QueryParser {
         // !!! D1 Only ASC order is valid:
         if (ordering === OrderDirection.desc) {
             this.rejectQuery(
-                `Invalid Query Format: D1 queries can only accept ascending ordering`,
+                `Invalid Query: D1 queries can only accept ascending ordering`,
             );
         }
 
         // Check query semantics - we can only sort by a column that is being displayed:
         if (!displayCols.includes(orderKey)) {
             this.rejectQuery(
-                `Invalid Query Format: Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
+                `Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
             );
         }
 
