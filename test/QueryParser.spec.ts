@@ -18,6 +18,7 @@ import {
     ENDFilter,
     NOTFilter,
     ANDFilter,
+    ORFilter,
 } from "../src/controller/filters";
 import Log from "../src/Util";
 
@@ -34,6 +35,63 @@ describe("QueryParser Tests", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    it("parseQuery: Throws error when INPUT contains underscore (SELECT audit FROM cour_ses)", () => {
+        const query =
+            "In courses dataset cour_ses, find all entries; show Audit.";
+
+        const errMessage = `DATASET INPUT (cour_ses) cannot contain underscore or equal RESERVED strings`;
+        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when INPUT is a RESERVED string (dataset) (SELECT audit FROM courses)", () => {
+        const query =
+            "In courses dataset dataset, find all entries; show Audit.";
+
+        const errMessage = `DATASET INPUT (dataset) cannot contain underscore or equal RESERVED strings`;
+        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    // !!! D1 Dataset KIND cannot be 'rooms'
+    it("parseQuery: (D1) Throws error when KIND is rooms", () => {
+        const query = "In rooms dataset courses, find all entries; show Audit.";
+
+        const errMessage = `DATASET KIND cannot be rooms for D1`;
+        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
     });
 
     it("parseQuery: Parses simple query (SELECT audit FROM courses)", () => {
@@ -554,6 +612,43 @@ describe("QueryParser Tests", function () {
             ),
             display: ["courses_audit"],
             order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    const MultTestSQL =
+        '(SELECT dept, id, avg FROM courses WHERE avg>90 AND dep="adhe" OR avg=95 ORDER BY avg ASC)';
+
+    it(`parseQuery: Parses query with multiple conditions ${MultTestSQL}`, () => {
+        const queryFilter =
+            'find entries whose Average is greater than 90 and Department is "adhe" or Average is equal to 95';
+        const queryDisplay = "show Department, ID and Average";
+        const queryOrder = "sort in ascending order by Average";
+
+        const query = `In courses dataset courses, ${queryFilter}; ${queryDisplay}; ${queryOrder}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ORFilter(
+                new ANDFilter(
+                    new GTFilter("courses_avg", 90),
+                    new EQFilter("courses_dept", "adhe"),
+                ),
+                new EQFilter("courses_avg", 95),
+            ),
+            display: ["courses_dept", "courses_id", "courses_avg"],
+            order: [OrderDirection.asc, "courses_avg"],
         };
         let actualAST;
 
