@@ -4,6 +4,7 @@ import {
     InsightDatasetKind,
     InsightQueryAST,
 } from "../src/controller/IInsightFacade";
+import { OrderDirection } from "../src/controller/DatasetQuerier";
 
 import QueryParser from "../src/controller/QueryParser";
 import {
@@ -115,6 +116,76 @@ describe("QueryParser Tests", function () {
         }
     });
 
+    it("parseQuery: Parses query with ordering (ASC) (SELECT audit, pass FROM courses ORDER BY pass ASC)", () => {
+        const query =
+            "In courses dataset courses, find all entries; show Audit and Pass; sort in ascending order by Pass.";
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            display: ["courses_audit", "courses_pass"],
+            order: [OrderDirection.asc, "courses_pass"],
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    // !!! D1 - sorting in descending order throws an error
+    it("parseQuery: Errors on query with order (DESC) (SELECT audit, pass FROM courses ORDER BY audit DESC)", () => {
+        const query =
+            "In courses dataset courses, find all entries; show Audit and Pass; sort in descending order by Audit.";
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            display: ["courses_audit", "courses_pass"],
+            order: [OrderDirection.asc, "courses_audit"],
+        };
+
+        const expectedErr =
+            "queryParser.parseQuery ERROR: Invalid Query: D1 queries can only accept ascending ordering";
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+            // expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Errors on invalid ordering semantics (SELECT audit FROM courses ORDER BY pass ASC)", () => {
+        const query =
+            "In courses dataset courses, find all entries; show Audit; sort in ascending order by Pass.";
+
+        const errMessage = `Invalid ORDER semantics - column courses_pass not selected in DISPLAY`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
     it("parseQuery: Parses query with 'is equal to' filter (SELECT audit FROM courses WHERE audit = 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is equal to 10; show Audit.";
@@ -134,7 +205,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -158,7 +228,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -182,7 +251,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -206,7 +274,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -230,7 +297,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -254,7 +320,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -278,7 +343,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -302,7 +366,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -326,7 +389,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -350,7 +412,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -374,7 +435,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -398,7 +458,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -422,7 +481,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -446,7 +504,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -477,7 +534,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
@@ -508,7 +564,6 @@ describe("QueryParser Tests", function () {
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
             );
         } finally {
-            Log.trace(`${JSON.stringify(actualAST)}`);
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
