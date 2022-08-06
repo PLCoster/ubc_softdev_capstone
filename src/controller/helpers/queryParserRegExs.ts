@@ -33,7 +33,7 @@ export const singleFilterRE = RegExp(
 );
 
 // RE to capture DATASET section of query string
-const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset [a-zA-Z0-9]+)/;
+const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset \S+)/;
 
 // RE to capture FILTER section of query string
 const filterRE = new RegExp(
