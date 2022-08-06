@@ -79,7 +79,7 @@ export const filterDetailsRE = new RegExp(
 
 // RE to extract DIRECTION and COLNAME from ORDER section of query
 export const sortDirectionColRE = new RegExp(
-    `^sort in (?<DIRECTION>ascending) order by (?<COLNAME>${columnNameRE.source})$`,
+    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${columnNameRE.source})$`,
 );
 
 // RE for RESERVED strings (INPUT cannot be equal to any of these):
