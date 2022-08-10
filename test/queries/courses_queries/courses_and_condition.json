@@ -1,0 +1,38 @@
+{
+    "title": "SELECT audit FROM courses WHERE dept = \"math\" AND audit > 1",
+    "query": "In courses dataset courses, find entries whose Department is \"math\" and Audit is greater than 1; show Audit.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 4 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 4 },
+                { "courses_audit": 4 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 3 },
+                { "courses_audit": 3 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 },
+                { "courses_audit": 2 }
+            ]
+        }
+    }
+}

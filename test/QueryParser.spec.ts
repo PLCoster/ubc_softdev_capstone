@@ -567,18 +567,18 @@ describe("QueryParser Tests", function () {
     });
 
     const ANDTestSQL =
-        '(SELECT audit FROM courses WHERE dept = "math" AND audit > 10)';
+        '(SELECT audit FROM courses WHERE dept = "math" AND audit > 1)';
 
     it(`parseQuery: Parses query with two conditions (AND) ${ANDTestSQL}`, () => {
         const queryFilter =
-            'find entries whose Department is "math" and Audit is greater than 10';
+            'find entries whose Department is "math" and Audit is greater than 1';
         const query = `In courses dataset courses, ${queryFilter}; show Audit.`;
         const expectedAST: InsightQueryAST = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ANDFilter(
                 new EQFilter("courses_dept", "math"),
-                new GTFilter("courses_audit", 10),
+                new GTFilter("courses_audit", 1),
             ),
             display: ["courses_audit"],
             order: null,
@@ -597,20 +597,20 @@ describe("QueryParser Tests", function () {
     });
 
     const ORTestSQL =
-        '(SELECT audit FROM courses WHERE dept = "math" OR audit > 10)';
+        '(SELECT inst, dept, audit FROM courses WHERE inst = "*bentall*" OR audit > 7)';
 
     it(`parseQuery: Parses query with two conditions (OR) ${ORTestSQL}`, () => {
         const queryFilter =
-            'find entries whose Department is "math" or Audit is greater than 10';
-        const query = `In courses dataset courses, ${queryFilter}; show Audit.`;
+            'find entries whose Instructor includes "bentall" or Audit is greater than 7';
+        const query = `In courses dataset courses, ${queryFilter}; show Instructor, Department and Audit.`;
         const expectedAST: InsightQueryAST = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ANDFilter(
-                new EQFilter("courses_dept", "math"),
-                new GTFilter("courses_audit", 10),
+                new INCFilter("courses_instructor", "bentall"),
+                new GTFilter("courses_audit", 7),
             ),
-            display: ["courses_audit"],
+            display: ["courses_instructor", "courses_dept", "courses_audit"],
             order: null,
         };
         let actualAST;
