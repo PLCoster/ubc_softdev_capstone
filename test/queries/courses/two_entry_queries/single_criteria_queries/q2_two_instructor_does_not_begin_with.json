@@ -1,0 +1,22 @@
+{
+    "title": "SELECT * FROM coursesTwoEntries, WHERE instructor NOT LIKE 'smul%', ORDER BY id ASC",
+    "query": "In courses dataset coursesTwoEntries, find entries whose Instructor does not begin with \"smul\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesTwoEntries_audit": 10,
+                    "coursesTwoEntries_avg": 80.13,
+                    "coursesTwoEntries_dept": "phar",
+                    "coursesTwoEntries_fail": 25,
+                    "coursesTwoEntries_id": "454",
+                    "coursesTwoEntries_instructor": "carr, roxane",
+                    "coursesTwoEntries_pass": 221,
+                    "coursesTwoEntries_title": "ped geri drg thp",
+                    "coursesTwoEntries_uuid": "83080"
+                }
+            ]
+        }
+    }
+}

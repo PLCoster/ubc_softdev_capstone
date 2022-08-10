@@ -1,6 +1,6 @@
 {
     "title": "Invalid Dataset Kind",
-    "query": "In badkind dataset twoentries, find all entries; show Audit; sort in ascending order by Audit.",
+    "query": "In badkind dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {

@@ -1,0 +1,22 @@
+{
+    "title": "SELECT * FROM coursesTwoEntries, WHERE pass < 221, ORDER BY id ASC",
+    "query": "In courses dataset coursesTwoEntries, find entries whose Pass is less than 221; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesTwoEntries_audit": 0,
+                    "coursesTwoEntries_avg": 86.65,
+                    "coursesTwoEntries_dept": "adhe",
+                    "coursesTwoEntries_fail": 0,
+                    "coursesTwoEntries_id": "327",
+                    "coursesTwoEntries_instructor": "smulders, dave",
+                    "coursesTwoEntries_pass": 23,
+                    "coursesTwoEntries_title": "teach adult",
+                    "coursesTwoEntries_uuid": "17255"
+                }
+            ]
+        }
+    }
+}

@@ -1,6 +1,6 @@
 {
-    "title": "Invalid Order Key Semantics: SELECT audit FROM twoentries, ORDER BY id ASC",
-    "query": "In courses dataset twoentries, find all entries; show Audit; sort in ascending order by ID.",
+    "title": "Invalid Order Key Semantics: SELECT audit FROM coursesTwoEntries, ORDER BY id ASC",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {

@@ -25,10 +25,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
-        courses: "./test/data/courses.zip",
-        empty: "./test/data/empty.zip",
-        invalid_format: "./test/data/invalid_format.zip",
-        no_sections: "./test/data/no_sections.zip",
+        courses: "./test/data/courses/courses.zip",
+        coursesEmpty: "./test/data/courses/empty.zip",
+        coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
+        coursesNoSections: "./test/data/courses/no_sections.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -137,7 +137,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("addDataset: Should throw an error when trying to add a dataset containing no CSV files", async () => {
-        const id: string = "empty";
+        const id: string = "coursesEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
 
@@ -156,7 +156,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("addDataset: Should throw an error when trying to add a dataset with only invalid format data", async () => {
-        const id: string = "invalid_format";
+        const id: string = "coursesInvalidFormat";
         const expectedCode: number = 400;
         let response: InsightResponse;
 
@@ -175,7 +175,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("addDataset: Should throw an error when trying to add a dataset with no valid course sections", async () => {
-        const id: string = "no_sections";
+        const id: string = "coursesNoSections";
         const expectedCode: number = 400;
         let response: InsightResponse;
 
@@ -246,10 +246,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
 // You should not need to modify it; instead, add additional files to the queries directory.
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: string } = {
-        courseslarge: "./test/data/courses_large.zip",
-        courses: "./test/data/courses.zip",
-        singleentry: "./test/data/single_entry.zip",
-        twoentries: "./test/data/two_entries.zip",
+        courseslarge: "./test/data/courses/courses_large.zip",
+        courses: "./test/data/courses/courses.zip",
+        coursesSingleEntry: "./test/data/courses/single_entry.zip",
+        coursesTwoEntries: "./test/data/courses/two_entries.zip",
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -388,8 +388,8 @@ describe("InsightFacade List Datasets", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
-        courses: "./test/data/courses.zip",
-        empty: "./test/data/empty.zip",
+        courses: "./test/data/courses/courses.zip",
+        coursesEmpty: "./test/data/courses/empty.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -465,7 +465,7 @@ describe("InsightFacade List Datasets", function () {
 
     it("listDatasets: Should list valid added datasets when datasets are added", async () => {
         const idValid: string = "courses";
-        const idInvalid: string = "empty";
+        const idInvalid: string = "coursesEmpty";
         const expectedCode = 200;
         let response: InsightResponse;
 

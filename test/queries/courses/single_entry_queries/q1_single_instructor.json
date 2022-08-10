@@ -1,0 +1,14 @@
+{
+    "title": "SELECT instructor FROM coursesSingleEntry",
+    "query": "In courses dataset coursesSingleEntry, find all entries; show Instructor.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesSingleEntry_instructor": "smulders, dave"
+                }
+            ]
+        }
+    }
+}

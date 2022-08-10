@@ -1,6 +1,6 @@
 {
     "title": "Invalid Display Syntax",
-    "query": "In courses dataset twoentries, find all entries; show Audit, ID, Pass; sort in ascending order by Audit.",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit, ID, Pass; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {

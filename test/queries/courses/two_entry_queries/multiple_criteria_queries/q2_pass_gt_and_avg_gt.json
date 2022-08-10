@@ -1,0 +1,10 @@
+{
+    "title": "SELECT * FROM coursesTwoEntries, WHERE pass > 100 AND avg > 85, ORDER BY id ASC",
+    "query": "In courses dataset coursesTwoEntries, find entries whose Pass is greater than 100 and Average is greater than 85; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": []
+        }
+    }
+}

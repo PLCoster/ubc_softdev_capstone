@@ -1,6 +1,6 @@
 {
     "title": "Invalid string Criteria syntax - should be 'is' not 'is equal to'",
-    "query": "In courses dataset twoentries, find entries whose Instructor is equal to \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "query": "In courses dataset coursesTwoEntries, find entries whose Instructor is equal to \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {

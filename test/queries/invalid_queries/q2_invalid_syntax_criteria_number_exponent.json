@@ -1,6 +1,6 @@
 {
     "title": "Invalid Criteria Number - cannot be number with exponent ie 1e1",
-    "query": "In courses dataset twoentries, find entries whose Pass is equal to 1e1; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "query": "In courses dataset coursesTwoEntries, find entries whose Pass is equal to 1e1; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {

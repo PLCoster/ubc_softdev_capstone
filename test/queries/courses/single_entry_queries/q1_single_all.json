@@ -1,0 +1,22 @@
+{
+    "title": "SELECT * FROM coursesSingleEntry",
+    "query": "In courses dataset coursesSingleEntry, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesSingleEntry_audit": 0,
+                    "coursesSingleEntry_avg": 86.65,
+                    "coursesSingleEntry_dept": "adhe",
+                    "coursesSingleEntry_fail": 0,
+                    "coursesSingleEntry_id": "327",
+                    "coursesSingleEntry_instructor": "smulders, dave",
+                    "coursesSingleEntry_pass": 23,
+                    "coursesSingleEntry_title": "teach adult",
+                    "coursesSingleEntry_uuid": "17255"
+                }
+            ]
+        }
+    }
+}

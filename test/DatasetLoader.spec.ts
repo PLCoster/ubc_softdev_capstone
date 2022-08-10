@@ -18,12 +18,12 @@ describe("DatasetLoader Tests", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
-        courses: "./test/data/courses.zip",
-        courseslarge: "./test/data/courses_large.zip",
-        singleentry: "./test/data/single_entry.zip",
-        twoentries: "./test/data/two_entries.zip",
-        empty: "./test/data/empty.zip",
-        invalidFormat: "./test/data/invalid_format.zip",
+        courses: "./test/data/courses/courses.zip",
+        coursesLarge: "./test/data/courses/courses_large.zip",
+        coursesSingleEntry: "./test/data/courses/single_entry.zip",
+        coursesTwoEntries: "./test/data/courses/two_entries.zip",
+        coursesEmpty: "./test/data/courses/empty.zip",
+        coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
     };
 
     let datasetLoader: DatasetLoader;
@@ -175,7 +175,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should return an error when no dataset content is given", async () => {
-        const id: string = "singleentry";
+        const id: string = "coursesSingleEntry";
         const expectedCode = 400;
         const errorStr = `DatasetLoader.loadDataset ERROR: No dataset content given: ${""}`;
         let response: InsightResponse;
@@ -197,7 +197,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should return an error when dataset contains no courses folder (empty.zip)", async () => {
-        const id: string = "empty";
+        const id: string = "coursesEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
         const errorStr =
@@ -220,7 +220,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should return an error when dataset has no valid sections (invalid_format.zip)", async () => {
-        const id: string = "invalidFormat";
+        const id: string = "coursesInvalidFormat";
         const expectedCode: number = 400;
         let response: InsightResponse;
         const errorStr =
@@ -243,7 +243,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should successfully load a tiny valid COURSES dataset (single_entry.zip)", async () => {
-        const id: string = "singleentry";
+        const id: string = "coursesSingleEntry";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
         const expectedResult = [id, kind, 1];
@@ -271,7 +271,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should successfully load a small valid COURSES dataset (two_entries.zip)", async () => {
-        const id: string = "twoentries";
+        const id: string = "coursesTwoEntries";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
         const expectedResult = [id, kind, 2];
@@ -327,7 +327,7 @@ describe("DatasetLoader Tests", function () {
     });
 
     it("loadDataset: Should successfully load the expanded valid COURSES dataset (courses_large.zip)", async () => {
-        const id: string = "courseslarge";
+        const id: string = "coursesLarge";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
         const expectedResult = [id, kind, 64612];
@@ -388,10 +388,10 @@ describe("DatasetLoader Tests", function () {
         const expectedCode: number = 200;
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
-            { id: "singleentry", kind: idkCourses, numRows: 1 },
-            { id: "twoentries", kind: idkCourses, numRows: 2 },
+            { id: "coursesSingleEntry", kind: idkCourses, numRows: 1 },
+            { id: "coursesTwoEntries", kind: idkCourses, numRows: 2 },
             { id: "courses", kind: idkCourses, numRows: 49044 },
-            { id: "courseslarge", kind: idkCourses, numRows: 64612 },
+            { id: "coursesLarge", kind: idkCourses, numRows: 64612 },
         ];
         let response: InsightResponse;
 
@@ -405,7 +405,7 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.be.instanceof(Array);
-            // singleentry, twoentries, courses, courseslarge have been added
+            // coursesSingleEntry, coursesTwoEntries, courses, courseslarge have been added
             expect(actualResult).to.have.lengthOf(4);
             expect(actualResult).to.deep.equal(expectedResult);
         }
@@ -464,9 +464,9 @@ describe("DatasetLoader Tests", function () {
         const expectedCode: number = 200;
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
-            { id: "singleentry", kind: idkCourses, numRows: 1 },
-            { id: "twoentries", kind: idkCourses, numRows: 2 },
-            { id: "courseslarge", kind: idkCourses, numRows: 64612 },
+            { id: "coursesSingleEntry", kind: idkCourses, numRows: 1 },
+            { id: "coursesTwoEntries", kind: idkCourses, numRows: 2 },
+            { id: "coursesLarge", kind: idkCourses, numRows: 64612 },
         ];
         let response: InsightResponse;
 
@@ -480,7 +480,7 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.be.instanceof(Array);
-            // singleentry, twoentries, courseslarge remain
+            // singleEntry, coursesTwoEntries, courseslarge remain
             expect(actualResult).to.have.lengthOf(3);
             expect(actualResult).to.deep.equal(expectedResult);
         }
