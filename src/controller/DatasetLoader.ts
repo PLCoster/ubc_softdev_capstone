@@ -2,6 +2,7 @@ import * as JSZip from "jszip";
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as parse5 from "parse5";
+import * as http from "http";
 
 import {
     InsightResponse,
@@ -46,7 +47,7 @@ const roomAttrNameToQueryKeyTranslator: {
     name: ["fullname", identity],
     id: ["shortname", identity],
     number: ["number", identity],
-    // !!! name field added separately
+    shortname_number: ["name", identity],
     address: ["address", identity],
     // !!! lat and lon fields to be added
     seats: ["seats", parseFloat],
@@ -59,12 +60,14 @@ export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
     private datasets: { [key: string]: InsightCourseDataObject[] };
     private cachePath: string;
+    private buildingGeoData: { [key: string]: { lat: number; lon: number } };
 
     constructor() {
         Log.trace("DatasetLoader::init()");
         this.loadedInsightDatasets = {};
         this.datasets = {};
         this.cachePath = path.join(__dirname, "../../.cache/");
+        this.buildingGeoData = {};
     }
 
     public loadDataset(
@@ -348,37 +351,54 @@ export default class DatasetLoader {
                 return zipData.file("index.xml").async("text");
             })
             .then((indexText) => {
-                // Process text into AST
+                // Process index.xml text into AST
                 const fileAST = parse5.parse(indexText) as ASTNode;
 
-                // Get to building nodes in AST
+                // Get to building nodes from index.xml AST
                 const buildingsArr =
-                    fileAST.childNodes[1].childNodes[1].childNodes[0]
-                        .childNodes;
+                    fileAST.childNodes[1].childNodes[1].childNodes[0].childNodes.filter(
+                        (node: ASTNode) => node.nodeName === "building",
+                    );
 
-                const buildingFilesToProcess: string[] = [];
+                // Get file path and building GeoData for each building
+                const buildingFilePromises: Array<Promise<string>> = [];
+                const geoDataPromises: Array<
+                    Promise<{ address: string; lat: number; lon: number }>
+                > = [];
                 buildingsArr.forEach((node: ASTNode) => {
-                    if (node.nodeName === "building") {
-                        node.attrs.forEach((attr: NodeAttribute) => {
-                            // Push File Path Attribute into Array of Files to process
-                            if (attr.name === "path") {
-                                buildingFilesToProcess.push(
-                                    // Slice off relative path ("./") from filepath
-                                    attr.value.slice(2),
-                                );
-                            }
-                        });
-                    }
+                    node.attrs.forEach((attr: NodeAttribute) => {
+                        // Generate array of JSZip file load promises for each building
+                        if (attr.name === "path") {
+                            // Slice off relative path ("./") from filepath
+                            const filePath = attr.value.slice(2);
+                            buildingFilePromises.push(
+                                allFilesZip.file(filePath).async("text"),
+                            );
+                        }
+                    });
+
+                    // Generate array of promises for fetching building GeoData
+                    const locationNode = node.childNodes.filter(
+                        (childnode: ASTNode) =>
+                            childnode.nodeName === "location",
+                    )[0];
+
+                    const addressStr = locationNode.attrs.filter(
+                        (locAttr: NodeAttribute) => locAttr.name === "address",
+                    )[0].value;
+
+                    geoDataPromises.push(
+                        this.getBuildingGeolocation(addressStr),
+                    );
                 });
 
-                // Load all buildings files using JSZIP:
-                return Promise.all(
-                    buildingFilesToProcess.map((filePath) => {
-                        return allFilesZip.file(filePath).async("text");
-                    }),
+                // Wait for all geodata fetching and file loading promises to resolve before continuing
+                return Promise.all(geoDataPromises).then(() =>
+                    Promise.all(buildingFilePromises),
                 );
             })
             .then((buildingFilesArr: string[]) => {
+                // Process all building xml files to create individual room data objects
                 const roomsDataset: InsightCourseDataObject[] = [];
 
                 buildingFilesArr.forEach((buildingFileData: string) => {
@@ -391,7 +411,7 @@ export default class DatasetLoader {
 
                     const buildingAttrs: InsightCourseDataObject = {};
                     buildingNode.attrs.forEach((attribute) =>
-                        this.addAttrToDataObj(attribute, buildingAttrs),
+                        this.addAttrToDataObj(attribute, buildingAttrs, id),
                     );
 
                     // Get array of 'room' nodes from AST
@@ -402,37 +422,58 @@ export default class DatasetLoader {
 
                     // Create a Dataset Object for each room, add all attributes
                     roomsArr.forEach((node: ASTNode) => {
-                        const roomDataObj: InsightCourseDataObject = {};
+                        let roomDataObj: InsightCourseDataObject = {};
                         // Get room number from room Node:
                         node.attrs.forEach((attribute) =>
-                            this.addAttrToDataObj(attribute, roomDataObj),
+                            this.addAttrToDataObj(attribute, roomDataObj, id),
                         );
 
                         // Get attributes from web child node of room
                         node.childNodes[1].attrs.forEach((attribute) =>
-                            this.addAttrToDataObj(attribute, roomDataObj),
+                            this.addAttrToDataObj(attribute, roomDataObj, id),
                         );
 
                         // Get attributes from space child node of room
                         node.childNodes[1].childNodes[1].attrs.forEach(
                             (attribute) =>
-                                this.addAttrToDataObj(attribute, roomDataObj),
+                                this.addAttrToDataObj(
+                                    attribute,
+                                    roomDataObj,
+                                    id,
+                                ),
                         );
 
-                        roomsDataset.push({
+                        // Add building attributes to the DataObj
+                        roomDataObj = {
                             ...buildingAttrs,
                             ...roomDataObj,
-                        });
+                        };
+
+                        // Create 'name' attribute for DataObj from shortname and number properties
+                        this.addAttrToDataObj(
+                            {
+                                name: "shortname_number",
+                                value: `${roomDataObj[`${id}_shortname`]}_${
+                                    roomDataObj[`${id}_number`]
+                                }`,
+                            },
+                            roomDataObj,
+                            id,
+                        );
+
+                        // Add lat and lon GeoData
+                        const roomAddress = roomDataObj[`${id}_address`];
+
+                        roomDataObj[`${id}_lat`] =
+                            this.buildingGeoData[roomAddress].lat;
+                        roomDataObj[`${id}_lon`] =
+                            this.buildingGeoData[roomAddress].lon;
+
+                        roomsDataset.push(roomDataObj);
                     });
                 });
 
-                Log.trace(`FINAL DATASET: ${JSON.stringify(roomsDataset)}`);
-                Log.trace(
-                    `FINAL DATASET LENGTH: ${JSON.stringify(
-                        roomsDataset.length,
-                    )}`,
-                );
-                // Placeholder
+                // Return complete rooms dataset
                 return roomsDataset;
             });
     }
@@ -441,6 +482,7 @@ export default class DatasetLoader {
     private addAttrToDataObj(
         { name, value }: NodeAttribute,
         roomDataObj: InsightCourseDataObject,
+        id: string,
     ): void {
         if (!roomAttrNameToQueryKeyTranslator.hasOwnProperty(name)) {
             throw new Error(
@@ -449,6 +491,49 @@ export default class DatasetLoader {
         }
         const [translatedName, valueParser] =
             roomAttrNameToQueryKeyTranslator[name];
-        roomDataObj[translatedName] = valueParser(value);
+        roomDataObj[`${id}_${translatedName}`] = valueParser(value);
+    }
+
+    // Fetches building Lat and Lon via web API
+    private getBuildingGeolocation(
+        address: string,
+    ): Promise<{ address: string; lat: number; lon: number }> {
+        // If we already have the building GeoData, resolve immediately
+        if (this.buildingGeoData.hasOwnProperty(address)) {
+            return Promise.resolve({
+                address,
+                ...this.buildingGeoData[address],
+            });
+        }
+
+        // Otherwise Fetch data via http
+        return new Promise((resolve) => {
+            const safeAddressString = address.replace(/ /g, "%20");
+
+            const options = {
+                hostname: "sdmm.cs.ubc.ca",
+                port: 11316,
+                path: `/api/v1/team/${safeAddressString}`,
+            };
+
+            const req = http.get(options, (res) => {
+                if (res.statusCode !== 200) {
+                    throw new Error(
+                        `DatasetLoader.loadDataset ERROR: Bad status code from GeoData API: ${res.statusCode}`,
+                    );
+                }
+
+                res.on("data", (d) => {
+                    this.buildingGeoData[address] = JSON.parse(d.toString());
+                    resolve({ address, ...this.buildingGeoData[address] });
+                });
+            });
+
+            req.on("error", (err) => {
+                throw new Error(
+                    `DatasetLoader.loadDataset ERROR: Error occurred when requesting GeoData from API: ${err.message}`,
+                );
+            });
+        });
     }
 }
