@@ -668,6 +668,7 @@ describe("DatasetLoader Tests", function () {
                 roomsSingleRoom_lat: 49.26372,
                 roomsSingleRoom_lon: -123.25099,
                 roomsSingleRoom_seats: 144,
+                roomsSingleRoom_type: "Tiered Large Group",
                 roomsSingleRoom_furniture: "Classroom-Fixed Tablets",
                 roomsSingleRoom_href:
                     "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/AERL-120",
