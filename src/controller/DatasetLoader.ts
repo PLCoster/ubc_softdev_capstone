@@ -87,6 +87,8 @@ export default class DatasetLoader {
                 if (kind === InsightDatasetKind.Courses) {
                     processedData = await this.loadCoursesDataset(id, content);
                 } else {
+                    // Load Building GeoData from File if not already loaded, then load rooms dataset
+                    await this.loadGeoDataFromFile();
                     processedData = await this.loadRoomsDataset(id, content);
                 }
 
@@ -492,6 +494,36 @@ export default class DatasetLoader {
         const [translatedName, valueParser] =
             roomAttrNameToQueryKeyTranslator[name];
         roomDataObj[`${id}_${translatedName}`] = valueParser(value);
+    }
+
+    // Loads building GeoData from JSON file if present
+    private async loadGeoDataFromFile(): Promise<string> {
+        // If we already have GeoData, don't load from file again:
+        if (Object.keys(this.buildingGeoData).length > 0) {
+            return Promise.resolve("Already Loaded");
+        }
+
+        const geoFilePath = path.join(
+            __dirname,
+            "/helpers/buildingGeoData.json",
+        );
+
+        let fileFound = false;
+        try {
+            // Check if building GeoData file exists:
+            await fs.access(geoFilePath);
+            fileFound = true;
+        } catch (err) {
+            // If file does not exist then just return:
+            return Promise.resolve("No file to load");
+        }
+
+        if (fileFound) {
+            // Otherwise load data from the file
+            const fileData = await fs.readFile(geoFilePath);
+            this.buildingGeoData = JSON.parse(fileData.toString());
+            return Promise.resolve("Data Loaded from file");
+        }
     }
 
     // Fetches building Lat and Lon via web API
