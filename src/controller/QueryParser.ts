@@ -1,17 +1,16 @@
 import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
 import { OrderDirection } from "./DatasetQuerier";
+import { QuerySectionREs } from "./helpers/queryParserRegExs";
 
 import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
 import Log from "../Util";
 
 import {
-    queryRE,
-    inputKindRE,
-    singleFilterRE,
-    columnNameRE,
-    sortDirectionColRE,
-    filterDetailsRE,
+    cQueryRE,
+    rQueryRE,
     reservedRE,
+    courseQuerySectionREs,
+    roomsQuerySectionREs,
 } from "./helpers/queryParserRegExs";
 import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
 
@@ -33,12 +32,22 @@ export default class QueryParser {
     }
 
     public parseQuery(queryStr: string) {
-        // Split query string into major components
-        const queryMatchObj = queryStr.match(queryRE);
-
-        if (!queryMatchObj) {
+        // Try to match queryStr as valid courses or rooms dataset query
+        let queryMatchObj: RegExpMatchArray;
+        let querySectionREs: QuerySectionREs;
+        if (cQueryRE.test(queryStr)) {
+            queryMatchObj = queryStr.match(cQueryRE);
+            querySectionREs = courseQuerySectionREs;
+        } else if (rQueryRE.test(queryStr)) {
+            queryMatchObj = queryStr.match(rQueryRE);
+            querySectionREs = roomsQuerySectionREs;
+        } else {
+            // No matches for courses or rooms query - invalid query
             this.rejectQuery(`Invalid Query: incorrect query syntax`);
         }
+
+        Log.trace(`Query Matched: ${JSON.stringify(queryMatchObj)}`);
+        Log.trace(`QUERY RES: ${querySectionREs.colNameRE}`);
 
         const {
             groups: {
@@ -50,9 +59,9 @@ export default class QueryParser {
         } = queryMatchObj;
 
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
-        const { id, kind } = this.parseDataset(datasetStr);
-        const filter = this.parseFilters(filterStr, id);
-        const display = this.parseDisplay(displayStr, id);
+        const { id, kind } = this.parseDataset(datasetStr, querySectionREs);
+        const filter = this.parseFilters(filterStr, id, querySectionREs);
+        const display = this.parseDisplay(displayStr, id, querySectionREs);
 
         const queryAST: InsightQueryAST = {
             id,
@@ -63,18 +72,26 @@ export default class QueryParser {
         };
 
         if (orderStr) {
-            queryAST.order = this.parseOrder(orderStr, id, display);
+            queryAST.order = this.parseOrder(
+                orderStr,
+                id,
+                display,
+                querySectionREs,
+            );
         }
 
         return queryAST;
     }
 
     // Extracts Dataset INPUT(id) and KIND from query string
-    private parseDataset(datasetStr: string): {
+    private parseDataset(
+        datasetStr: string,
+        querySectionREs: QuerySectionREs,
+    ): {
         id: string;
         kind: InsightDatasetKind;
     } {
-        const datasetMatchObj = datasetStr.match(inputKindRE);
+        const datasetMatchObj = datasetStr.match(querySectionREs.inputKindRE);
 
         if (!datasetMatchObj) {
             this.rejectQuery(
@@ -84,13 +101,6 @@ export default class QueryParser {
 
         const id: string = datasetMatchObj.groups.INPUT;
         const kind = datasetMatchObj.groups.KIND as InsightDatasetKind;
-
-        // !!! D1 - do not accept rooms Dataset Kind:
-        if (kind === InsightDatasetKind.Rooms) {
-            this.rejectQuery(
-                "Invalid Query: DATASET KIND cannot be rooms for D1",
-            );
-        }
 
         // Ensure that dataset id does not contain underscore char or is RESERVED string
         if (id.includes("_") || reservedRE.test(id)) {
@@ -103,7 +113,11 @@ export default class QueryParser {
     }
 
     // Extracts FILTER(s) from query string, builds AST for filters:
-    private parseFilters(filterStr: string, id: string): IFilter {
+    private parseFilters(
+        filterStr: string,
+        id: string,
+        querySectionREs: QuerySectionREs,
+    ): IFilter {
         if (filterStr === "find all entries") {
             return new ALLFilter();
         }
@@ -114,7 +128,9 @@ export default class QueryParser {
 
         // Determine number of filters present:
         const filterOperatorArr = filterStr
-            .split(new RegExp(`(${singleFilterRE.source}|and|or)`))
+            .split(
+                new RegExp(`(${querySectionREs.singleFilterRE.source}|and|or)`),
+            )
             .filter((str) => str.length > 1);
 
         if (!filterOperatorArr.length) {
@@ -128,27 +144,25 @@ export default class QueryParser {
             filterOperatorArr,
             id,
             filterOperatorArr.length - 1,
+            querySectionREs,
         );
     }
 
     // Extracts DISPLAY from query string:
-    private parseDisplay(displayStr: string, id: string): string[] {
-        const displayColNames = displayStr.split(/, | /);
+    private parseDisplay(
+        displayStr: string,
+        id: string,
+        querySectionREs: QuerySectionREs,
+    ): string[] {
+        Log.trace(`DISPLAYSTRING IS: ${displayStr}`);
+        const displayColNames = displayStr.split(/, | and /);
         const numCols = displayColNames.length;
 
         const displayCols = new Set<string>();
 
         displayColNames.forEach((colName, index) => {
-            // Check multiple column display syntax is correct:
-            if (numCols > 1 && index === numCols - 2) {
-                if (colName !== "and") {
-                    this.rejectQuery("Invalid Query: bad DISPLAY syntax");
-                }
-                return;
-            }
-
             // Check Column Name is valid, if not throw error:
-            if (!columnNameRE.test(colName)) {
+            if (!querySectionREs.colNameRE.test(colName)) {
                 this.rejectQuery(
                     `Invalid Query: invalid DISPLAY COLUMN NAME ${colName}`,
                 );
@@ -171,8 +185,11 @@ export default class QueryParser {
         orderStr: string,
         id: string,
         displayCols: string[],
+        querySectionREs: QuerySectionREs,
     ): [string, string] {
-        const orderMatchObj = orderStr.match(sortDirectionColRE);
+        const orderMatchObj = orderStr.match(
+            querySectionREs.sortDirectionColRE,
+        );
 
         const orderKey = `${id}_${
             queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]
@@ -208,16 +225,22 @@ export default class QueryParser {
         filterOperatorArr: string[],
         id: string,
         currentIndex: number,
+        querySectionREs: QuerySectionREs,
     ): IFilter {
         // If we only have a single filter, just build and return that single filter
         if (currentIndex === 0) {
-            return this.buildSingleFilter(filterOperatorArr[0], id);
+            return this.buildSingleFilter(
+                filterOperatorArr[0],
+                id,
+                querySectionREs,
+            );
         }
 
         // Otherwise build left and right filters and combine with logical filter
         const rightFilter = this.buildSingleFilter(
             filterOperatorArr[currentIndex],
             id,
+            querySectionREs,
         );
 
         const logicalFilter =
@@ -229,15 +252,20 @@ export default class QueryParser {
             filterOperatorArr,
             id,
             currentIndex - 2,
+            querySectionREs,
         );
 
         return new logicalFilter(leftFilter, rightFilter);
     }
 
     // Builds and returns a single IFilter based on the filter criteria:
-    private buildSingleFilter(filterStr: string, id: string): IFilter {
+    private buildSingleFilter(
+        filterStr: string,
+        id: string,
+        querySectionREs: QuerySectionREs,
+    ): IFilter {
         // Parse relevant information from the filterstring:
-        const filterMatchObj = filterStr.match(filterDetailsRE);
+        const filterMatchObj = filterStr.match(querySectionREs.filterDetailRE);
 
         if (!filterMatchObj) {
             this.rejectQuery(`Invalid filter syntax: ${filterStr}`);
@@ -267,3 +295,11 @@ export default class QueryParser {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
     }
 }
+
+// TEST DRIVER
+// const queryParser = new QueryParser();
+// queryParser.parseQuery(
+// tslint:disable-next-line:max-line-length
+//     "In rooms dataset roomsSingleRoom, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+// );
+// Log.trace("DONE");
