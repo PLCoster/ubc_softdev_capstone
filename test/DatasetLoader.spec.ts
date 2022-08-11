@@ -24,6 +24,8 @@ describe("DatasetLoader Tests", function () {
         coursesTwoEntries: "./test/data/courses/two_entries.zip",
         coursesEmpty: "./test/data/courses/empty.zip",
         coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
+        rooms: "./test/data/rooms/rooms.zip",
+        roomsEmpty: "./test/data/rooms/empty.zip",
     };
 
     let datasetLoader: DatasetLoader;
@@ -470,6 +472,57 @@ describe("DatasetLoader Tests", function () {
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
         const expectedResult = [id, kind, 49044];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
+        }
+    });
+
+    it("loadDataset (ROOMS): Should return an error on an empty dataset (empty.zip)", async () => {
+        const id: string = "roomsEmpty";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+        const errorStr =
+            "DatasetLoader.loadDataset ERROR: Given dataset contained no index.xml file";
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset (ROOMS): Should successfully load the standard ROOMS dataset (rooms.zip)", async () => {
+        const id: string = "rooms";
+        const kind = InsightDatasetKind.Rooms;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 284];
         let response: InsightResponse;
 
         try {
