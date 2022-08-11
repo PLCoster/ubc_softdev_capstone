@@ -8,6 +8,7 @@ import {
     InsightResponseErrorBody,
     InsightDatasetKind,
     InsightDataset,
+    InsightCourseDataObject,
 } from "../src/controller/IInsightFacade";
 
 import DatasetLoader from "../src/controller/DatasetLoader";
@@ -495,12 +496,73 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
+    it("getDataset: Should throw an error when asked to get an unloaded dataset", () => {
+        const id: string = "unloadedDataset";
+        const kind = InsightDatasetKind.Courses;
+        const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset with ID ${id} not found`;
+
+        let response: InsightCourseDataObject[];
+        let errorMessage: string;
+        try {
+            response = datasetLoader.getDataset(id, kind);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErrorStr);
+            expect(response).to.equal(undefined);
+        }
+    });
+
+    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind", () => {
+        const id: string = "courses";
+        const kind = InsightDatasetKind.Rooms;
+        const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`;
+
+        let response: InsightCourseDataObject[];
+        let errorMessage: string;
+        try {
+            response = datasetLoader.getDataset(id, kind);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErrorStr);
+            expect(response).to.equal(undefined);
+        }
+    });
+
+    it("getDataset (COURSES): Should return a correctly loaded tiny courses dataset (single_entry.zip)", () => {
+        const id: string = "coursesSingleEntry";
+        const kind = InsightDatasetKind.Courses;
+        const expectedResponse: InsightCourseDataObject[] = [
+            {
+                coursesSingleEntry_audit: 0,
+                coursesSingleEntry_avg: 86.65,
+                coursesSingleEntry_dept: "adhe",
+                coursesSingleEntry_fail: 0,
+                coursesSingleEntry_id: "327",
+                coursesSingleEntry_instructor: "smulders, dave",
+                coursesSingleEntry_pass: 23,
+                coursesSingleEntry_title: "teach adult",
+                coursesSingleEntry_uuid: "17255",
+            },
+        ];
+
+        let response: InsightCourseDataObject[];
+
+        try {
+            response = datasetLoader.getDataset(id, kind);
+        } catch (err) {
+            assert.fail(`Unexpected Error thrown: ${err.message}`);
+        } finally {
+            expect(response).to.deep.equal(expectedResponse);
+        }
+    });
+
     it("loadDataset (ROOMS): Should return an error on an empty dataset (empty.zip)", async () => {
         const id: string = "roomsEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
-        const errorStr =
-            "DatasetLoader.loadDataset ERROR: Given dataset contained no index.xml file";
+        const errorStr = `DatasetLoader.loadDataset ERROR: Rooms dataset ${id} contains no index.xml file`;
 
         try {
             response = await datasetLoader.loadDataset(

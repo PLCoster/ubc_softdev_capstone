@@ -187,7 +187,7 @@ export default class DatasetLoader {
         // Ensure loaded dataset kind matches kind specified in query
         if (this.loadedInsightDatasets[id].kind !== kind) {
             throw new Error(
-                `DatasetLoader.getDataset ERROR: Dataset with ID ${id} queried with incorrect KIND ${kind}`,
+                `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`,
             );
         }
 
