@@ -29,6 +29,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         coursesEmpty: "./test/data/courses/empty.zip",
         coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
         coursesNoSections: "./test/data/courses/no_sections.zip",
+        rooms: "./test/data/rooms/rooms.zip",
+        roomsEmpty: "./test/data/rooms/empty.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -81,42 +83,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    it("addDataset: Should add a valid dataset", async () => {
-        const id: string = "courses";
-        const expectedCode: number = 204;
-        let response: InsightResponse;
-
-        try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses,
-            );
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-        }
-    });
-
-    it("addDataset: Should throw an error when trying to add a dataset with the same id", async () => {
-        const id: string = "courses";
-        const expectedCode: number = 400;
-        let response: InsightResponse;
-
-        try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses,
-            );
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-        }
-    });
-
     it("addDataset: Should throw an error when trying to add a non-existent dataset", async () => {
         const id: string = "non-existant-courses";
         const expectedCode: number = 400;
@@ -136,7 +102,62 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("addDataset: Should throw an error when trying to add a dataset containing no CSV files", async () => {
+    it("addDataset (COURSES): Should return an error when adding a dataset with incorrect kind", async () => {
+        const id: string = "courses";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.property("error");
+        }
+    });
+
+    it("addDataset (COURSES): Should add a valid dataset", async () => {
+        const id: string = "courses";
+        const expectedCode: number = 204;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
+
+    it("addDataset (COURSES): Should throw an error when trying to add a dataset with the same id", async () => {
+        const id: string = "courses";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
+
+    it("addDataset (COURSES): Should throw an error when trying to add a dataset containing no CSV files", async () => {
         const id: string = "coursesEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -155,7 +176,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("addDataset: Should throw an error when trying to add a dataset with only invalid format data", async () => {
+    it("addDataset (COURSES): Should throw an error when adding a dataset with only invalid format data", async () => {
         const id: string = "coursesInvalidFormat";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -174,7 +195,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("addDataset: Should throw an error when trying to add a dataset with no valid course sections", async () => {
+    it("addDataset (COURSES): Should throw an error when trying to add a dataset with no valid sections", async () => {
         const id: string = "coursesNoSections";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -193,7 +214,44 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("removeDataset: Should remove the courses dataset successfully after it has been added", async () => {
+    it("addDataset (ROOMS): Should return an error when adding a rooms dataset with incorrect kind", async () => {
+        const id: string = "rooms";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.property("error");
+        }
+    });
+
+    it("addDataset (ROOMS): Should add a valid rooms dataset", async () => {
+        const id: string = "rooms";
+        const expectedCode: number = 204;
+        let response: InsightResponse;
+
+        try {
+            response = await insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+        }
+    });
+
+    it("removeDataset (COURSES): Should remove the courses dataset successfully after it has been added", async () => {
         const id: string = "courses";
         const expectedCode = 204;
         let response: InsightResponse;
@@ -207,32 +265,13 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("removeDataset: Should return an error when asked to remove non-existent dataset", async () => {
+    it("removeDataset (COURSES): Should return an error when asked to remove non-existent dataset", async () => {
         const id: string = "courses";
         const expectedCode = 404;
         let response: InsightResponse;
 
         try {
             response = await insightFacade.removeDataset(id);
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.property("error");
-        }
-    });
-
-    it("addDataset: Should return an error when asked to add a dataset with incorrect kind given", async () => {
-        const id: string = "courses";
-        const expectedCode: number = 400;
-        let response: InsightResponse;
-
-        try {
-            response = await insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Rooms,
-            );
         } catch (err) {
             response = err;
         } finally {
@@ -317,18 +356,18 @@ describe("InsightFacade PerformQuery", () => {
             // This try/catch is a hack to let your dynamic tests execute enough the addDataset method fails.
             // In D1, you should remove this try/catch to ensure your datasets load successfully before trying
             // to run you queries.
-            try {
-                const responses: InsightResponse[] = await Promise.all(
-                    responsePromises,
-                );
-                responses.forEach((response) =>
-                    expect(response.code).to.equal(204),
-                );
-            } catch (err) {
-                Log.warn(
-                    `Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`,
-                );
-            }
+            // try {
+            //     const responses: InsightResponse[] = await Promise.all(
+            //         responsePromises,
+            //     );
+            //     responses.forEach((response) =>
+            //         expect(response.code).to.equal(204),
+            //     );
+            // } catch (err) {
+            //     Log.warn(
+            //         `Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`,
+            //     );
+            // }
         } catch (err) {
             expect.fail(
                 "",
