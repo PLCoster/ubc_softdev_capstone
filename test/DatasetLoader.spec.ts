@@ -26,6 +26,7 @@ describe("DatasetLoader Tests", function () {
         coursesEmpty: "./test/data/courses/empty.zip",
         coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
         rooms: "./test/data/rooms/rooms.zip",
+        roomsSingleRoom: "./test/data/rooms/single_room.zip",
         roomsEmpty: "./test/data/rooms/empty.zip",
     };
 
@@ -496,6 +497,84 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
+    it("loadDataset (ROOMS): Should return an error on an empty dataset (empty.zip)", async () => {
+        const id: string = "roomsEmpty";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+        const errorStr = `DatasetLoader.loadDataset ERROR: Rooms dataset ${id} contains no index.xml file`;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset (ROOMS): Should successfully load a tiny rooms dataset (single_room.zip)", async () => {
+        const id: string = "roomsSingleRoom";
+        const kind = InsightDatasetKind.Rooms;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 1];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
+        }
+    });
+
+    it("loadDataset (ROOMS): Should successfully load the standard ROOMS dataset (rooms.zip)", async () => {
+        const id: string = "rooms";
+        const kind = InsightDatasetKind.Rooms;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 284];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+        }
+
+        // Check the dataset has been cached onto disk
+        const cachePath = datasetLoader.getCachePath();
+        try {
+            await fs.access(path.join(cachePath, `${id}.json`));
+        } catch (err) {
+            assert.fail("Expected cached dataset not found on disk");
+        }
+    });
+
     it("getDataset: Should throw an error when asked to get an unloaded dataset", () => {
         const id: string = "unloadedDataset";
         const kind = InsightDatasetKind.Courses;
@@ -513,9 +592,26 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind", () => {
+    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind (1)", () => {
         const id: string = "courses";
         const kind = InsightDatasetKind.Rooms;
+        const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`;
+
+        let response: InsightCourseDataObject[];
+        let errorMessage: string;
+        try {
+            response = datasetLoader.getDataset(id, kind);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErrorStr);
+            expect(response).to.equal(undefined);
+        }
+    });
+
+    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind (2)", () => {
+        const id: string = "rooms";
+        const kind = InsightDatasetKind.Courses;
         const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`;
 
         let response: InsightCourseDataObject[];
@@ -558,53 +654,35 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (ROOMS): Should return an error on an empty dataset (empty.zip)", async () => {
-        const id: string = "roomsEmpty";
-        const expectedCode: number = 400;
-        let response: InsightResponse;
-        const errorStr = `DatasetLoader.loadDataset ERROR: Rooms dataset ${id} contains no index.xml file`;
-
-        try {
-            response = await datasetLoader.loadDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Rooms,
-            );
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.own.property("error");
-            const actualResult = response.body as InsightResponseErrorBody;
-            expect(actualResult.error).to.equal(errorStr);
-        }
-    });
-
-    it("loadDataset (ROOMS): Should successfully load the standard ROOMS dataset (rooms.zip)", async () => {
-        const id: string = "rooms";
+    it("getDataset (ROOMS): Should return a correctly loaded tiny rooms dataset (single_room.zip)", () => {
+        const id: string = "roomsSingleRoom";
         const kind = InsightDatasetKind.Rooms;
-        const expectedCode: number = 204;
-        const expectedResult = [id, kind, 284];
-        let response: InsightResponse;
+        const expectedResponse: InsightCourseDataObject[] = [
+            {
+                roomsSingleRoom_fullname:
+                    "Aquatic Ecosystems Research Laboratory",
+                roomsSingleRoom_shortname: "AERL",
+                roomsSingleRoom_number: "120",
+                roomsSingleRoom_name: "AERL_120",
+                roomsSingleRoom_address: "2202 Main Mall",
+                roomsSingleRoom_lat: 49.26372,
+                roomsSingleRoom_lon: -123.25099,
+                roomsSingleRoom_seats: 144,
+                roomsSingleRoom_furniture: "Classroom-Fixed Tablets",
+                roomsSingleRoom_href:
+                    "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/AERL-120",
+            },
+        ];
+
+        let response: InsightCourseDataObject[];
 
         try {
-            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+            response = datasetLoader.getDataset(id, kind);
         } catch (err) {
-            response = err;
+            assert.fail(`Unexpected Error thrown: ${err.message}`);
         } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.own.property("result");
-            const actualResult = (response.body as InsightResponseSuccessBody)
-                .result;
-            expect(actualResult).to.deep.equal(expectedResult);
-        }
-
-        // Check the dataset has been cached onto disk
-        const cachePath = datasetLoader.getCachePath();
-        try {
-            await fs.access(path.join(cachePath, `${id}.json`));
-        } catch (err) {
-            assert.fail("Expected cached dataset not found on disk");
+            Log.trace(`RESPONSE WAS: ${response}`);
+            expect(response).to.deep.equal(expectedResponse);
         }
     });
 });
