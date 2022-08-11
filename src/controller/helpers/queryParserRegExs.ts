@@ -2,90 +2,162 @@
  * This file holds various RegExs in order to validate and parse a query string
  */
 
-// RE for all possible column names
-export const columnNameRE =
+// RE for all possible courses column names
+export const cColNameRE =
     /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
 
+// RE for all possible rooms column names
+const rColNameRE =
+    /Full Name|Short Name|Number|Name|Address|Type|Furniture|Link|Latitude|Longitude|Seats/;
+
 // RE relating to numerical data columns
-const numberColRE = /(?:Average|Pass|Fail|Audit)/;
+const cNumColRE = /(?:Average|Pass|Fail|Audit)/;
+const rNumColRE = /(?:Latitude|Longitude|Seats)/;
+
 const numberOPRE = /(?:is (?:not )?(?:greater than|less than|equal to))/;
 const numberRE = /(?:(?:-)?(?:[1-9][0-9]*|0)(?:[.][0-9]+)?)/;
 
-// RE for a numerical column filter condition
-const numberFilterRE = RegExp(
-    `(?:${numberColRE.source} ${numberOPRE.source} ${numberRE.source})`,
+// REs for a numerical column filter condition
+const cNumFilterRE = RegExp(
+    `(?:${cNumColRE.source} ${numberOPRE.source} ${numberRE.source})`,
+);
+const rNumFilterRE = RegExp(
+    `(?:${rNumColRE.source} ${numberOPRE.source} ${numberRE.source})`,
 );
 
 // RE relating to string data columns
-const stringColRE = /(?:Department|ID|Instructor|Title|UUID)/;
+const cStrColRE = /(?:Department|ID|Instructor|Title|UUID)/;
+const rStrColRE =
+    /(?:FullName|Short Name|Number|Name|Address|Type|Furniture|Link)/;
+
 const stringOPRE =
     /(?:is(?: not)?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
 const stringRE = /"(?:[^*"]*)"/;
 
-// RE for a string column filter condition
-const stringFilterRE = RegExp(
-    `(?:${stringColRE.source} ${stringOPRE.source} ${stringRE.source})`,
+// REs for a string column filter condition
+const cStrFilterRE = RegExp(
+    `(?:${cStrColRE.source} ${stringOPRE.source} ${stringRE.source})`,
+);
+const rStrFilterRE = RegExp(
+    `(?:${rStrColRE.source} ${stringOPRE.source} ${stringRE.source})`,
 );
 
-// RE for a single filter condition (numerical condition or string condition)
-export const singleFilterRE = RegExp(
-    `(?:${numberFilterRE.source}|${stringFilterRE.source})`,
+// REs for a single filter condition (numerical condition or string condition)
+export const cOneFilterRE = RegExp(
+    `(?:${cNumFilterRE.source}|${cStrFilterRE.source})`,
+);
+const rOneFilterRE = RegExp(
+    `(?:${rNumFilterRE.source}|${rStrFilterRE.source})`,
 );
 
-// RE to capture DATASET section of query string
-const datasetRE = /(?<DATASET>In (?:courses|rooms) dataset \S+)/;
+// REs to capture DATASET section of query string
+const cDatasetRE = /(?<DATASET>In courses dataset \S+)/;
+const rDatasetRE = /(?<DATASET>In rooms dataset \S+)/;
 
-// RE to capture FILTER section of query string
-const filterRE = new RegExp(
-    `(?<FILTER>find entries whose (?:${singleFilterRE.source} (?:and|or) )*${singleFilterRE.source}|find all entries)`,
+// REs to capture FILTER section of query string
+const cFilterRE = new RegExp(
+    `(?<FILTER>find entries whose (?:${cOneFilterRE.source} (?:and|or) )*${cOneFilterRE.source}|find all entries)`,
+);
+const rFilterRE = new RegExp(
+    `(?<FILTER>find entries whose (?:${rOneFilterRE.source} (?:and|or) )*${rOneFilterRE.source}|find all entries)`,
 );
 
-const displaySingleRE = new RegExp(`(?:${columnNameRE.source})`);
-const displayTwoRE = new RegExp(
-    `(?:(:?${columnNameRE.source}) and (?:${columnNameRE.source}))`,
+// REs to capture DISPLAY section of query string
+const cDisplaySingleRE = new RegExp(`(?:${cColNameRE.source})`);
+const cDisplayTwoRE = new RegExp(
+    `(?:(:?${cColNameRE.source}) and (?:${cColNameRE.source}))`,
 );
-const displayMultRE = new RegExp(
-    `(?:(?:(?:${columnNameRE.source}), )+(?:${columnNameRE.source}) and (?:${columnNameRE.source}))`,
-);
-
-// RE to capture DISPLAY section of query string
-const displayRE = new RegExp(
-    `(?<DISPLAY>${displayMultRE.source}|${displayTwoRE.source}|${displaySingleRE.source})`,
+const cDisplayMultRE = new RegExp(
+    `(?:(?:(?:${cColNameRE.source}), )+(?:${cColNameRE.source}) and (?:${cColNameRE.source}))`,
 );
 
-// RE to capture ORDER section of query string
-const orderRE = new RegExp(
-    `(?<ORDER>sort in (?:ascending|descending) order by (?:${columnNameRE.source}))`,
+const rDisplaySingleRE = new RegExp(`(?:${rColNameRE.source})`);
+const rDisplayTwoRE = new RegExp(
+    `(?:(:?${rColNameRE.source}) and (?:${rColNameRE.source}))`,
+);
+const rDisplayMultRE = new RegExp(
+    `(?:(?:(?:${rColNameRE.source}), )+(?:${rColNameRE.source}) and (?:${rColNameRE.source}))`,
 );
 
-// RE to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
-export const queryRE = new RegExp(
-    `^${datasetRE.source}, ${filterRE.source}; show ${displayRE.source}(?:; ${orderRE.source})?[.]$`,
+const cDisplayRE = new RegExp(
+    `(?<DISPLAY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplaySingleRE.source})`,
+);
+const rDisplayRE = new RegExp(
+    `(?<DISPLAY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source})`,
+);
+
+// REs to capture ORDER section of query string
+const cOrderRE = new RegExp(
+    `(?<ORDER>sort in (?:ascending|descending) order by (?:${cColNameRE.source}))`,
+);
+const rOrderRE = new RegExp(
+    `(?<ORDER>sort in (?:ascending|descending) order by (?:${rColNameRE.source}))`,
+);
+
+// REs to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
+export const cQueryRE = new RegExp(
+    `^${cDatasetRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:; ${cOrderRE.source})?[.]$`,
+);
+export const rQueryRE = new RegExp(
+    `^${rDatasetRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:; ${rOrderRE.source})?[.]$`,
 );
 
 // RE to extract KIND and INPUT name from DATASET section of query
-export const inputKindRE = /^In (?<KIND>courses|rooms) dataset (?<INPUT>\S+)$/;
+export const cInputKindRE = /^In (?<KIND>courses) dataset (?<INPUT>\S+)$/;
+export const rInputKindRE = /^In (?<KIND>rooms) dataset (?<INPUT>\S+)$/;
 
-// RE to extract CONDITION, VALUE and COLNAME from FILTER section of query
+// REs to extract CONDITION, VALUE and COLNAME from FILTER section of query
 const filterConditionRE = new RegExp(
     `(?<CONDITION>${numberOPRE.source}|${stringOPRE.source})`,
 );
 const filterValueRE = new RegExp(
     `(?<VALUE>${numberRE.source}|${stringRE.source})`,
 );
-export const filterDetailsRE = new RegExp(
-    `^(?<COLNAME>${columnNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
+
+export const cFilterDetailsRE = new RegExp(
+    `^(?<COLNAME>${cColNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
+);
+export const rFilterDetailsRE = new RegExp(
+    `^(?<COLNAME>${rColNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
 );
 
-// RE to extract DIRECTION and COLNAME from ORDER section of query
-export const sortDirectionColRE = new RegExp(
-    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${columnNameRE.source})$`,
+// REs to extract DIRECTION and COLNAME from ORDER section of query
+export const cSortDirectionColRE = new RegExp(
+    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${cColNameRE.source})$`,
+);
+export const rSortDirectionColRE = new RegExp(
+    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${rColNameRE.source})$`,
 );
 
 // RE for RESERVED strings (INPUT cannot be equal to any of these):
 const keywordRE =
-    /(In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose)/;
+    /(In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose|grouped|where)/;
 
 export const reservedRE = new RegExp(
     `^${keywordRE.source}$|^${numberOPRE.source}$|^${stringOPRE.source}$`,
 );
+
+// Interface and implentations that contain relevant RegExs for Course/Room queries
+export interface QuerySectionREs {
+    colNameRE: RegExp;
+    inputKindRE: RegExp;
+    singleFilterRE: RegExp;
+    filterDetailRE: RegExp;
+    sortDirectionColRE: RegExp;
+}
+
+export const courseQuerySectionREs: QuerySectionREs = {
+    colNameRE: cColNameRE,
+    inputKindRE: cInputKindRE,
+    singleFilterRE: cOneFilterRE,
+    filterDetailRE: cFilterDetailsRE,
+    sortDirectionColRE: cSortDirectionColRE,
+};
+
+export const roomsQuerySectionREs: QuerySectionREs = {
+    colNameRE: rColNameRE,
+    inputKindRE: rInputKindRE,
+    singleFilterRE: rOneFilterRE,
+    filterDetailRE: rFilterDetailsRE,
+    sortDirectionColRE: rSortDirectionColRE,
+};
