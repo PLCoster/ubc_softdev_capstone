@@ -1,6 +1,7 @@
 import * as JSZip from "jszip";
 import { promises as fs } from "fs";
 import * as path from "path";
+import * as parse5 from "parse5";
 
 import {
     InsightResponse,
@@ -10,6 +11,18 @@ import {
 } from "./IInsightFacade";
 
 import Log from "../Util";
+
+// Interface types for parse5 processed XML AST
+interface NodeAttribute {
+    name: string;
+    value: string;
+}
+
+interface ASTNode {
+    childNodes: ASTNode[];
+    nodeName: string;
+    attrs?: NodeAttribute[];
+}
 
 const identity = (arg: string): string => arg;
 
@@ -26,6 +39,21 @@ const coursesColNumToQueryKeyTranslator: Array<
     [8, "avg", parseFloat],
     [9, "dept", identity],
 ];
+
+const roomAttrNameToQueryKeyTranslator: {
+    [key: string]: [string, (arg1: string, ...args: any[]) => string | number];
+} = {
+    name: ["fullname", identity],
+    id: ["shortname", identity],
+    number: ["number", identity],
+    // !!! name field added separately
+    address: ["address", identity],
+    // !!! lat and lon fields to be added
+    seats: ["seats", parseFloat],
+    type: ["type", identity],
+    furniture: ["furniture", identity],
+    link: ["href", identity],
+};
 
 export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
@@ -50,49 +78,54 @@ export default class DatasetLoader {
                 this.validateDatasetKind(kind);
                 this.validateDatasetId(id);
                 this.validateDatasetContent(content);
+
+                let processedData: InsightCourseDataObject[];
+
                 if (kind === InsightDatasetKind.Courses) {
-                    const processedCoursesData: InsightCourseDataObject[] =
-                        await this.loadCoursesDataset(id, content);
-
-                    // Add the dataset summary to loaded Insight datasets:
-                    this.loadedInsightDatasets[id] = {
-                        id,
-                        kind,
-                        numRows: processedCoursesData.length,
-                    };
-
-                    // Store the dataset itself for querying
-                    this.datasets[id] = processedCoursesData;
-
-                    Log.trace(
-                        `Course InsightDataset Loaded: ${JSON.stringify(
-                            this.loadedInsightDatasets[id],
-                        )}`,
-                    );
-
-                    // Cache dataset to disk
-                    try {
-                        // Check if cacheing directory exists:
-                        await fs.access(this.cachePath);
-                    } catch (err) {
-                        // Error is thrown if cache directory does not exist
-                        await fs.mkdir(this.cachePath);
-                    } finally {
-                        await fs.writeFile(
-                            path.join(this.cachePath, `${id}.json`),
-                            JSON.stringify(processedCoursesData),
-                        );
-                    }
-
-                    // Return success response including dataset info
-                    return resolve({
-                        code: 204,
-                        body: {
-                            result: [id, kind, processedCoursesData.length],
-                        },
-                    });
+                    processedData = await this.loadCoursesDataset(id, content);
+                } else {
+                    processedData = await this.loadRoomsDataset(id, content);
                 }
+
+                // Add the dataset summary to loaded Insight datasets:
+                this.loadedInsightDatasets[id] = {
+                    id,
+                    kind,
+                    numRows: processedData.length,
+                };
+
+                // Store the dataset itself for querying
+                this.datasets[id] = processedData;
+
+                Log.trace(
+                    `InsightDataset Loaded: ${JSON.stringify(
+                        this.loadedInsightDatasets[id],
+                    )}`,
+                );
+
+                // Cache dataset to disk
+                try {
+                    // Check if cacheing directory exists:
+                    await fs.access(this.cachePath);
+                } catch (err) {
+                    // Error is thrown if cache directory does not exist
+                    await fs.mkdir(this.cachePath);
+                } finally {
+                    await fs.writeFile(
+                        path.join(this.cachePath, `${id}.json`),
+                        JSON.stringify(processedData),
+                    );
+                }
+
+                // Return success response including dataset info
+                return resolve({
+                    code: 204,
+                    body: {
+                        result: [id, kind, processedData.length],
+                    },
+                });
             } catch (err) {
+                Log.trace(`ERROR WHEN LOADING DATASET: ${err.message}`);
                 return reject({
                     code: 400,
                     body: {
@@ -100,8 +133,6 @@ export default class DatasetLoader {
                     },
                 });
             }
-
-            reject({ code: -1, body: null });
         });
     }
 
@@ -181,12 +212,9 @@ export default class DatasetLoader {
         return this.cachePath;
     }
 
-    // Check that dataset kind is valid (D1 - Rooms dataset kind is not valid)
+    // Check that dataset kind is valid
     private validateDatasetKind(kind: InsightDatasetKind) {
-        if (
-            !Object.values(InsightDatasetKind).includes(kind) ||
-            kind === InsightDatasetKind.Rooms
-        ) {
+        if (!Object.values(InsightDatasetKind).includes(kind)) {
             throw new Error(
                 `DatasetLoader.loadDataset ERROR: Invalid Dataset Kind Given: ${kind}`,
             );
@@ -294,5 +322,133 @@ export default class DatasetLoader {
                 // Resolve the promise with the processed course dataset:
                 return processedCoursesData;
             });
+    }
+
+    private loadRoomsDataset(
+        id: string,
+        content: string,
+    ): Promise<InsightCourseDataObject[]> {
+        const zip = new JSZip();
+        let allFilesZip: JSZip;
+
+        // Unzip the zipped data folder using JSZip
+        return zip
+            .loadAsync(content, { base64: true })
+            .then(async (zipData) => {
+                allFilesZip = zipData;
+
+                // If no index.xml file, throw an error:
+                if (!zipData.file("index.xml")) {
+                    throw new Error(
+                        `DatasetLoader.loadDataset ERROR: Rooms dataset ${id} contains no index.xml file`,
+                    );
+                }
+
+                // Otherwise load index.xml for processing
+                return zipData.file("index.xml").async("text");
+            })
+            .then((indexText) => {
+                // Process text into AST
+                const fileAST = parse5.parse(indexText) as ASTNode;
+
+                // Get to building nodes in AST
+                const buildingsArr =
+                    fileAST.childNodes[1].childNodes[1].childNodes[0]
+                        .childNodes;
+
+                const buildingFilesToProcess: string[] = [];
+                buildingsArr.forEach((node: ASTNode) => {
+                    if (node.nodeName === "building") {
+                        node.attrs.forEach((attr: NodeAttribute) => {
+                            // Push File Path Attribute into Array of Files to process
+                            if (attr.name === "path") {
+                                buildingFilesToProcess.push(
+                                    // Slice off relative path ("./") from filepath
+                                    attr.value.slice(2),
+                                );
+                            }
+                        });
+                    }
+                });
+
+                // Load all buildings files using JSZIP:
+                return Promise.all(
+                    buildingFilesToProcess.map((filePath) => {
+                        return allFilesZip.file(filePath).async("text");
+                    }),
+                );
+            })
+            .then((buildingFilesArr: string[]) => {
+                const roomsDataset: InsightCourseDataObject[] = [];
+
+                buildingFilesArr.forEach((buildingFileData: string) => {
+                    // Use parse5 to extract room information from each building file:
+                    const fileAST = parse5.parse(buildingFileData) as ASTNode;
+
+                    // Get building id, address and name from building xml node
+                    const buildingNode =
+                        fileAST.childNodes[1].childNodes[1].childNodes[0];
+
+                    const buildingAttrs: InsightCourseDataObject = {};
+                    buildingNode.attrs.forEach((attribute) =>
+                        this.addAttrToDataObj(attribute, buildingAttrs),
+                    );
+
+                    // Get array of 'room' nodes from AST
+                    const roomsArr =
+                        buildingNode.childNodes[1].childNodes.filter(
+                            (node: ASTNode) => node.nodeName === "room",
+                        );
+
+                    // Create a Dataset Object for each room, add all attributes
+                    roomsArr.forEach((node: ASTNode) => {
+                        const roomDataObj: InsightCourseDataObject = {};
+                        // Get room number from room Node:
+                        node.attrs.forEach((attribute) =>
+                            this.addAttrToDataObj(attribute, roomDataObj),
+                        );
+
+                        // Get attributes from web child node of room
+                        node.childNodes[1].attrs.forEach((attribute) =>
+                            this.addAttrToDataObj(attribute, roomDataObj),
+                        );
+
+                        // Get attributes from space child node of room
+                        node.childNodes[1].childNodes[1].attrs.forEach(
+                            (attribute) =>
+                                this.addAttrToDataObj(attribute, roomDataObj),
+                        );
+
+                        roomsDataset.push({
+                            ...buildingAttrs,
+                            ...roomDataObj,
+                        });
+                    });
+                });
+
+                Log.trace(`FINAL DATASET: ${JSON.stringify(roomsDataset)}`);
+                Log.trace(
+                    `FINAL DATASET LENGTH: ${JSON.stringify(
+                        roomsDataset.length,
+                    )}`,
+                );
+                // Placeholder
+                return roomsDataset;
+            });
+    }
+
+    // Translates AST Node attributes to valid rooms dataset keys, and adds the keys to the given data object
+    private addAttrToDataObj(
+        { name, value }: NodeAttribute,
+        roomDataObj: InsightCourseDataObject,
+    ): void {
+        if (!roomAttrNameToQueryKeyTranslator.hasOwnProperty(name)) {
+            throw new Error(
+                `DatasetLoader.loadDataset ERROR: attribute ${name} not expected on rooms dataset node`,
+            );
+        }
+        const [translatedName, valueParser] =
+            roomAttrNameToQueryKeyTranslator[name];
+        roomDataObj[translatedName] = valueParser(value);
     }
 }
