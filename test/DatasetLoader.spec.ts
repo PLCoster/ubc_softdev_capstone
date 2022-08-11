@@ -88,11 +88,11 @@ describe("DatasetLoader Tests", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    it("getLoadedDatasets: Should return a Promise when called", () => {
+    it("getLoadedDatasets: Returns a Promise when called", () => {
         expect(datasetLoader.getLoadedDatasets()).to.be.an("promise");
     });
 
-    it("getLoadedDatasets: Should return no datasets when none have been added", async () => {
+    it("getLoadedDatasets: Returns no datasets when none have been added", async () => {
         const expectedCode: number = 200;
         let response: InsightResponse;
 
@@ -110,11 +110,11 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should return a Promise when called", () => {
+    it("loadDataset: Returns a Promise when called", () => {
         expect(datasetLoader.loadDataset(null, null, null)).to.be.an("promise");
     });
 
-    it("loadDataset: Should return an error when called with an invalid dataset kind", async () => {
+    it("loadDataset: Returns an error when called with an invalid dataset kind", async () => {
         const expectedCode: number = 400;
         const errorStr: string = `DatasetLoader.loadDataset ERROR: Invalid Dataset Kind Given: ${null}`;
         let response: InsightResponse;
@@ -131,28 +131,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: !!! For D1, 'Rooms' dataset kind is invalid, should return an error", async () => {
-        const expectedCode = 400;
-        const errorStr = `DatasetLoader.loadDataset ERROR: Invalid Dataset Kind Given: ${InsightDatasetKind.Rooms}`;
-        let response: InsightResponse;
-
-        try {
-            response = await datasetLoader.loadDataset(
-                null,
-                null,
-                InsightDatasetKind.Rooms,
-            );
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response.code).to.equal(expectedCode);
-            expect(response.body).to.have.own.property("error");
-            const actualResult = response.body as InsightResponseErrorBody;
-            expect(actualResult.error).to.equal(errorStr);
-        }
-    });
-
-    it("loadDataset: Should return an error when no dataset id is given", async () => {
+    it("loadDataset: Returns an error when no dataset id is given", async () => {
         const id: string = null;
         const expectedCode = 400;
         const errorStr = `DatasetLoader.loadDataset ERROR: Invalid Dataset Id Given: ${id}`;
@@ -174,7 +153,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should return an error when no dataset content is given", async () => {
+    it("loadDataset: Returns an error when no dataset content is given", async () => {
         const id: string = "coursesSingleEntry";
         const expectedCode = 400;
         const errorStr = `DatasetLoader.loadDataset ERROR: No dataset content given: ${""}`;
@@ -196,7 +175,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should return an error when dataset contains no courses folder (empty.zip)", async () => {
+    it("loadDataset (COURSES): Returns an error when dataset contains no courses folder (empty.zip)", async () => {
         const id: string = "coursesEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -219,7 +198,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should return an error when dataset has no valid sections (invalid_format.zip)", async () => {
+    it("loadDataset (COURSES): Returns an error when dataset has no valid sections (invalid_format.zip)", async () => {
         const id: string = "coursesInvalidFormat";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -242,7 +221,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should successfully load a tiny valid COURSES dataset (single_entry.zip)", async () => {
+    it("loadDataset (COURSES): Should successfully load a tiny valid COURSES dataset (single_entry.zip)", async () => {
         const id: string = "coursesSingleEntry";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -270,7 +249,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should successfully load a small valid COURSES dataset (two_entries.zip)", async () => {
+    it("loadDataset (COURSES): Should successfully load a small valid COURSES dataset (two_entries.zip)", async () => {
         const id: string = "coursesTwoEntries";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -298,7 +277,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should successfully load the standard valid COURSES dataset (courses.zip)", async () => {
+    it("loadDataset (COURSES): Should successfully load the standard valid COURSES dataset (courses.zip)", async () => {
         const id: string = "courses";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -326,7 +305,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should successfully load the expanded valid COURSES dataset (courses_large.zip)", async () => {
+    it("loadDataset (COURSES): Should successfully load expanded COURSES dataset (courses_large.zip)", async () => {
         const id: string = "coursesLarge";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -354,7 +333,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset: Should return an error when asked to load an id that has already been loaded", async () => {
+    it("loadDataset: Returns an error when asked to load an id that has already been loaded", async () => {
         const id: string = "courses";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -384,7 +363,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getLoadedDatasets: Should return InsightDatasets when datasets have been added", async () => {
+    it("getLoadedDatasets: Returns InsightDatasets when datasets have been added", async () => {
         const expectedCode: number = 200;
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
@@ -411,7 +390,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("deleteDataset: Should return an error when trying to delete unloaded datasets", async () => {
+    it("deleteDataset: Returns an error when trying to delete unloaded datasets", async () => {
         const id = "unloadeddataset";
         const expectedCode: number = 404;
         const expectedErrorStr = `DatasetLoader.deleteDataset ERROR: Dataset with id ${id} not found`;
@@ -460,7 +439,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getLoadedDatasets: Should return updated InsightDatasets when datasets have been deleted", async () => {
+    it("getLoadedDatasets: Returns updated InsightDatasets when datasets have been deleted", async () => {
         const expectedCode: number = 200;
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
