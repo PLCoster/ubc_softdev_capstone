@@ -1,0 +1,59 @@
+{
+    "title": "SELECT * FROM coursesFourEntries ORDER BY dept, avg ASC",
+    "query": "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year; sort in ascending order by Department and Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_audit": 0,
+                    "coursesFourEntries_avg": 78.93,
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_fail": 3,
+                    "coursesFourEntries_id": "327",
+                    "coursesFourEntries_instructor": "smulders, dave",
+                    "coursesFourEntries_pass": 42,
+                    "coursesFourEntries_title": "teach adult",
+                    "coursesFourEntries_uuid": "17255",
+                    "coursesFourEntries_year": 2011
+                },
+                {
+                    "coursesFourEntries_audit": 0,
+                    "coursesFourEntries_avg": 86.65,
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_fail": 0,
+                    "coursesFourEntries_id": "327",
+                    "coursesFourEntries_instructor": "smulders, dave",
+                    "coursesFourEntries_pass": 23,
+                    "coursesFourEntries_title": "teach adult",
+                    "coursesFourEntries_uuid": "17255",
+                    "coursesFourEntries_year": 2010
+                },
+                {
+                    "coursesFourEntries_audit": 5,
+                    "coursesFourEntries_avg": 75.3,
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_fail": 32,
+                    "coursesFourEntries_id": "454",
+                    "coursesFourEntries_instructor": "carr, roxane",
+                    "coursesFourEntries_pass": 185,
+                    "coursesFourEntries_title": "ped geri drg thp",
+                    "coursesFourEntries_uuid": "83080",
+                    "coursesFourEntries_year": 2015
+                },
+                {
+                    "coursesFourEntries_audit": 10,
+                    "coursesFourEntries_avg": 80.13,
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_fail": 25,
+                    "coursesFourEntries_id": "454",
+                    "coursesFourEntries_instructor": "carr, roxane",
+                    "coursesFourEntries_pass": 221,
+                    "coursesFourEntries_title": "ped geri drg thp",
+                    "coursesFourEntries_uuid": "83080",
+                    "coursesFourEntries_year": 2014
+                }
+            ]
+        }
+    }
+}
