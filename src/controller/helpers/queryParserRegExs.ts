@@ -28,7 +28,7 @@ const rNumFilterRE = RegExp(
 // RE relating to string data columns
 const cStrColRE = /(?:Department|ID|Instructor|Title|UUID)/;
 const rStrColRE =
-    /(?:FullName|Short Name|Number|Name|Address|Type|Furniture|Link)/;
+    /(?:Full Name|Short Name|Number|Name|Address|Type|Furniture|Link)/;
 
 const stringOPRE =
     /(?:is(?: not)?|includes|does not include|(?:begins|does not begin|ends|does not end) with)/;
