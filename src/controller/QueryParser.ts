@@ -306,7 +306,6 @@ export default class QueryParser {
 // TEST DRIVER
 // const queryParser = new QueryParser();
 // queryParser.parseQuery(
-// tslint:disable-next-line:max-line-length
-//     "In rooms dataset roomsSingleRoom, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+//     "In rooms dataset roomsSingleRoom, find all entries; show Full Name.",
 // );
 // Log.trace("DONE");
