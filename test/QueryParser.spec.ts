@@ -196,34 +196,6 @@ describe("QueryParser Tests", function () {
         }
     });
 
-    // !!! D1 - sorting in descending order throws an error
-    it("parseQuery: Errors on query with order (DESC) (SELECT audit, pass FROM courses ORDER BY audit DESC)", () => {
-        const query =
-            "In courses dataset courses, find all entries; show Audit and Pass; sort in descending order by Audit.";
-        const expectedAST: InsightQueryAST = {
-            id: "courses",
-            kind: InsightDatasetKind.Courses,
-            filter: new ALLFilter(),
-            display: ["courses_audit", "courses_pass"],
-            order: [OrderDirection.asc, "courses_audit"],
-        };
-
-        const expectedErr =
-            "queryParser.parseQuery ERROR: Invalid Query: D1 queries can only accept ascending ordering";
-
-        let actualAST;
-        let errorMessage;
-        try {
-            actualAST = queryParser.parseQuery(query);
-        } catch (err) {
-            errorMessage = err.message;
-        } finally {
-            expect(errorMessage).to.equal(expectedErr);
-            expect(actualAST).to.equal(undefined);
-            // expect(actualAST).to.deep.equal(expectedAST);
-        }
-    });
-
     it("parseQuery: Errors on invalid ordering semantics (SELECT audit FROM courses ORDER BY pass ASC)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit; sort in ascending order by Pass.";
