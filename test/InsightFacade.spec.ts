@@ -307,6 +307,10 @@ describe("InsightFacade PerformQuery", () => {
             kind: InsightDatasetKind.Rooms,
             path: "./test/data/rooms/single_room.zip",
         },
+        roomsTwoRooms: {
+            kind: InsightDatasetKind.Rooms,
+            path: "./test/data/rooms/two_rooms.zip",
+        },
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
