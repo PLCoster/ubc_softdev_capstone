@@ -305,8 +305,7 @@ export default class QueryParser {
 // const queryParser = new QueryParser();
 // console.log(
 //     queryParser.parseQuery(
-// tslint:disable-next-line:max-line-length
-//         "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by Department and Average.",
+//         "In courses dataset coursesFourEntries, find all entries; show Department and Average.",
 //     ),
 // );
 // Log.trace("DONE");
