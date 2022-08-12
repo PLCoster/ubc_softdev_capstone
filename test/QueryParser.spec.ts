@@ -141,7 +141,7 @@ describe("QueryParser Tests", function () {
 
     it("parseQuery: Parses simple query requesting all columns (SELECT * FROM courses)", () => {
         const queryCols =
-            "Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID";
+            "Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year";
         const query = `In courses dataset courses, find all entries; show ${queryCols}.`;
         const expectedAST: InsightQueryAST = {
             id: "courses",
@@ -157,6 +157,7 @@ describe("QueryParser Tests", function () {
                 "courses_pass",
                 "courses_title",
                 "courses_uuid",
+                "courses_year",
             ],
             order: null,
         };

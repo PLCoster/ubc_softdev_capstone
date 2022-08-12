@@ -24,6 +24,7 @@ const queryColNameStrToKeyStr: { [key: string]: string } = {
     "Pass": "pass",
     "Title": "title",
     "UUID": "uuid",
+    "Year": "year",
     "Full Name": "fullname",
     "Short Name": "shortname",
     "Number": "number",

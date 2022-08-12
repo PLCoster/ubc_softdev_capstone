@@ -4,14 +4,14 @@
 
 // RE for all possible courses column names
 export const cColNameRE =
-    /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID/;
+    /Average|Pass|Fail|Audit|Department|ID|Instructor|Title|UUID|Year/;
 
 // RE for all possible rooms column names
 const rColNameRE =
     /Full Name|Short Name|Number|Name|Address|Type|Furniture|Link|Latitude|Longitude|Seats/;
 
 // RE relating to numerical data columns
-const cNumColRE = /(?:Average|Pass|Fail|Audit)/;
+const cNumColRE = /(?:Average|Pass|Fail|Audit|Year)/;
 const rNumColRE = /(?:Latitude|Longitude|Seats)/;
 
 const numberOPRE = /(?:is (?:not )?(?:greater than|less than|equal to))/;
