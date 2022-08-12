@@ -1,0 +1,21 @@
+{
+    "title": "SELECT shortname, number, seats FROM rooms WHERE shortname='ESB' AND seats>100 SORT by seats ASC",
+    "query": "In rooms dataset rooms, find entries whose Short Name is \"ESB\" and Seats is greater than 100; show Short Name, Number and Seats; sort in ascending order by Seats.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "rooms_shortname": "ESB",
+                    "rooms_number": "1012",
+                    "rooms_seats": 150
+                },
+                {
+                    "rooms_shortname": "ESB",
+                    "rooms_number": "1013",
+                    "rooms_seats": 350
+                }
+            ]
+        }
+    }
+}
