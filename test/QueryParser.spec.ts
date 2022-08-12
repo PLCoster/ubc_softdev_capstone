@@ -182,7 +182,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             display: ["courses_audit", "courses_pass"],
-            order: [OrderDirection.asc, "courses_pass"],
+            order: { direction: OrderDirection.asc, keys: ["courses_pass"] },
         };
         let actualAST;
 
@@ -197,11 +197,105 @@ describe("QueryParser Tests", function () {
         }
     });
 
-    it("parseQuery: Errors on invalid ordering semantics (SELECT audit FROM courses ORDER BY pass ASC)", () => {
+    it("parseQuery: Parses query with ordering (DESC) (SELECT audit, pass FROM courses ORDER BY pass DESC)", () => {
+        const query =
+            "In courses dataset courses, find all entries; show Audit and Pass; sort in descending order by Pass.";
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            display: ["courses_audit", "courses_pass"],
+            order: { direction: OrderDirection.desc, keys: ["courses_pass"] },
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with two order keys (SELECT fail, pass FROM courses ORDER BY pass, fail ASC)", () => {
+        const order = "sort in ascending order by Pass and Fail";
+        const query = `In courses dataset courses, find all entries; show Fail and Pass; ${order}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            display: ["courses_fail", "courses_pass"],
+            order: {
+                direction: OrderDirection.asc,
+                keys: ["courses_pass", "courses_fail"],
+            },
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with multiple order keys", () => {
+        const order = "sort in descending order by Department, Pass and Fail";
+        const query = `In courses dataset courses, find all entries; show Department, Fail and Pass; ${order}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            display: ["courses_dept", "courses_fail", "courses_pass"],
+            order: {
+                direction: OrderDirection.desc,
+                keys: ["courses_dept", "courses_pass", "courses_fail"],
+            },
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Errors on invalid ordering semantics (1) (SELECT audit FROM courses ORDER BY pass ASC)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit; sort in ascending order by Pass.";
 
         const errMessage = `Invalid ORDER semantics - column courses_pass not selected in DISPLAY`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Errors on invalid ordering semantics (2) ", () => {
+        const order = "sort in descending order by Department, Pass and Audit";
+        const query = `In courses dataset courses, find all entries; show Department, Fail and Pass; ${order}.`;
+
+        const errMessage = `Invalid ORDER semantics - column courses_audit not selected in DISPLAY`;
         const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
 
         let actualAST;
@@ -620,7 +714,7 @@ describe("QueryParser Tests", function () {
                 new EQFilter("courses_avg", 95),
             ),
             display: ["courses_dept", "courses_id", "courses_avg"],
-            order: [OrderDirection.asc, "courses_avg"],
+            order: { direction: OrderDirection.asc, keys: ["courses_avg"] },
         };
         let actualAST;
 
