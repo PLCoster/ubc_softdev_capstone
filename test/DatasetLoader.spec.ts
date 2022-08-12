@@ -29,6 +29,8 @@ describe("DatasetLoader Tests", function () {
         rooms: "./test/data/rooms/rooms.zip",
         roomsSingleRoom: "./test/data/rooms/single_room.zip",
         roomsEmpty: "./test/data/rooms/empty.zip",
+        roomsNoBuildings: "./test/data/rooms/no_buildings.zip",
+        roomsNoRooms: "./test/data/rooms/no_rooms.zip",
     };
 
     let datasetLoader: DatasetLoader;
@@ -531,6 +533,53 @@ describe("DatasetLoader Tests", function () {
         const expectedCode: number = 400;
         let response: InsightResponse;
         const errorStr = `DatasetLoader.loadDataset ERROR: Rooms dataset ${id} contains no index.xml file`;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset (ROOMS): Returns an error on a dataset with no building files (no_buildings.zip)", async () => {
+        const id: string = "roomsNoBuildings";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        const filePath = "campus/discover/buildings-and-classrooms/AERL";
+        const errorStr = `DatasetLoader.loadDataset ERROR: Building file ${filePath} could not be found`;
+
+        try {
+            response = await datasetLoader.loadDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Rooms,
+            );
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("error");
+            const actualResult = response.body as InsightResponseErrorBody;
+            expect(actualResult.error).to.equal(errorStr);
+        }
+    });
+
+    it("loadDataset (ROOMS): Returns an error on a dataset with no rooms (no_rooms.zip)", async () => {
+        const id: string = "roomsNoRooms";
+        const expectedCode: number = 400;
+        let response: InsightResponse;
+
+        const errorStr = `DatasetLoader.loadDataset ERROR: rooms dataset ${id} contains no rooms`;
 
         try {
             response = await datasetLoader.loadDataset(
