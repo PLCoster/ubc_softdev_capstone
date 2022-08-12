@@ -34,6 +34,7 @@ const coursesColNumToQueryKeyTranslator: Array<
     [1, "uuid", identity],
     [2, "instructor", identity],
     [3, "audit", parseFloat],
+    [4, "year", parseFloat],
     [5, "id", identity],
     [6, "pass", parseFloat],
     [7, "fail", parseFloat],
@@ -312,6 +313,11 @@ export default class DatasetLoader {
                                 );
                             },
                         );
+
+                        // If the course section has a 'Section' column with value ("overall"), change Year to 1900
+                        if (numCols === 11 && rowEntries[10] === "overall") {
+                            courseData[`${id}_year`] = 1900;
+                        }
 
                         processedCoursesData.push(courseData);
                     });
