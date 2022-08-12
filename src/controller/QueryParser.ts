@@ -57,9 +57,6 @@ export default class QueryParser {
             this.rejectQuery(`Invalid Query: incorrect query syntax`);
         }
 
-        Log.trace(`Query Matched: ${JSON.stringify(queryMatchObj)}`);
-        Log.trace(`QUERY RES: ${querySectionREs.colNameRE}`);
-
         const {
             groups: {
                 DATASET: datasetStr,
@@ -165,7 +162,6 @@ export default class QueryParser {
         id: string,
         querySectionREs: QuerySectionREs,
     ): string[] {
-        Log.trace(`DISPLAYSTRING IS: ${displayStr}`);
         const displayColNames = displayStr.split(/, | and /);
         const numCols = displayColNames.length;
 
