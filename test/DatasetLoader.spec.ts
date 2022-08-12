@@ -25,6 +25,7 @@ describe("DatasetLoader Tests", function () {
         coursesTwoEntries: "./test/data/courses/two_entries.zip",
         coursesEmpty: "./test/data/courses/empty.zip",
         coursesInvalidFormat: "./test/data/courses/invalid_format.zip",
+        coursesSectionOverall: "./test/data/courses/section_overall.zip",
         rooms: "./test/data/rooms/rooms.zip",
         roomsSingleRoom: "./test/data/rooms/single_room.zip",
         roomsEmpty: "./test/data/rooms/empty.zip",
@@ -225,7 +226,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (COURSES): Should successfully load a tiny valid COURSES dataset (single_entry.zip)", async () => {
+    it("loadDataset (COURSES): Loads a tiny valid COURSES dataset (single_entry.zip)", async () => {
         const id: string = "coursesSingleEntry";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -253,7 +254,35 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (COURSES): Should successfully load a small valid COURSES dataset (two_entries.zip)", async () => {
+    it('loadDataset (COURSES): Loads valid COURSES dataset with Section="overall" (section_overall.zip)', async () => {
+        const id: string = "coursesSectionOverall";
+        const kind = InsightDatasetKind.Courses;
+        const expectedCode: number = 204;
+        const expectedResult = [id, kind, 1];
+        let response: InsightResponse;
+
+        try {
+            response = await datasetLoader.loadDataset(id, datasets[id], kind);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response.code).to.equal(expectedCode);
+            expect(response.body).to.have.own.property("result");
+            const actualResult = (response.body as InsightResponseSuccessBody)
+                .result;
+            expect(actualResult).to.deep.equal(expectedResult);
+
+            // Check the dataset has been cached onto disk
+            const cachePath = datasetLoader.getCachePath();
+            try {
+                await fs.access(path.join(cachePath, `${id}.json`));
+            } catch (err) {
+                assert.fail("Expected cached dataset not found on disk");
+            }
+        }
+    });
+
+    it("loadDataset (COURSES): Loads a small valid COURSES dataset (two_entries.zip)", async () => {
         const id: string = "coursesTwoEntries";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -281,7 +310,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (COURSES): Should successfully load the standard valid COURSES dataset (courses.zip)", async () => {
+    it("loadDataset (COURSES): Loads the standard valid COURSES dataset (courses.zip)", async () => {
         const id: string = "courses";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -309,7 +338,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (COURSES): Should successfully load expanded COURSES dataset (courses_large.zip)", async () => {
+    it("loadDataset (COURSES): Loads expanded COURSES dataset (courses_large.zip)", async () => {
         const id: string = "coursesLarge";
         const kind = InsightDatasetKind.Courses;
         const expectedCode: number = 204;
@@ -372,6 +401,7 @@ describe("DatasetLoader Tests", function () {
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
             { id: "coursesSingleEntry", kind: idkCourses, numRows: 1 },
+            { id: "coursesSectionOverall", kind: idkCourses, numRows: 1 },
             { id: "coursesTwoEntries", kind: idkCourses, numRows: 2 },
             { id: "courses", kind: idkCourses, numRows: 49044 },
             { id: "coursesLarge", kind: idkCourses, numRows: 64612 },
@@ -388,8 +418,7 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.be.instanceof(Array);
-            // coursesSingleEntry, coursesTwoEntries, courses, courseslarge have been added
-            expect(actualResult).to.have.lengthOf(4);
+            expect(actualResult).to.have.lengthOf(expectedResult.length);
             expect(actualResult).to.deep.equal(expectedResult);
         }
     });
@@ -448,6 +477,7 @@ describe("DatasetLoader Tests", function () {
         const idkCourses = InsightDatasetKind.Courses;
         const expectedResult: InsightDataset[] = [
             { id: "coursesSingleEntry", kind: idkCourses, numRows: 1 },
+            { id: "coursesSectionOverall", kind: idkCourses, numRows: 1 },
             { id: "coursesTwoEntries", kind: idkCourses, numRows: 2 },
             { id: "coursesLarge", kind: idkCourses, numRows: 64612 },
         ];
@@ -463,8 +493,7 @@ describe("DatasetLoader Tests", function () {
             const actualResult = (response.body as InsightResponseSuccessBody)
                 .result;
             expect(actualResult).to.be.instanceof(Array);
-            // singleEntry, coursesTwoEntries, courseslarge remain
-            expect(actualResult).to.have.lengthOf(3);
+            expect(actualResult).to.have.lengthOf(expectedResult.length);
             expect(actualResult).to.deep.equal(expectedResult);
         }
     });
@@ -497,7 +526,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (ROOMS): Should return an error on an empty dataset (empty.zip)", async () => {
+    it("loadDataset (ROOMS): Returns an error on an empty dataset (empty.zip)", async () => {
         const id: string = "roomsEmpty";
         const expectedCode: number = 400;
         let response: InsightResponse;
@@ -519,7 +548,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (ROOMS): Should successfully load a tiny rooms dataset (single_room.zip)", async () => {
+    it("loadDataset (ROOMS): Loads a tiny rooms dataset (single_room.zip)", async () => {
         const id: string = "roomsSingleRoom";
         const kind = InsightDatasetKind.Rooms;
         const expectedCode: number = 204;
@@ -547,7 +576,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("loadDataset (ROOMS): Should successfully load the standard ROOMS dataset (rooms.zip)", async () => {
+    it("loadDataset (ROOMS): Loads the standard ROOMS dataset (rooms.zip)", async () => {
         const id: string = "rooms";
         const kind = InsightDatasetKind.Rooms;
         const expectedCode: number = 204;
@@ -575,7 +604,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset: Should throw an error when asked to get an unloaded dataset", () => {
+    it("getDataset: Throws an error when asked to get an unloaded dataset", () => {
         const id: string = "unloadedDataset";
         const kind = InsightDatasetKind.Courses;
         const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset with ID ${id} not found`;
@@ -592,7 +621,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind (1)", () => {
+    it("getDataset: Throws an error when asked to get a dataset with incorrect kind (1)", () => {
         const id: string = "courses";
         const kind = InsightDatasetKind.Rooms;
         const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`;
@@ -609,7 +638,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset: Should throw an error when asked to get a dataset with incorrect kind (2)", () => {
+    it("getDataset: Throws an error when asked to get a dataset with incorrect kind (2)", () => {
         const id: string = "rooms";
         const kind = InsightDatasetKind.Courses;
         const expectedErrorStr = `DatasetLoader.getDataset ERROR: Dataset ${id} queried with incorrect KIND ${kind}`;
@@ -626,7 +655,7 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset (COURSES): Should return a correctly loaded tiny courses dataset (single_entry.zip)", () => {
+    it("getDataset (COURSES): Returns a loaded tiny courses dataset (single_entry.zip)", () => {
         const id: string = "coursesSingleEntry";
         const kind = InsightDatasetKind.Courses;
         const expectedResponse: InsightCourseDataObject[] = [
@@ -640,6 +669,7 @@ describe("DatasetLoader Tests", function () {
                 coursesSingleEntry_pass: 23,
                 coursesSingleEntry_title: "teach adult",
                 coursesSingleEntry_uuid: "17255",
+                coursesSingleEntry_year: 2010,
             },
         ];
 
@@ -654,7 +684,36 @@ describe("DatasetLoader Tests", function () {
         }
     });
 
-    it("getDataset (ROOMS): Should return a correctly loaded tiny rooms dataset (single_room.zip)", () => {
+    it('getDataset (COURSES): Returns a loaded courses dataset with Section="overall" (section_overall.zip)', () => {
+        const id: string = "coursesSectionOverall";
+        const kind = InsightDatasetKind.Courses;
+        const expectedResponse: InsightCourseDataObject[] = [
+            {
+                coursesSectionOverall_audit: 0,
+                coursesSectionOverall_avg: 86.65,
+                coursesSectionOverall_dept: "adhe",
+                coursesSectionOverall_fail: 0,
+                coursesSectionOverall_id: "327",
+                coursesSectionOverall_instructor: "smulders, dave",
+                coursesSectionOverall_pass: 23,
+                coursesSectionOverall_title: "teach adult",
+                coursesSectionOverall_uuid: "17255",
+                coursesSectionOverall_year: 1900,
+            },
+        ];
+
+        let response: InsightCourseDataObject[];
+
+        try {
+            response = datasetLoader.getDataset(id, kind);
+        } catch (err) {
+            assert.fail(`Unexpected Error thrown: ${err.message}`);
+        } finally {
+            expect(response).to.deep.equal(expectedResponse);
+        }
+    });
+
+    it("getDataset (ROOMS): Returns a loaded tiny rooms dataset with (single_room.zip)", () => {
         const id: string = "roomsSingleRoom";
         const kind = InsightDatasetKind.Rooms;
         const expectedResponse: InsightCourseDataObject[] = [
