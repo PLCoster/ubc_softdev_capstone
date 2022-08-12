@@ -1,0 +1,24 @@
+{
+    "title": "SELECT * FROM roomsTwoRooms WHERE shortname='AERL'",
+    "query": "In rooms dataset roomsTwoRooms, find entries whose Short Name is \"AERL\"; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsTwoRooms_fullname": "Aquatic Ecosystems Research Laboratory",
+                    "roomsTwoRooms_shortname": "AERL",
+                    "roomsTwoRooms_number": "120",
+                    "roomsTwoRooms_name": "AERL_120",
+                    "roomsTwoRooms_address": "2202 Main Mall",
+                    "roomsTwoRooms_lat": 49.26372,
+                    "roomsTwoRooms_lon": -123.25099,
+                    "roomsTwoRooms_seats": 144,
+                    "roomsTwoRooms_type": "Tiered Large Group",
+                    "roomsTwoRooms_furniture": "Classroom-Fixed Tablets",
+                    "roomsTwoRooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/AERL-120"
+                }
+            ]
+        }
+    }
+}

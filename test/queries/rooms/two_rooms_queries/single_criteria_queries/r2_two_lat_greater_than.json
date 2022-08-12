@@ -1,0 +1,24 @@
+{
+    "title": "SELECT * FROM roomsTwoRooms WHERE lat>49.26372",
+    "query": "In rooms dataset roomsTwoRooms, find entries whose Latitude is greater than 49.26372; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsTwoRooms_fullname": "Allard Hall (LAW)",
+                    "roomsTwoRooms_shortname": "ALRD",
+                    "roomsTwoRooms_number": "105",
+                    "roomsTwoRooms_name": "ALRD_105",
+                    "roomsTwoRooms_address": "1822 East Mall",
+                    "roomsTwoRooms_lat": 49.2699,
+                    "roomsTwoRooms_lon": -123.25318,
+                    "roomsTwoRooms_seats": 94,
+                    "roomsTwoRooms_type": "Case Style",
+                    "roomsTwoRooms_furniture": "Classroom-Fixed Tables/Movable Chairs",
+                    "roomsTwoRooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/ALRD-105"
+                }
+            ]
+        }
+    }
+}
