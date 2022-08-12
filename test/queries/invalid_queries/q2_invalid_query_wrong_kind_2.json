@@ -1,0 +1,10 @@
+{
+    "title": "Wrong dataset kind (rooms dataset queried as courses dataset)",
+    "query": "In courses dataset rooms, find all entries; show Audit.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "title": "Wrong dataset kind column (ask for audit from rooms dataset)",
+    "query": "In rooms dataset rooms, find all entries; show Full Name, Audit, Short Name, Name and Number.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
