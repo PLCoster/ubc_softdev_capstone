@@ -207,13 +207,6 @@ export default class QueryParser {
                 ? OrderDirection.asc
                 : OrderDirection.desc;
 
-        // !!! D1 Only ASC order is valid:
-        if (ordering === OrderDirection.desc) {
-            this.rejectQuery(
-                `Invalid Query: D1 queries can only accept ascending ordering`,
-            );
-        }
-
         // Check query semantics - we can only sort by a column that is being displayed:
         if (!displayCols.includes(orderKey)) {
             this.rejectQuery(
