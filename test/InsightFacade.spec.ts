@@ -284,11 +284,29 @@ describe("InsightFacade Add/Remove Dataset", function () {
 // This test suite dynamically generates tests from the JSON files in test/queries.
 // You should not need to modify it; instead, add additional files to the queries directory.
 describe("InsightFacade PerformQuery", () => {
-    const datasetsToQuery: { [id: string]: string } = {
-        courseslarge: "./test/data/courses/courses_large.zip",
-        courses: "./test/data/courses/courses.zip",
-        coursesSingleEntry: "./test/data/courses/single_entry.zip",
-        coursesTwoEntries: "./test/data/courses/two_entries.zip",
+    const datasetsToQuery: {
+        [id: string]: { kind: InsightDatasetKind; path: string };
+    } = {
+        courseslarge: {
+            kind: InsightDatasetKind.Courses,
+            path: "./test/data/courses/courses_large.zip",
+        },
+        courses: {
+            kind: InsightDatasetKind.Courses,
+            path: "./test/data/courses/courses.zip",
+        },
+        coursesSingleEntry: {
+            kind: InsightDatasetKind.Courses,
+            path: "./test/data/courses/single_entry.zip",
+        },
+        coursesTwoEntries: {
+            kind: InsightDatasetKind.Courses,
+            path: "./test/data/courses/two_entries.zip",
+        },
+        roomsSingleRoom: {
+            kind: InsightDatasetKind.Rooms,
+            path: "./test/data/rooms/single_room.zip",
+        },
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -325,31 +343,30 @@ describe("InsightFacade PerformQuery", () => {
         // Fail if there is a problem reading ANY dataset.
         try {
             const loadDatasetPromises: Array<Promise<Buffer>> = [];
-            for (const [id, path] of Object.entries(datasetsToQuery)) {
+            for (const [id, { kind, path }] of Object.entries(
+                datasetsToQuery,
+            )) {
                 loadDatasetPromises.push(TestUtil.readFileAsync(path));
             }
             const loadedDatasets = (await Promise.all(loadDatasetPromises)).map(
                 (buf, i) => {
+                    const [id, { kind, path }] =
+                        Object.entries(datasetsToQuery)[i];
+
                     return {
-                        [Object.keys(datasetsToQuery)[i]]:
-                            buf.toString("base64"),
+                        [id]: { kind, content: buf.toString("base64") },
                     };
                 },
             );
             expect(loadedDatasets).to.have.length.greaterThan(0);
 
             const responsePromises: Array<Promise<InsightResponse>> = [];
-            const datasets: { [id: string]: string } = Object.assign(
-                {},
-                ...loadedDatasets,
-            );
-            for (const [id, content] of Object.entries(datasets)) {
+            const datasets: {
+                [id: string]: { kind: InsightDatasetKind; content: string };
+            } = Object.assign({}, ...loadedDatasets);
+            for (const [id, { kind, content }] of Object.entries(datasets)) {
                 responsePromises.push(
-                    insightFacade.addDataset(
-                        id,
-                        content,
-                        InsightDatasetKind.Courses,
-                    ),
+                    insightFacade.addDataset(id, content, kind),
                 );
             }
 
@@ -357,12 +374,12 @@ describe("InsightFacade PerformQuery", () => {
             // In D1, you should remove this try/catch to ensure your datasets load successfully before trying
             // to run you queries.
             // try {
-            //     const responses: InsightResponse[] = await Promise.all(
-            //         responsePromises,
-            //     );
-            //     responses.forEach((response) =>
-            //         expect(response.code).to.equal(204),
-            //     );
+            const responses: InsightResponse[] = await Promise.all(
+                responsePromises,
+            );
+            responses.forEach((response) =>
+                expect(response.code).to.equal(204),
+            );
             // } catch (err) {
             //     Log.warn(
             //         `Ignoring addDataset errors. For D1, you should allow errors to fail the Before All hook.`,
@@ -375,6 +392,9 @@ describe("InsightFacade PerformQuery", () => {
                 `Failed to read one or more datasets. ${JSON.stringify(err)}`,
             );
         }
+        Log.test(
+            `Loaded Datasets for performQuery tests: ${insightFacade.listDatasets()}`,
+        );
     });
 
     beforeEach(function () {
@@ -401,7 +421,7 @@ describe("InsightFacade PerformQuery", () => {
                     } catch (err) {
                         response = err;
                     } finally {
-                        Log.trace(`${JSON.stringify(response.body)}`);
+                        Log.trace(`RESPONSE: ${JSON.stringify(response.body)}`);
                         expect(response.code).to.equal(test.response.code);
 
                         if (test.response.code >= 400) {
