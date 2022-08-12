@@ -379,9 +379,17 @@ export default class DatasetLoader {
                         if (attr.name === "path") {
                             // Slice off relative path ("./") from filepath
                             const filePath = attr.value.slice(2);
-                            buildingFilePromises.push(
-                                allFilesZip.file(filePath).async("text"),
-                            );
+
+                            try {
+                                buildingFilePromises.push(
+                                    allFilesZip.file(filePath).async("text"),
+                                );
+                            } catch (err) {
+                                // If file cannot be found at path, throw error
+                                throw new Error(
+                                    `DatasetLoader.loadDataset ERROR: Building file ${filePath} could not be found`,
+                                );
+                            }
                         }
                     });
 
@@ -480,6 +488,13 @@ export default class DatasetLoader {
                         roomsDataset.push(roomDataObj);
                     });
                 });
+
+                // If processed dataset contained no rooms, throw an error
+                if (!roomsDataset.length) {
+                    throw new Error(
+                        `DatasetLoader.loadDataset ERROR: rooms dataset ${id} contains no rooms`,
+                    );
+                }
 
                 // Return complete rooms dataset
                 return roomsDataset;
