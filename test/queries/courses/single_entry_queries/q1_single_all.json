@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM coursesSingleEntry",
-    "query": "In courses dataset coursesSingleEntry, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
+    "query": "In courses dataset coursesSingleEntry, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.",
     "response": {
         "code": 200,
         "body": {
@@ -14,7 +14,8 @@
                     "coursesSingleEntry_instructor": "smulders, dave",
                     "coursesSingleEntry_pass": 23,
                     "coursesSingleEntry_title": "teach adult",
-                    "coursesSingleEntry_uuid": "17255"
+                    "coursesSingleEntry_uuid": "17255",
+                    "coursesSingleEntry_year": 2010
                 }
             ]
         }
