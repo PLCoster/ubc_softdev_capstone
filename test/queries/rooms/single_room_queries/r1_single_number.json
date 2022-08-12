@@ -1,0 +1,14 @@
+{
+    "title": "SELECT number FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Number.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_number": "120"
+                }
+            ]
+        }
+    }
+}

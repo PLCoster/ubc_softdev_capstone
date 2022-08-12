@@ -1,0 +1,14 @@
+{
+    "title": "SELECT furniture FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Furniture.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_furniture": "Classroom-Fixed Tablets"
+                }
+            ]
+        }
+    }
+}

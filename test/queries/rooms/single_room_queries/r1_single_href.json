@@ -1,0 +1,14 @@
+{
+    "title": "SELECT href FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Link.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/AERL-120"
+                }
+            ]
+        }
+    }
+}

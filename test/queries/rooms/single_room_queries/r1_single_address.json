@@ -1,0 +1,14 @@
+{
+    "title": "SELECT address FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Address.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_address": "2202 Main Mall"
+                }
+            ]
+        }
+    }
+}

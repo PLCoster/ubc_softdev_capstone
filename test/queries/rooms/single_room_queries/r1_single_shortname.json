@@ -1,0 +1,14 @@
+{
+    "title": "SELECT shortname FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Short Name.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_shortname": "AERL"
+                }
+            ]
+        }
+    }
+}

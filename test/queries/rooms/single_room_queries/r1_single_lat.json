@@ -1,0 +1,14 @@
+{
+    "title": "SELECT lat FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Latitude.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_lat": 49.26372
+                }
+            ]
+        }
+    }
+}

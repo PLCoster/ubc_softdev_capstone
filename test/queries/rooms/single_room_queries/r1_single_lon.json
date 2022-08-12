@@ -1,0 +1,14 @@
+{
+    "title": "SELECT lon FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Longitude.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_lon": -123.25099
+                }
+            ]
+        }
+    }
+}

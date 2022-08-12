@@ -1,0 +1,14 @@
+{
+    "title": "SELECT fullname FROM roomsSingleRoom",
+    "query": "In rooms dataset roomsSingleRoom, find all entries; show Full Name.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "roomsSingleRoom_fullname": "Aquatic Ecosystems Research Laboratory"
+                }
+            ]
+        }
+    }
+}
