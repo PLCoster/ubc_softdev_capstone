@@ -75,11 +75,10 @@ describe("QueryParser Tests", function () {
         }
     });
 
-    // !!! D1 Dataset KIND cannot be 'rooms'
-    it("parseQuery: (D1) Throws error when KIND is rooms", () => {
+    it("parseQuery: Throws error when KIND is incorrect", () => {
         const query = "In rooms dataset courses, find all entries; show Audit.";
 
-        const errMessage = `DATASET KIND cannot be rooms for D1`;
+        const errMessage = `incorrect query syntax`;
         const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
 
         let actualAST;
