@@ -12,15 +12,29 @@ type InsightDatasetSortFunction = (
     b: InsightCourseDataObject,
 ) => number;
 
-type sortFunctionCreator = (sortKey: string) => InsightDatasetSortFunction;
+type sortFunctionCreator = (sortKeys: string[]) => InsightDatasetSortFunction;
 
 // Closure Sort Functions for Ascending and Descending Order
 const sortFuncs: { [key in OrderDirection]: sortFunctionCreator } = {
-    ASC: (sortKey: string) => {
-        return (a, b) => (a[sortKey] > b[sortKey] ? 1 : -1);
+    ASC: (sortKeys: string[]) => {
+        return (a, b) => {
+            for (const sortKey of sortKeys) {
+                if (a[sortKey] !== b[sortKey]) {
+                    return a[sortKey] > b[sortKey] ? 1 : -1;
+                }
+            }
+            return -1;
+        };
     },
-    DESC: (sortKey: string) => {
-        return (a, b) => (a[sortKey] > b[sortKey] ? -1 : 1);
+    DESC: (sortKeys: string[]) => {
+        return (a, b) => {
+            for (const sortKey of sortKeys) {
+                if (a[sortKey] !== b[sortKey]) {
+                    return a[sortKey] < b[sortKey] ? 1 : -1;
+                }
+            }
+            return -1;
+        };
     },
 };
 
@@ -49,9 +63,9 @@ export default class DatasetQuerier {
 
         // If the query contains an ORDER section, sort appropriately:
         if (queryAST.order) {
-            const direction = queryAST.order[0] as OrderDirection;
-            const key: string = queryAST.order[1];
-            filteredData.sort(sortFuncs[direction](key));
+            const direction = queryAST.order.direction;
+            const sortKeys = queryAST.order.keys;
+            filteredData.sort(sortFuncs[direction](sortKeys));
         }
         return filteredData;
     }

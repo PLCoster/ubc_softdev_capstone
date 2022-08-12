@@ -192,33 +192,37 @@ export default class QueryParser {
     private parseOrder(
         orderStr: string,
         id: string,
-        displayCols: string[],
+        displayKeys: string[],
         querySectionREs: QuerySectionREs,
-    ): [string, string] {
+    ): { direction: OrderDirection; keys: string[] } {
         const orderMatchObj = orderStr.match(
             querySectionREs.sortDirectionColRE,
         );
 
-        const orderKey = `${id}_${
-            queryColNameStrToKeyStr[orderMatchObj.groups.COLNAME]
-        }`;
+        if (!orderMatchObj) {
+            this.rejectQuery(`Invalid ORDER query section: ${orderStr}`);
+        }
 
         const ordering =
             orderMatchObj.groups.DIRECTION === "ascending"
                 ? OrderDirection.asc
                 : OrderDirection.desc;
 
-        // Check query semantics - we can only sort by a column that is being displayed:
-        if (!displayCols.includes(orderKey)) {
-            this.rejectQuery(
-                `Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
-            );
-        }
+        // Extract valid DataObj keys from query ORDER column names
+        const orderKeys = orderMatchObj.groups.COLNAMES.split(/, | and /).map(
+            (colName) => `${id}_${queryColNameStrToKeyStr[colName]}`,
+        );
 
-        return [
-            ordering,
-            `${id}_${queryColNameStrToKeyStr[orderMatchObj.groups.COLNAME]}`,
-        ];
+        // Check query semantics - we can only sort by a key that is being displayed:
+        orderKeys.forEach((orderKey) => {
+            if (!displayKeys.includes(orderKey)) {
+                this.rejectQuery(
+                    `Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
+                );
+            }
+        });
+
+        return { direction: ordering, keys: orderKeys };
     }
 
     // // Builds up the nested filter object based on query filter criteria:
@@ -299,7 +303,10 @@ export default class QueryParser {
 
 // TEST DRIVER
 // const queryParser = new QueryParser();
-// queryParser.parseQuery(
-//     "In rooms dataset roomsSingleRoom, find all entries; show Full Name.",
+// console.log(
+//     queryParser.parseQuery(
+// tslint:disable-next-line:max-line-length
+//         "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by Department and Average.",
+//     ),
 // );
 // Log.trace("DONE");

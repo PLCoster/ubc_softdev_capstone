@@ -1,3 +1,4 @@
+import { OrderDirection } from "./DatasetQuerier";
 import { IFilter } from "./filters";
 
 /*
@@ -38,7 +39,7 @@ export interface InsightQueryAST {
     kind: InsightDatasetKind;
     filter: IFilter;
     display: string[];
-    order: [string, string] | null;
+    order: { direction: OrderDirection; keys: string[] };
 }
 
 export interface IInsightFacade {

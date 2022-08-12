@@ -43,7 +43,7 @@ const rStrFilterRE = RegExp(
 );
 
 // REs for a single filter condition (numerical condition or string condition)
-export const cOneFilterRE = RegExp(
+const cOneFilterRE = RegExp(
     `(?:${cNumFilterRE.source}|${cStrFilterRE.source})`,
 );
 const rOneFilterRE = RegExp(
@@ -87,11 +87,21 @@ const rDisplayRE = new RegExp(
 );
 
 // REs to capture ORDER section of query string
+const cSingleOrderRE = new RegExp(`(?:${cColNameRE.source})`);
+const rSingleOrderRE = new RegExp(`(?:${rColNameRE.source})`);
+
+const cMultipleOrderRE = new RegExp(
+    `(?:(?:${cColNameRE.source}), )*(?:${cColNameRE.source}) and (?:${cColNameRE.source})`,
+);
+const rMultipleOrderRE = new RegExp(
+    `(?:(?:${rColNameRE.source}), )*(?:${rColNameRE.source}) and (?:${rColNameRE.source})`,
+);
+
 const cOrderRE = new RegExp(
-    `(?<ORDER>sort in (?:ascending|descending) order by (?:${cColNameRE.source}))`,
+    `(?<ORDER>sort in (?:ascending|descending) order by (?:${cMultipleOrderRE.source}|${cSingleOrderRE.source}))`,
 );
 const rOrderRE = new RegExp(
-    `(?<ORDER>sort in (?:ascending|descending) order by (?:${rColNameRE.source}))`,
+    `(?<ORDER>sort in (?:ascending|descending) order by (?:${rMultipleOrderRE.source}|${rSingleOrderRE.source}))`,
 );
 
 // REs to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
@@ -103,8 +113,8 @@ export const rQueryRE = new RegExp(
 );
 
 // RE to extract KIND and INPUT name from DATASET section of query
-export const cInputKindRE = /^In (?<KIND>courses) dataset (?<INPUT>\S+)$/;
-export const rInputKindRE = /^In (?<KIND>rooms) dataset (?<INPUT>\S+)$/;
+const cInputKindRE = /^In (?<KIND>courses) dataset (?<INPUT>\S+)$/;
+const rInputKindRE = /^In (?<KIND>rooms) dataset (?<INPUT>\S+)$/;
 
 // REs to extract CONDITION, VALUE and COLNAME from FILTER section of query
 const filterConditionRE = new RegExp(
@@ -114,19 +124,21 @@ const filterValueRE = new RegExp(
     `(?<VALUE>${numberRE.source}|${stringRE.source})`,
 );
 
-export const cFilterDetailsRE = new RegExp(
+const cFilterDetailsRE = new RegExp(
     `^(?<COLNAME>${cColNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
 );
-export const rFilterDetailsRE = new RegExp(
+const rFilterDetailsRE = new RegExp(
     `^(?<COLNAME>${rColNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
 );
 
 // REs to extract DIRECTION and COLNAME from ORDER section of query
-export const cSortDirectionColRE = new RegExp(
-    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${cColNameRE.source})$`,
+const directionRE = /(?<DIRECTION>ascending|descending)/;
+
+const cSortDirectionColRE = new RegExp(
+    `^sort in ${directionRE.source} order by (?<COLNAMES>${cMultipleOrderRE.source}|${cSingleOrderRE.source})$`,
 );
-export const rSortDirectionColRE = new RegExp(
-    `^sort in (?<DIRECTION>ascending|descending) order by (?<COLNAME>${rColNameRE.source})$`,
+const rSortDirectionColRE = new RegExp(
+    `^sort in ${directionRE.source} order by (?<COLNAMES>${rMultipleOrderRE.source}|${rSingleOrderRE.source})$`,
 );
 
 // RE for RESERVED strings (INPUT cannot be equal to any of these):
