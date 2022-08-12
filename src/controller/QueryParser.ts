@@ -14,16 +14,27 @@ import {
 } from "./helpers/queryParserRegExs";
 import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
 
-const queryColumnStrToKeyStr: { [key: string]: string } = {
-    Audit: "audit",
-    Average: "avg",
-    Department: "dept",
-    Fail: "fail",
-    ID: "id",
-    Instructor: "instructor",
-    Pass: "pass",
-    Title: "title",
-    UUID: "uuid",
+const queryColNameStrToKeyStr: { [key: string]: string } = {
+    "Audit": "audit",
+    "Average": "avg",
+    "Department": "dept",
+    "Fail": "fail",
+    "ID": "id",
+    "Instructor": "instructor",
+    "Pass": "pass",
+    "Title": "title",
+    "UUID": "uuid",
+    "Full Name": "fullname",
+    "Short Name": "shortname",
+    "Number": "number",
+    "Name": "name",
+    "Address": "address",
+    "Type": "type",
+    "Furniture": "furniture",
+    "Link": "href",
+    "Latitude": "lat",
+    "Longitude": "lon",
+    "Seats": "seats",
 };
 
 export default class QueryParser {
@@ -167,7 +178,7 @@ export default class QueryParser {
                     `Invalid Query: invalid DISPLAY COLUMN NAME ${colName}`,
                 );
             }
-            displayCols.add(`${id}_${queryColumnStrToKeyStr[colName]}`);
+            displayCols.add(`${id}_${queryColNameStrToKeyStr[colName]}`);
         });
 
         // If we have no column names, to display then throw an error:
@@ -192,7 +203,7 @@ export default class QueryParser {
         );
 
         const orderKey = `${id}_${
-            queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]
+            queryColNameStrToKeyStr[orderMatchObj.groups.COLNAME]
         }`;
 
         const ordering =
@@ -216,7 +227,7 @@ export default class QueryParser {
 
         return [
             ordering,
-            `${id}_${queryColumnStrToKeyStr[orderMatchObj.groups.COLNAME]}`,
+            `${id}_${queryColNameStrToKeyStr[orderMatchObj.groups.COLNAME]}`,
         ];
     }
 
@@ -278,7 +289,7 @@ export default class QueryParser {
         const { filter, valueParser, negation } =
             conditionStringToIFilterInfo[condition];
 
-        const conditionKey = `${id}_${queryColumnStrToKeyStr[colname]}`;
+        const conditionKey = `${id}_${queryColNameStrToKeyStr[colname]}`;
         const conditionValue = valueParser(value);
 
         let builtFilter: IFilter = new filter(conditionKey, conditionValue);
