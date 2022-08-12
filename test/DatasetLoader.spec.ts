@@ -741,7 +741,6 @@ describe("DatasetLoader Tests", function () {
         } catch (err) {
             assert.fail(`Unexpected Error thrown: ${err.message}`);
         } finally {
-            Log.trace(`RESPONSE WAS: ${response}`);
             expect(response).to.deep.equal(expectedResponse);
         }
     });
