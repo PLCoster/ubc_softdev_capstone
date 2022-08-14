@@ -93,6 +93,26 @@ describe("QueryParser Tests", function () {
         }
     });
 
+    it("parseQuery: Throws error when GROUPBY/DISPLAY semantics invalid", () => {
+        const query =
+            "In courses dataset courses grouped by Department and Title, find all entries; show Department and Audit.";
+
+        const errMessage =
+            "Invalid DISPLAY semantics when GROUPING - courses_audit not in GROUPBY or AGG";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
     it("parseQuery: Parses simple query (SELECT audit FROM courses)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit.";
@@ -100,6 +120,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -123,6 +144,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_uuid", "courses_avg", "courses_audit"],
             order: null,
         };
@@ -147,6 +169,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: [
                 "courses_audit",
                 "courses_avg",
@@ -181,6 +204,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_audit", "courses_pass"],
             order: { direction: OrderDirection.asc, keys: ["courses_pass"] },
         };
@@ -204,6 +228,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_audit", "courses_pass"],
             order: { direction: OrderDirection.desc, keys: ["courses_pass"] },
         };
@@ -227,6 +252,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_fail", "courses_pass"],
             order: {
                 direction: OrderDirection.asc,
@@ -253,6 +279,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
+            groupby: null,
             display: ["courses_dept", "courses_fail", "courses_pass"],
             order: {
                 direction: OrderDirection.desc,
@@ -317,6 +344,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_audit", 10),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -340,6 +368,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_audit", 10)),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -363,6 +392,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new GTFilter("courses_audit", 10),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -386,6 +416,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new GTFilter("courses_audit", 10)),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -409,6 +440,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new LTFilter("courses_audit", 10),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -432,6 +464,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new LTFilter("courses_audit", 10)),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -455,6 +488,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_dept", "math"),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -478,6 +512,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_dept", "math")),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -501,6 +536,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new INCFilter("courses_dept", "math"),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -524,6 +560,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new INCFilter("courses_dept", "math")),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -547,6 +584,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new BEGFilter("courses_dept", "math"),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -570,6 +608,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new BEGFilter("courses_dept", "math")),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -593,6 +632,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ENDFilter("courses_dept", "math"),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -616,6 +656,7 @@ describe("QueryParser Tests", function () {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new ENDFilter("courses_dept", "math")),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -646,6 +687,7 @@ describe("QueryParser Tests", function () {
                 new EQFilter("courses_dept", "math"),
                 new GTFilter("courses_audit", 1),
             ),
+            groupby: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -676,6 +718,7 @@ describe("QueryParser Tests", function () {
                 new INCFilter("courses_instructor", "bentall"),
                 new GTFilter("courses_audit", 7),
             ),
+            groupby: null,
             display: ["courses_instructor", "courses_dept", "courses_audit"],
             order: null,
         };
@@ -713,6 +756,7 @@ describe("QueryParser Tests", function () {
                 ),
                 new EQFilter("courses_avg", 95),
             ),
+            groupby: null,
             display: ["courses_dept", "courses_id", "courses_avg"],
             order: { direction: OrderDirection.asc, keys: ["courses_avg"] },
         };
@@ -729,6 +773,81 @@ describe("QueryParser Tests", function () {
         }
     });
 
+    it("parseQuery: Parses simple query with GROUPBY (SELECT dept FROM courses GROUP BY dept)", () => {
+        const query =
+            "In courses dataset courses grouped by Department, find all entries; show Department.";
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            display: ["courses_dept"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with two column GROUPBY", () => {
+        const groupDisplay = "Department and Instructor";
+        const query = `In courses dataset courses grouped by ${groupDisplay}, find all entries; show ${groupDisplay}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept", "courses_instructor"],
+            display: ["courses_dept", "courses_instructor"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with multi column GROUPBY", () => {
+        const groupDisplay = "Department, Title and Instructor";
+        const query = `In courses dataset courses grouped by ${groupDisplay}, find all entries; show ${groupDisplay}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept", "courses_title", "courses_instructor"],
+            display: ["courses_dept", "courses_title", "courses_instructor"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    // ROOMS QUERIES
     it(`parseQuery: Parses a simple ROOMS query (SELECT * FROM rooms)`, () => {
         const queryDisplay =
             "show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats";
@@ -739,6 +858,7 @@ describe("QueryParser Tests", function () {
             id: "rooms",
             kind: InsightDatasetKind.Rooms,
             filter: new ALLFilter(),
+            groupby: null,
             display: [
                 "rooms_fullname",
                 "rooms_shortname",
