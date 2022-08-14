@@ -62,6 +62,7 @@ export default class QueryParser {
             groups: {
                 DATASET: datasetStr,
                 FILTER: filterStr,
+                GROUPBY: groupStr,
                 DISPLAY: displayStr,
                 ORDER: orderStr,
             },
@@ -70,15 +71,28 @@ export default class QueryParser {
         // Parse DATASET, FILTER(S), DISPLAY and ORDER sections of query
         const { id, kind } = this.parseDataset(datasetStr, querySectionREs);
         const filter = this.parseFilters(filterStr, id, querySectionREs);
-        const display = this.parseDisplay(displayStr, id, querySectionREs);
+        const display = this.parseDisplayOrGroupBy(
+            displayStr,
+            id,
+            querySectionREs,
+        );
 
         const queryAST: InsightQueryAST = {
             id,
             kind,
             filter,
+            groupby: null,
             display,
             order: null,
         };
+
+        if (groupStr) {
+            queryAST.groupby = this.parseDisplayOrGroupBy(
+                groupStr,
+                id,
+                querySectionREs,
+            );
+        }
 
         if (orderStr) {
             queryAST.order = this.parseOrder(
@@ -89,6 +103,7 @@ export default class QueryParser {
             );
         }
 
+        this.astHasValidSemantics(queryAST);
         return queryAST;
     }
 
@@ -157,8 +172,8 @@ export default class QueryParser {
         );
     }
 
-    // Extracts DISPLAY from query string:
-    private parseDisplay(
+    // Extracts DISPLAY or GROUPBY keys from query string:
+    private parseDisplayOrGroupBy(
         displayStr: string,
         id: string,
         querySectionREs: QuerySectionREs,
@@ -296,6 +311,23 @@ export default class QueryParser {
         return builtFilter;
     }
 
+    // Calls rejectQuery if query has invalid Semantics:
+    private astHasValidSemantics(queryAST: InsightQueryAST): boolean {
+        // If query has GROUPBY section, can only display grouped/agg cols:
+        // !!! TODO: Check AGG cols here too
+        if (queryAST.groupby) {
+            queryAST.display.forEach((colName: string) => {
+                if (!queryAST.groupby.includes(colName)) {
+                    return this.rejectQuery(
+                        `Invalid DISPLAY semantics when GROUPING - ${colName} not in GROUPBY or AGG`,
+                    );
+                }
+            });
+        }
+
+        return true;
+    }
+
     private rejectQuery(message: string) {
         throw new Error(`queryParser.parseQuery ERROR: ${message}`);
     }
@@ -305,7 +337,7 @@ export default class QueryParser {
 // const queryParser = new QueryParser();
 // console.log(
 //     queryParser.parseQuery(
-//         "In courses dataset coursesFourEntries, find all entries; show Department and Average.",
+//         "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department.",
 //     ),
 // );
 // Log.trace("DONE");

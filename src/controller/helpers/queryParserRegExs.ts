@@ -86,6 +86,14 @@ const rDisplayRE = new RegExp(
     `(?<DISPLAY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source})`,
 );
 
+// REs to capture optional GROUPBY section of query string
+const cGroupByRE = new RegExp(
+    `(?: grouped by (?<GROUPBY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplaySingleRE.source}))?`,
+);
+const rGroupByRE = new RegExp(
+    `(?: grouped by (?<GROUPBY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source}))?`,
+);
+
 // REs to capture ORDER section of query string
 const cSingleOrderRE = new RegExp(`(?:${cColNameRE.source})`);
 const rSingleOrderRE = new RegExp(`(?:${rColNameRE.source})`);
@@ -106,10 +114,13 @@ const rOrderRE = new RegExp(
 
 // REs to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
 export const cQueryRE = new RegExp(
-    `^${cDatasetRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:; ${cOrderRE.source})?[.]$`,
+    // tslint:disable-next-line:max-line-length
+    `^${cDatasetRE.source}${cGroupByRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:; ${cOrderRE.source})?[.]$`,
 );
+
 export const rQueryRE = new RegExp(
-    `^${rDatasetRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:; ${rOrderRE.source})?[.]$`,
+    // tslint:disable-next-line:max-line-length
+    `^${rDatasetRE.source}${rGroupByRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:; ${rOrderRE.source})?[.]$`,
 );
 
 // RE to extract KIND and INPUT name from DATASET section of query

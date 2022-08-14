@@ -38,6 +38,7 @@ export interface InsightQueryAST {
     id: string;
     kind: InsightDatasetKind;
     filter: IFilter;
+    groupby: string[];
     display: string[];
     order: { direction: OrderDirection; keys: string[] };
 }
