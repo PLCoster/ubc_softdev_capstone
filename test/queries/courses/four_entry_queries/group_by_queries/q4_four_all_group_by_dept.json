@@ -1,0 +1,17 @@
+{
+    "title": "SELECT dept FROM coursesFourEntries GROUP BY dept",
+    "query": "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_dept": "adhe"
+                },
+                {
+                    "coursesFourEntries_dept": "phar"
+                }
+            ]
+        }
+    }
+}
