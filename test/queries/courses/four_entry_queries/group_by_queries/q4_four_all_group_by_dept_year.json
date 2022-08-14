@@ -1,0 +1,27 @@
+{
+    "title": "SELECT dept, year FROM coursesFourEntries GROUP BY dept, year",
+    "query": "In courses dataset coursesFourEntries grouped by Department and Year, find all entries; show Department and Year.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_year": 2010
+                },
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_year": 2011
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_year": 2014
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_year": 2015
+                }
+            ]
+        }
+    }
+}

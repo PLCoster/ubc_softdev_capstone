@@ -1,0 +1,10 @@
+{
+    "title": "Invalid DISPLAY/GROUPBY Semantics: Selected display column is not grouped",
+    "query": "In courses dataset coursesTwoEntries grouped by Department, find all entries; show Audit.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

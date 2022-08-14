@@ -1,0 +1,626 @@
+{
+    "title": "SELECT dept, title, avg FROM courses WHERE avg > 90 GROUP BY dept, title, avg, SORT BY avg DESC",
+    "query": "In courses dataset courses grouped by Department, Title and Average, find entries whose Average is greater than 95; show Department, Title and Average; sort in descending order by Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "math",
+                    "courses_title": "algb topology i",
+                    "courses_avg": 99.78
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "career planning",
+                    "courses_avg": 99.19
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 98.8
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 98.76
+                },
+                {
+                    "courses_dept": "eece",
+                    "courses_title": "multimedia sys",
+                    "courses_avg": 98.75
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "cl pro prim care",
+                    "courses_avg": 98.71
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "assess lrn diffi",
+                    "courses_avg": 98.7
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "fam nrs pract",
+                    "courses_avg": 98.58
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 98.58
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "fam nrs pract",
+                    "courses_avg": 98.5
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "dev el sk df&hrd",
+                    "courses_avg": 98.45
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "assess lrn diffi",
+                    "courses_avg": 98.36
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "cl pro prim care",
+                    "courses_avg": 98.21
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "assess lrn diffi",
+                    "courses_avg": 98.08
+                },
+                {
+                    "courses_dept": "crwr",
+                    "courses_title": "thesis",
+                    "courses_avg": 98
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "acad assess schl",
+                    "courses_avg": 97.78
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "sem in autism",
+                    "courses_avg": 97.69
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "coll&uni teachng",
+                    "courses_avg": 97.67
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "fam nrs pract",
+                    "courses_avg": 97.53
+                },
+                {
+                    "courses_dept": "educ",
+                    "courses_title": "res mthd in educ",
+                    "courses_avg": 97.5
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "algb geometry i",
+                    "courses_avg": 97.48
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "career planning",
+                    "courses_avg": 97.47
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "acad assess schl",
+                    "courses_avg": 97.41
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 97.41
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "eth&profl issues",
+                    "courses_avg": 97.33
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "assess lrn diffi",
+                    "courses_avg": 97.29
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "diff geometry i",
+                    "courses_avg": 97.25
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "harmonic anal i",
+                    "courses_avg": 97.09
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "cor des ed res",
+                    "courses_avg": 97.09
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "acad assess schl",
+                    "courses_avg": 97
+                },
+                {
+                    "courses_dept": "crwr",
+                    "courses_title": "thesis",
+                    "courses_avg": 97
+                },
+                {
+                    "courses_dept": "arst",
+                    "courses_title": "aud&non-txt arch",
+                    "courses_avg": 96.94
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "intro excp child",
+                    "courses_avg": 96.9
+                },
+                {
+                    "courses_dept": "audi",
+                    "courses_title": "audi prctcm iv",
+                    "courses_avg": 96.9
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "probability ii",
+                    "courses_avg": 96.83
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "eth&profl issues",
+                    "courses_avg": 96.73
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "fam nrs pract",
+                    "courses_avg": 96.64
+                },
+                {
+                    "courses_dept": "mine",
+                    "courses_title": "seminar",
+                    "courses_avg": 96.59
+                },
+                {
+                    "courses_dept": "musc",
+                    "courses_title": "ubc chamb string",
+                    "courses_avg": 96.5
+                },
+                {
+                    "courses_dept": "midw",
+                    "courses_title": "cnsl mat cr prov",
+                    "courses_avg": 96.5
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "indig, tech&ed",
+                    "courses_avg": 96.47
+                },
+                {
+                    "courses_dept": "edst",
+                    "courses_title": "adlt edu pract",
+                    "courses_avg": 96.46
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "algebra ii",
+                    "courses_avg": 96.44
+                },
+                {
+                    "courses_dept": "fipr",
+                    "courses_title": "mo pict prod i",
+                    "courses_avg": 96.4
+                },
+                {
+                    "courses_dept": "frst",
+                    "courses_title": "ds intl forstry",
+                    "courses_avg": 96.36
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "msc major essay",
+                    "courses_avg": 96.33
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "specific lrn dis",
+                    "courses_avg": 96.33
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "prgm devl cnsl",
+                    "courses_avg": 96.33
+                },
+                {
+                    "courses_dept": "civl",
+                    "courses_title": "dynam struct 2",
+                    "courses_avg": 96.27
+                },
+                {
+                    "courses_dept": "mtrl",
+                    "courses_title": "hydrmtllgcl rctr",
+                    "courses_avg": 96.25
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "prt diff equa i",
+                    "courses_avg": 96.25
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 96.24
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "hn dev: inf-adlt",
+                    "courses_avg": 96.23
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "classroom mgmt",
+                    "courses_avg": 96.21
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "assess lrn diffi",
+                    "courses_avg": 96.21
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "prgm devl cnsl",
+                    "courses_avg": 96.16
+                },
+                {
+                    "courses_dept": "adhe",
+                    "courses_title": "dev wkshp/sem",
+                    "courses_avg": 96.11
+                },
+                {
+                    "courses_dept": "libr",
+                    "courses_title": "acad libraries",
+                    "courses_avg": 96.1
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "intro excp child",
+                    "courses_avg": 96.03
+                },
+                {
+                    "courses_dept": "phil",
+                    "courses_title": "log & crit think",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "pcth",
+                    "courses_title": "ms thesis",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "basic princ meas",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "tch'g hghly able",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "crwr",
+                    "courses_title": "thesis",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "prgm devl cnsl",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "apsc",
+                    "courses_title": "eng mtls lab",
+                    "courses_avg": 96
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "tech math sci",
+                    "courses_avg": 95.96
+                },
+                {
+                    "courses_dept": "apsc",
+                    "courses_title": "eng mtls lab",
+                    "courses_avg": 95.95
+                },
+                {
+                    "courses_dept": "apsc",
+                    "courses_title": "eng mtls lab",
+                    "courses_avg": 95.94
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "exp des anl ed",
+                    "courses_avg": 95.9
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "basic princ meas",
+                    "courses_avg": 95.86
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "cur dev e df&hrd",
+                    "courses_avg": 95.83
+                },
+                {
+                    "courses_dept": "edst",
+                    "courses_title": "fn & educ change",
+                    "courses_avg": 95.78
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "schl counselling",
+                    "courses_avg": 95.78
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 95.72
+                },
+                {
+                    "courses_dept": "crwr",
+                    "courses_title": "prep writ career",
+                    "courses_avg": 95.7
+                },
+                {
+                    "courses_dept": "musc",
+                    "courses_title": "orch repertoire",
+                    "courses_avg": 95.67
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "functional analy",
+                    "courses_avg": 95.67
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "tech for vis imp",
+                    "courses_avg": 95.67
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "curric issu",
+                    "courses_avg": 95.63
+                },
+                {
+                    "courses_dept": "mine",
+                    "courses_title": "mgmt sc meth",
+                    "courses_avg": 95.6
+                },
+                {
+                    "courses_dept": "edcp",
+                    "courses_title": "ds tec ii sc c&p",
+                    "courses_avg": 95.58
+                },
+                {
+                    "courses_dept": "math",
+                    "courses_title": "lie theory i",
+                    "courses_avg": 95.56
+                },
+                {
+                    "courses_dept": "chbe",
+                    "courses_title": "thermodynamics",
+                    "courses_avg": 95.54
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "augmt&alt comm",
+                    "courses_avg": 95.5
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "educ stds autism",
+                    "courses_avg": 95.47
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "surv bhvr dis ch",
+                    "courses_avg": 95.47
+                },
+                {
+                    "courses_dept": "mine",
+                    "courses_title": "mgmt sc meth",
+                    "courses_avg": 95.44
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "exp des anl ed",
+                    "courses_avg": 95.44
+                },
+                {
+                    "courses_dept": "phys",
+                    "courses_title": "quant fld theory",
+                    "courses_avg": 95.43
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "cl pro prim care",
+                    "courses_avg": 95.43
+                },
+                {
+                    "courses_dept": "mine",
+                    "courses_title": "mgmt sc meth",
+                    "courses_avg": 95.43
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "able&creatv lrnr",
+                    "courses_avg": 95.41
+                },
+                {
+                    "courses_dept": "musc",
+                    "courses_title": "orch repertoire",
+                    "courses_avg": 95.38
+                },
+                {
+                    "courses_dept": "phth",
+                    "courses_title": "clin make iv",
+                    "courses_avg": 95.37
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "",
+                    "courses_avg": 95.36
+                },
+                {
+                    "courses_dept": "cnps",
+                    "courses_title": "counsl adolescnt",
+                    "courses_avg": 95.36
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "curric issu",
+                    "courses_avg": 95.33
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "cor des ed res",
+                    "courses_avg": 95.33
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "indig, tech&ed",
+                    "courses_avg": 95.32
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "thy cognt assess",
+                    "courses_avg": 95.31
+                },
+                {
+                    "courses_dept": "chbe",
+                    "courses_title": "math operations",
+                    "courses_avg": 95.31
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "able&creatv lrnr",
+                    "courses_avg": 95.3
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "cl pro prim care",
+                    "courses_avg": 95.29
+                },
+                {
+                    "courses_dept": "hgse",
+                    "courses_title": "islnd wild mgmt",
+                    "courses_avg": 95.29
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "tchg st visl imp",
+                    "courses_avg": 95.27
+                },
+                {
+                    "courses_dept": "hgse",
+                    "courses_title": "islnd wild mgmt",
+                    "courses_avg": 95.26
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "ed prg hghly abl",
+                    "courses_avg": 95.22
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "tech math sci",
+                    "courses_avg": 95.19
+                },
+                {
+                    "courses_dept": "mine",
+                    "courses_title": "seminar",
+                    "courses_avg": 95.18
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "dev neuropsych",
+                    "courses_avg": 95.17
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "exp des anl ed",
+                    "courses_avg": 95.16
+                },
+                {
+                    "courses_dept": "educ",
+                    "courses_title": "res mthd in educ",
+                    "courses_avg": 95.16
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "intro excp child",
+                    "courses_avg": 95.15
+                },
+                {
+                    "courses_dept": "bmeg",
+                    "courses_title": "med tech project",
+                    "courses_avg": 95.15
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "basic princ meas",
+                    "courses_avg": 95.14
+                },
+                {
+                    "courses_dept": "nurs",
+                    "courses_title": "cl pro prim care",
+                    "courses_avg": 95.13
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "exp des anl ed",
+                    "courses_avg": 95.13
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "classroom mgmt",
+                    "courses_avg": 95.13
+                },
+                {
+                    "courses_dept": "epse",
+                    "courses_title": "intr stat rs edu",
+                    "courses_avg": 95.11
+                },
+                {
+                    "courses_dept": "etec",
+                    "courses_title": "indig, tech&ed",
+                    "courses_avg": 95.1
+                },
+                {
+                    "courses_dept": "phar",
+                    "courses_title": "admn of injectns",
+                    "courses_avg": 95.07
+                },
+                {
+                    "courses_dept": "apsc",
+                    "courses_title": "eng mtls lab",
+                    "courses_avg": 95.05
+                }
+            ]
+        }
+    }
+}

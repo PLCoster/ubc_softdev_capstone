@@ -1,0 +1,31 @@
+{
+    "title": "SELECT dept, title, avg FROM coursesFourEntries GROUP BY dept, title, avg",
+    "query": "In courses dataset coursesFourEntries grouped by Department, Title and Average, find all entries; show Department, Title and Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_title": "teach adult",
+                    "coursesFourEntries_avg": 86.65
+                },
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "coursesFourEntries_title": "teach adult",
+                    "coursesFourEntries_avg": 78.93
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_title": "ped geri drg thp",
+                    "coursesFourEntries_avg": 80.13
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "coursesFourEntries_title": "ped geri drg thp",
+                    "coursesFourEntries_avg": 75.3
+                }
+            ]
+        }
+    }
+}
