@@ -1,0 +1,19 @@
+{
+    "title": "SELECT dept, AVG(avg) FROM coursesFourEntries GROUP BY dept",
+    "query": "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and avgGrade where avgGrade is the AVG of Average.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "avgGrade": 82.79
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "avgGrade": 77.715
+                }
+            ]
+        }
+    }
+}
