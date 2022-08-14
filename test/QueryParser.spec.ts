@@ -728,4 +728,42 @@ describe("QueryParser Tests", function () {
             expect(actualAST).to.deep.equal(expectedAST);
         }
     });
+
+    it(`parseQuery: Parses a simple ROOMS query (SELECT * FROM rooms)`, () => {
+        const queryDisplay =
+            "show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats";
+
+        const query = `In rooms dataset rooms, find all entries; ${queryDisplay}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "rooms",
+            kind: InsightDatasetKind.Rooms,
+            filter: new ALLFilter(),
+            display: [
+                "rooms_fullname",
+                "rooms_shortname",
+                "rooms_number",
+                "rooms_name",
+                "rooms_address",
+                "rooms_type",
+                "rooms_furniture",
+                "rooms_href",
+                "rooms_lat",
+                "rooms_lon",
+                "rooms_seats",
+            ],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
 });
