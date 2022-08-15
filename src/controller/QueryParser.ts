@@ -13,6 +13,7 @@ import {
     AVGAggregator,
     MAXAggregator,
     MINAggregator,
+    SUMAggregator,
 } from "./aggregators";
 import Log from "../Util";
 
@@ -29,6 +30,7 @@ enum InsightFacadeAggregatorKind {
     AVG = "AVG",
     MAX = "MAX",
     MIN = "MIN",
+    SUM = "SUM",
 }
 
 const queryAggNameToIAggregatorInfo: {
@@ -43,6 +45,7 @@ const queryAggNameToIAggregatorInfo: {
     AVG: { Aggregator: AVGAggregator, aggType: "numeric" },
     MAX: { Aggregator: MAXAggregator, aggType: "numeric" },
     MIN: { Aggregator: MINAggregator, aggType: "numeric" },
+    SUM: { Aggregator: SUMAggregator, aggType: "numeric" },
 };
 
 const queryColNameStrToKeyStr: { [key: string]: string } = {

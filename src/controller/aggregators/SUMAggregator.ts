@@ -4,11 +4,11 @@ import { InsightCourseDataObject } from "../IInsightFacade";
 import { IAggregator } from "./IAggregator";
 
 /**
- * A NUMBER Aggregator that calculates the average of the given property of a dataGroup
+ * A NUMBER Aggregator that calculates the sum of the given property of a dataGroup
  * - adds the result to the dataObject at index 0 of the dataGroup
- * - calculates AVG to two decimal places using Decimal package
+ * - calculates SUM to two decimal places using Decimal package
  */
-export class AVGAggregator implements IAggregator {
+export class SUMAggregator implements IAggregator {
     private aggColName: string;
     private applyColName: string;
 
@@ -26,14 +26,13 @@ export class AVGAggregator implements IAggregator {
             sum = sum.plus(new Decimal(dataObj[this.applyColName]));
         });
 
-        const avg = sum.toNumber() / dataGroup.length;
-        const roundedAvg = Number(avg.toFixed(2));
+        const roundedSum = Number(sum.toFixed(2));
 
-        dataGroup[0][this.aggColName] = roundedAvg;
+        dataGroup[0][this.aggColName] = roundedSum;
         return dataGroup;
     }
 
     public toString(): string {
-        return `AVG(${this.applyColName}) as ${this.aggColName}`;
+        return `SUM(${this.applyColName}) as ${this.aggColName}`;
     }
 }

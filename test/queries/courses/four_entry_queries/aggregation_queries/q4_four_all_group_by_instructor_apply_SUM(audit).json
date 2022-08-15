@@ -1,0 +1,19 @@
+{
+    "title": "SELECT instructor, SUM(audit) FROM coursesFourEntries GROUP BY instructor",
+    "query": "In courses dataset coursesFourEntries grouped by Instructor, find all entries; show Instructor and sumAudit, where sumAudit is the SUM of Audit.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_instructor": "smulders, dave",
+                    "sumAudit": 0
+                },
+                {
+                    "coursesFourEntries_instructor": "carr, roxane",
+                    "sumAudit": 15
+                }
+            ]
+        }
+    }
+}
