@@ -1,5 +1,5 @@
 {
-    "title": "Invalid Key Syntax - non-existant Key name",
+    "title": "Invalid Key Syntax - non-existant Key name (Subject)",
     "query": "In courses dataset coursesTwoEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Subject and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,

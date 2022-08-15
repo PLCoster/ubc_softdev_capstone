@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
     InsightDatasetKind,
     InsightQueryAST,
@@ -113,6 +112,8 @@ export default class QueryParser {
             displayStr,
             id,
             querySectionREs,
+            groupStr ? true : false,
+            false,
         );
 
         const queryAST: InsightQueryAST = {
@@ -130,6 +131,7 @@ export default class QueryParser {
                 groupStr,
                 id,
                 querySectionREs,
+                true,
                 true,
             );
         }
@@ -225,7 +227,8 @@ export default class QueryParser {
         sectionStr: string,
         id: string,
         querySectionREs: QuerySectionREs,
-        groupBy: boolean = false,
+        hasGroupBy: boolean,
+        parseGroupBy: boolean,
     ): string[] {
         const sectionColNames = sectionStr.split(/, | and /);
         const numCols = sectionColNames.length;
@@ -239,9 +242,16 @@ export default class QueryParser {
                 sectionCols.add(`${id}_${queryColNameStrToKeyStr[colName]}`);
             } else {
                 // GROUPBY section cannot contain custom aggregator names
-                if (groupBy) {
+                if (parseGroupBy) {
                     this.rejectQuery(
                         `Invalid column name in GROUPBY: ${colName}`,
+                    );
+                }
+
+                // DISPLAY section cannot contain custom names when no GROUPBY section
+                if (!parseGroupBy && !hasGroupBy) {
+                    this.rejectQuery(
+                        `Invalid column name in DISPLAY: ${colName}`,
                     );
                 }
 
@@ -451,17 +461,6 @@ export default class QueryParser {
                     );
                 }
             });
-        } else {
-            // If no GROUPBY section, then by definition no APPLY section
-            // Column Names can only be default Columns
-            // !!! implement this properly
-            // queryAST.display.forEach((colName: string) => {
-            //     if (!querySectionREs.colNameRE.test(colName)) {
-            //         this.rejectQuery(
-            //             `Invalid column name in DISPLAY section: ${colName}`,
-            //         );
-            //     }
-            // });
         }
 
         return true;
@@ -475,11 +474,9 @@ export default class QueryParser {
 // TEST DRIVER
 // const queryParser = new QueryParser();
 
-// tslint:disable-next-line:no-console
 // console.log(
 //     queryParser.parseQuery(
-// tslint:disable-next-line:max-line-length
-//         "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and maxPass, where maxPass is the MAX of Pass.",
+//         "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department.",
 //     ),
 // );
 
