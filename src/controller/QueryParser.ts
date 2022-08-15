@@ -296,9 +296,15 @@ export default class QueryParser {
                 ? OrderDirection.asc
                 : OrderDirection.desc;
 
-        // Extract valid DataObj keys from query ORDER column names
+        // Extract valid DataObj keys or custom Agg keys from query ORDER column names
         const orderKeys = orderMatchObj.groups.COLNAMES.split(/, | and /).map(
-            (colName) => `${id}_${queryColNameStrToKeyStr[colName]}`,
+            (colName) => {
+                if (querySectionREs.colNameRE.test(colName)) {
+                    return `${id}_${queryColNameStrToKeyStr[colName]}`;
+                } else {
+                    return colName;
+                }
+            },
         );
 
         // Check query semantics - we can only sort by a key that is being displayed:

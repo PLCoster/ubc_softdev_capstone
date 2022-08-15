@@ -112,15 +112,28 @@ const cApplyRE = new RegExp(
     `(?<APPLY>${cMultipleAggRE.source}|${cSingleAggRE.source})`,
 );
 
+const rAggColRE = new RegExp(
+    `(?:${numAggRE.source} of ${cNumColRE.source}|${strOrNumAggRE.source} of (?:${cColNameRE.source}))`,
+);
+
+const rSingleAggRE = new RegExp(`(?:\\S+ is the ${rAggColRE.source})`);
+const rMultipleAggRE = new RegExp(
+    `(?:${rSingleAggRE.source}, )*(?:${rSingleAggRE.source}) and (?:${rSingleAggRE.source})`,
+);
+
+const rApplyRE = new RegExp(
+    `(?<APPLY>${rMultipleAggRE.source}|${rSingleAggRE.source})`,
+);
+
 // REs to capture ORDER section of query string
-const cSingleOrderRE = new RegExp(`(?:${cColNameRE.source})`);
-const rSingleOrderRE = new RegExp(`(?:${rColNameRE.source})`);
+const cSingleOrderRE = new RegExp(`(?:${cColNameRE.source}|\\S+)`);
+const rSingleOrderRE = new RegExp(`(?:${rColNameRE.source}|\\S+)`);
 
 const cMultipleOrderRE = new RegExp(
-    `(?:(?:${cColNameRE.source}), )*(?:${cColNameRE.source}) and (?:${cColNameRE.source})`,
+    `(?:(?:${cSingleOrderRE.source}), )*(?:${cSingleOrderRE.source}) and (?:${cSingleOrderRE.source})`,
 );
 const rMultipleOrderRE = new RegExp(
-    `(?:(?:${rColNameRE.source}), )*(?:${rColNameRE.source}) and (?:${rColNameRE.source})`,
+    `(?:(?:${rSingleOrderRE.source}), )*(?:${rSingleOrderRE.source}) and (?:${rSingleOrderRE.source})`,
 );
 
 const cOrderRE = new RegExp(
@@ -138,7 +151,7 @@ export const cQueryRE = new RegExp(
 
 export const rQueryRE = new RegExp(
     // tslint:disable-next-line:max-line-length
-    `^${rDatasetRE.source}${rGroupByRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:; ${rOrderRE.source})?[.]$`,
+    `^${rDatasetRE.source}${rGroupByRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:, where ${rApplyRE.source})?(?:; ${rOrderRE.source})?[.]$`,
 );
 
 // RE to extract KIND and INPUT name from DATASET section of query
@@ -165,6 +178,10 @@ const aggOpRE = /MAX|MIN|AVG|SUM|COUNT/;
 
 const cAggNameOpColRE = new RegExp(
     `^(?<NAME>\\S+) is the (?<OPERATION>${aggOpRE.source}) of (?<COLNAME>${cColNameRE.source})$`,
+);
+
+const rAggNameOpColRE = new RegExp(
+    `^(?<NAME>\\S+) is the (?<OPERATION>${aggOpRE.source}) of (?<COLNAME>${rColNameRE.source})$`,
 );
 
 // REs to extract DIRECTION and COLNAME from ORDER section of query
@@ -209,6 +226,6 @@ export const roomsQuerySectionREs: QuerySectionREs = {
     inputKindRE: rInputKindRE,
     singleFilterRE: rOneFilterRE,
     filterDetailRE: rFilterDetailsRE,
-    aggNameOpColRE: null, // !!!
+    aggNameOpColRE: rAggNameOpColRE,
     sortDirectionColRE: rSortDirectionColRE,
 };
