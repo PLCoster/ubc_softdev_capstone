@@ -9,7 +9,9 @@ export interface IAggregator {
      *
      * @return Updated array of InsightCourseDataObjects with the Aggregation added to object at index 0
      */
-    apply(dataGroup: InsightCourseDataObject[]): InsightCourseDataObject[];
+    applyAggregation(
+        dataGroup: InsightCourseDataObject[],
+    ): InsightCourseDataObject[];
 
     /**
      * @return string representation of the Aggregator
