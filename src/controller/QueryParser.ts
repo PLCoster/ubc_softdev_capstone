@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
     InsightDatasetKind,
     InsightQueryAST,
@@ -7,7 +8,7 @@ import { OrderDirection } from "./DatasetQuerier";
 import { QuerySectionREs } from "./helpers/queryParserRegExs";
 
 import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
-import { AVGAggregator, IAggregator } from "./aggregators";
+import { IAggregator, AVGAggregator, MAXAggregator } from "./aggregators";
 import Log from "../Util";
 
 import {
@@ -21,6 +22,7 @@ import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilter
 
 enum InsightFacadeAggregatorKind {
     AVG = "AVG",
+    MAX = "MAX",
 }
 
 const queryAggNameToIAggregatorInfo: {
@@ -33,6 +35,7 @@ const queryAggNameToIAggregatorInfo: {
     };
 } = {
     AVG: { Aggregator: AVGAggregator, aggType: "numeric" },
+    MAX: { Aggregator: MAXAggregator, aggType: "numeric" },
 };
 
 const queryColNameStrToKeyStr: { [key: string]: string } = {
@@ -114,6 +117,7 @@ export default class QueryParser {
                 groupStr,
                 id,
                 querySectionREs,
+                true,
             );
         }
 
@@ -208,18 +212,27 @@ export default class QueryParser {
         sectionStr: string,
         id: string,
         querySectionREs: QuerySectionREs,
+        groupBy: boolean = false,
     ): string[] {
         const sectionColNames = sectionStr.split(/, | and /);
         const numCols = sectionColNames.length;
 
         const sectionCols = new Set<string>();
 
-        sectionColNames.forEach((colName, index) => {
+        sectionColNames.forEach((colName) => {
             // Check Column Name is valid, (existing column or valid AGG column name)
             if (querySectionREs.colNameRE.test(colName)) {
                 // Valid normal column name
                 sectionCols.add(`${id}_${queryColNameStrToKeyStr[colName]}`);
             } else {
+                // GROUPBY section cannot contain custom aggregator names
+                if (groupBy) {
+                    this.rejectQuery(
+                        `Invalid column name in GROUPBY: ${colName}`,
+                    );
+                }
+
+                // DISPLAY Section can contain allowed APPLY aggregator names
                 if (colName.includes("_") || reservedRE.test(colName)) {
                     // Invalid APPLY column name
                     this.rejectQuery(
@@ -448,10 +461,13 @@ export default class QueryParser {
 
 // TEST DRIVER
 // const queryParser = new QueryParser();
+
+// tslint:disable-next-line:no-console
 // console.log(
 //     queryParser.parseQuery(
 // tslint:disable-next-line:max-line-length
-//         "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Average.",
+//         "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and maxPass, where maxPass is the MAX of Pass.",
 //     ),
 // );
+
 // Log.trace("DONE");

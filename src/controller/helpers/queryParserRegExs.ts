@@ -196,7 +196,7 @@ export interface QuerySectionREs {
 }
 
 export const courseQuerySectionREs: QuerySectionREs = {
-    colNameRE: cColNameRE,
+    colNameRE: new RegExp(`^(?:${cColNameRE.source})$`),
     inputKindRE: cInputKindRE,
     singleFilterRE: cOneFilterRE,
     filterDetailRE: cFilterDetailsRE,
@@ -205,7 +205,7 @@ export const courseQuerySectionREs: QuerySectionREs = {
 };
 
 export const roomsQuerySectionREs: QuerySectionREs = {
-    colNameRE: rColNameRE,
+    colNameRE: new RegExp(`^(?:${rColNameRE.source})$`),
     inputKindRE: rInputKindRE,
     singleFilterRE: rOneFilterRE,
     filterDetailRE: rFilterDetailsRE,

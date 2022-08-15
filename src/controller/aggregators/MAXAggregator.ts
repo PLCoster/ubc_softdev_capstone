@@ -8,7 +8,7 @@ import { IAggregator } from "./IAggregator";
  * A NUMBER Aggregator that returns the maximum of the given property of a dataGroup
  * - adds the result to the dataObject at index 0 of the dataGroup
  */
-export class MaxAggregator implements IAggregator {
+export class MAXAggregator implements IAggregator {
     private aggColName: string;
     private applyColName: string;
 
