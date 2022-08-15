@@ -5,3 +5,5 @@ export * from "./AVGAggregator";
 export * from "./MAXAggregator";
 export * from "./MINAggregator";
 export * from "./SUMAggregator";
+
+export * from "./COUNTAggregator";
