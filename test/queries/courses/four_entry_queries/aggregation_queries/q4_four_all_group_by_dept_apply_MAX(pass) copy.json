@@ -1,0 +1,19 @@
+{
+    "title": "SELECT title, MIN(fail) FROM coursesFourEntries GROUP BY title",
+    "query": "In courses dataset coursesFourEntries grouped by Title, find all entries; show Title and minFail, where minFail is the MIN of Fail.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_title": "teach adult",
+                    "minFail": 0
+                },
+                {
+                    "coursesFourEntries_title": "ped geri drg thp",
+                    "minFail": 25
+                }
+            ]
+        }
+    }
+}

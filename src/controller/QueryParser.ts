@@ -8,7 +8,12 @@ import { OrderDirection } from "./DatasetQuerier";
 import { QuerySectionREs } from "./helpers/queryParserRegExs";
 
 import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
-import { IAggregator, AVGAggregator, MAXAggregator } from "./aggregators";
+import {
+    IAggregator,
+    AVGAggregator,
+    MAXAggregator,
+    MINAggregator,
+} from "./aggregators";
 import Log from "../Util";
 
 import {
@@ -23,6 +28,7 @@ import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilter
 enum InsightFacadeAggregatorKind {
     AVG = "AVG",
     MAX = "MAX",
+    MIN = "MIN",
 }
 
 const queryAggNameToIAggregatorInfo: {
@@ -36,6 +42,7 @@ const queryAggNameToIAggregatorInfo: {
 } = {
     AVG: { Aggregator: AVGAggregator, aggType: "numeric" },
     MAX: { Aggregator: MAXAggregator, aggType: "numeric" },
+    MIN: { Aggregator: MINAggregator, aggType: "numeric" },
 };
 
 const queryColNameStrToKeyStr: { [key: string]: string } = {
