@@ -63,12 +63,13 @@ const rFilterRE = new RegExp(
 );
 
 // REs to capture DISPLAY section of query string
-const cDisplaySingleRE = new RegExp(`(?:${cColNameRE.source})`);
+const cDisplayColRE = new RegExp(`(?:${cColNameRE.source}|\\S+)`);
+
 const cDisplayTwoRE = new RegExp(
-    `(?:(:?${cColNameRE.source}) and (?:${cColNameRE.source}))`,
+    `(?:${cDisplayColRE.source} and ${cDisplayColRE.source})`,
 );
 const cDisplayMultRE = new RegExp(
-    `(?:(?:(?:${cColNameRE.source}), )+(?:${cColNameRE.source}) and (?:${cColNameRE.source}))`,
+    `(?:(?:${cDisplayColRE.source}, )+${cDisplayTwoRE.source})`,
 );
 
 const rDisplaySingleRE = new RegExp(`(?:${rColNameRE.source})`);
@@ -80,18 +81,35 @@ const rDisplayMultRE = new RegExp(
 );
 
 const cDisplayRE = new RegExp(
-    `(?<DISPLAY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplaySingleRE.source})`,
+    `(?<DISPLAY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplayColRE.source})`,
 );
 const rDisplayRE = new RegExp(
     `(?<DISPLAY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source})`,
 );
 
-// REs to capture optional GROUPBY section of query string
+// REs to capture GROUPBY section of query string
 const cGroupByRE = new RegExp(
-    `(?: grouped by (?<GROUPBY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplaySingleRE.source}))?`,
+    `(?: grouped by (?<GROUPBY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplayColRE.source}))?`,
 );
 const rGroupByRE = new RegExp(
     `(?: grouped by (?<GROUPBY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source}))?`,
+);
+
+// REs to capture APPLY(aggregation) section of query string
+const numAggRE = /(?:MAX|MIN|AVG|SUM)/;
+const strOrNumAggRE = /(?:COUNT)/;
+
+const cAggColRE = new RegExp(
+    `(?:${numAggRE.source} of ${cNumColRE.source}|${strOrNumAggRE.source} of (?:${cColNameRE.source}))`,
+);
+
+const cSingleAggRE = new RegExp(`(?:\\S+ is the ${cAggColRE.source})`);
+const cMultipleAggRE = new RegExp(
+    `(?:${cSingleAggRE.source}, )*(?:${cSingleAggRE.source}) and (?:${cSingleAggRE.source})`,
+);
+
+const cApplyRE = new RegExp(
+    `(?<APPLY>${cMultipleAggRE.source}|${cSingleAggRE.source})`,
 );
 
 // REs to capture ORDER section of query string
@@ -115,7 +133,7 @@ const rOrderRE = new RegExp(
 // REs to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
 export const cQueryRE = new RegExp(
     // tslint:disable-next-line:max-line-length
-    `^${cDatasetRE.source}${cGroupByRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:; ${cOrderRE.source})?[.]$`,
+    `^${cDatasetRE.source}${cGroupByRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:, where ${cApplyRE.source})?(?:; ${cOrderRE.source})?[.]$`,
 );
 
 export const rQueryRE = new RegExp(
@@ -142,6 +160,13 @@ const rFilterDetailsRE = new RegExp(
     `^(?<COLNAME>${rColNameRE.source}) ${filterConditionRE.source} ${filterValueRE.source}$`,
 );
 
+// REs to extract NAME, OPERATION and COLNAM from APPLY section(s)
+const aggOpRE = /MAX|MIN|AVG|SUM|COUNT/;
+
+const cAggNameOpColRE = new RegExp(
+    `^(?<NAME>\\S+) is the (?<OPERATION>${aggOpRE.source}) of (?<COLNAME>${cColNameRE.source})$`,
+);
+
 // REs to extract DIRECTION and COLNAME from ORDER section of query
 const directionRE = /(?<DIRECTION>ascending|descending)/;
 
@@ -166,6 +191,7 @@ export interface QuerySectionREs {
     inputKindRE: RegExp;
     singleFilterRE: RegExp;
     filterDetailRE: RegExp;
+    aggNameOpColRE: RegExp;
     sortDirectionColRE: RegExp;
 }
 
@@ -174,6 +200,7 @@ export const courseQuerySectionREs: QuerySectionREs = {
     inputKindRE: cInputKindRE,
     singleFilterRE: cOneFilterRE,
     filterDetailRE: cFilterDetailsRE,
+    aggNameOpColRE: cAggNameOpColRE,
     sortDirectionColRE: cSortDirectionColRE,
 };
 
@@ -182,5 +209,6 @@ export const roomsQuerySectionREs: QuerySectionREs = {
     inputKindRE: rInputKindRE,
     singleFilterRE: rOneFilterRE,
     filterDetailRE: rFilterDetailsRE,
+    aggNameOpColRE: null, // !!!
     sortDirectionColRE: rSortDirectionColRE,
 };
