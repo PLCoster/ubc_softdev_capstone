@@ -1,4 +1,5 @@
 import { Decimal } from "decimal.js";
+import Log from "../../Util";
 
 import { InsightCourseDataObject } from "../IInsightFacade";
 import { IAggregator } from "./IAggregator";
@@ -17,13 +18,13 @@ export class AVGAggregator implements IAggregator {
         this.applyColName = applyColName;
     }
 
-    public apply(
+    public applyAggregation(
         dataGroup: InsightCourseDataObject[],
     ): InsightCourseDataObject[] {
-        const sum = new Decimal(0);
+        let sum = new Decimal(0);
 
         dataGroup.forEach((dataObj) => {
-            sum.plus(new Decimal(dataObj[this.applyColName]));
+            sum = sum.plus(new Decimal(dataObj[this.applyColName]));
         });
 
         const avg = sum.toNumber() / dataGroup.length;
