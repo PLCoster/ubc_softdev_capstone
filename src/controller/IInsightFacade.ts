@@ -1,5 +1,6 @@
 import { OrderDirection } from "./DatasetQuerier";
 import { IFilter } from "./filters";
+import { IAggregator } from "./aggregators";
 
 /*
  * This is the primary high-level API for the project. In this folder there should be:
@@ -34,11 +35,18 @@ export interface InsightCourseDataObject {
     [key: string]: string | number;
 }
 
+export interface InsightQueryASTApplyObject {
+    name: string;
+    operation: IAggregator;
+    colName: string;
+}
+
 export interface InsightQueryAST {
     id: string;
     kind: InsightDatasetKind;
     filter: IFilter;
     groupby: string[];
+    apply: InsightQueryASTApplyObject[];
     display: string[];
     order: { direction: OrderDirection; keys: string[] };
 }

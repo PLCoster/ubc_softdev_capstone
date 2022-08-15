@@ -98,6 +98,13 @@ export default class DatasetQuerier {
         });
 
         // Data is now Grouped for applying AGG operations
+        if (queryAST.apply) {
+            queryAST.apply.forEach((applyObj) => {
+                Object.values(dataGroups).forEach((dataGroup) =>
+                    applyObj.operation.applyAggregation(dataGroup),
+                );
+            });
+        }
 
         // Return a representative member from each group:
         return Object.values(dataGroups).map(

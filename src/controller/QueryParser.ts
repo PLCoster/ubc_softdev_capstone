@@ -1,8 +1,13 @@
-import { InsightDatasetKind, InsightQueryAST } from "./IInsightFacade";
+import {
+    InsightDatasetKind,
+    InsightQueryAST,
+    InsightQueryASTApplyObject,
+} from "./IInsightFacade";
 import { OrderDirection } from "./DatasetQuerier";
 import { QuerySectionREs } from "./helpers/queryParserRegExs";
 
 import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "./filters";
+import { AVGAggregator, IAggregator } from "./aggregators";
 import Log from "../Util";
 
 import {
@@ -13,6 +18,22 @@ import {
     roomsQuerySectionREs,
 } from "./helpers/queryParserRegExs";
 import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
+
+enum InsightFacadeAggregatorKind {
+    AVG = "AVG",
+}
+
+const queryAggNameToIAggregatorInfo: {
+    [key in InsightFacadeAggregatorKind]: {
+        Aggregator: new (
+            aggColName: string,
+            applyColName: string,
+        ) => IAggregator;
+        aggType: "numeric" | "all";
+    };
+} = {
+    AVG: { Aggregator: AVGAggregator, aggType: "numeric" },
+};
 
 const queryColNameStrToKeyStr: { [key: string]: string } = {
     "Audit": "audit",
@@ -63,6 +84,7 @@ export default class QueryParser {
                 DATASET: datasetStr,
                 FILTER: filterStr,
                 GROUPBY: groupStr,
+                APPLY: applyStr,
                 DISPLAY: displayStr,
                 ORDER: orderStr,
             },
@@ -82,6 +104,7 @@ export default class QueryParser {
             kind,
             filter,
             groupby: null,
+            apply: null,
             display,
             order: null,
         };
@@ -94,6 +117,14 @@ export default class QueryParser {
             );
         }
 
+        if (applyStr) {
+            if (!groupStr) {
+                this.rejectQuery(`APPLY is only possible for GROUPBY queries`);
+            }
+
+            queryAST.apply = this.parseApply(applyStr, id, querySectionREs);
+        }
+
         if (orderStr) {
             queryAST.order = this.parseOrder(
                 orderStr,
@@ -103,7 +134,7 @@ export default class QueryParser {
             );
         }
 
-        this.astHasValidSemantics(queryAST);
+        this.astHasValidSemantics(queryAST, querySectionREs);
         return queryAST;
     }
 
@@ -174,33 +205,39 @@ export default class QueryParser {
 
     // Extracts DISPLAY or GROUPBY keys from query string:
     private parseDisplayOrGroupBy(
-        displayStr: string,
+        sectionStr: string,
         id: string,
         querySectionREs: QuerySectionREs,
     ): string[] {
-        const displayColNames = displayStr.split(/, | and /);
-        const numCols = displayColNames.length;
+        const sectionColNames = sectionStr.split(/, | and /);
+        const numCols = sectionColNames.length;
 
-        const displayCols = new Set<string>();
+        const sectionCols = new Set<string>();
 
-        displayColNames.forEach((colName, index) => {
-            // Check Column Name is valid, if not throw error:
-            if (!querySectionREs.colNameRE.test(colName)) {
-                this.rejectQuery(
-                    `Invalid Query: invalid DISPLAY COLUMN NAME ${colName}`,
-                );
+        sectionColNames.forEach((colName, index) => {
+            // Check Column Name is valid, (existing column or valid AGG column name)
+            if (querySectionREs.colNameRE.test(colName)) {
+                // Valid normal column name
+                sectionCols.add(`${id}_${queryColNameStrToKeyStr[colName]}`);
+            } else {
+                if (colName.includes("_") || reservedRE.test(colName)) {
+                    // Invalid APPLY column name
+                    this.rejectQuery(
+                        `APPLY column names must not contain "_" or RESERVED, found ${colName}`,
+                    );
+                }
+                sectionCols.add(colName);
             }
-            displayCols.add(`${id}_${queryColNameStrToKeyStr[colName]}`);
         });
 
         // If we have no column names, to display then throw an error:
-        if (!displayCols.size) {
+        if (!sectionCols.size) {
             this.rejectQuery(
-                `Invalid Query: invalid DISPLAY, no column names specified`,
+                `Invalid Query: invalid DISPLAY/GROUPBY, no column names specified "${sectionStr}"`,
             );
         }
 
-        return Array.from(displayCols);
+        return Array.from(sectionCols);
     }
 
     // Extracts ORDER from query string
@@ -240,7 +277,63 @@ export default class QueryParser {
         return { direction: ordering, keys: orderKeys };
     }
 
-    // // Builds up the nested filter object based on query filter criteria:
+    // Extracts APPLY (aggregations) from query string:
+    private parseApply(
+        applyStr: string,
+        id: string,
+        querySectionREs: QuerySectionREs,
+    ): InsightQueryASTApplyObject[] {
+        const aggregators = applyStr.split(/, | and /);
+
+        const aggNames = new Set<string>(); // Each aggregation must have a unique name
+        const applyDetails: InsightQueryASTApplyObject[] = [];
+
+        // Extract the agg name, operation and key:
+        // !!!NOTE: perhaps should check if aggName is in DISPLAY or not? (UI does not check for this, no error)
+        // !!!Also could double check that Operation it Appropriate for ColName e.g. AVG cannot apply to 'Title'
+        // !!!Check that each colName is only used once (e.g. can only have one Average aggregator)
+        aggregators.forEach((aggStr) => {
+            const aggMatchObject = aggStr.match(querySectionREs.aggNameOpColRE);
+
+            // If no match, throw an error:
+            if (!aggMatchObject) {
+                this.rejectQuery(`Bad Aggregation Syntax found: ${aggStr}`);
+            }
+
+            const {
+                NAME: aggName,
+                OPERATION: aggOp,
+                COLNAME: aggCol,
+            } = aggMatchObject.groups;
+
+            // If we have a duplicate name for an agg, error:
+            if (aggNames.has(aggName)) {
+                this.rejectQuery(
+                    `Multiple Identical Aggregation Names found: ${aggName}`,
+                );
+            }
+
+            // !!! Check here for AGG semantics using aggType
+            const { Aggregator, aggType } =
+                queryAggNameToIAggregatorInfo[
+                    aggOp as InsightFacadeAggregatorKind
+                ];
+
+            aggNames.add(aggName);
+            applyDetails.push({
+                name: aggName,
+                operation: new Aggregator(
+                    aggName,
+                    `${id}_${queryColNameStrToKeyStr[aggCol]}`,
+                ),
+                colName: aggCol,
+            });
+        });
+
+        return applyDetails;
+    }
+
+    // Builds up the nested filter object based on query filter criteria:
     private buildFilters(
         filterOperatorArr: string[],
         id: string,
@@ -312,17 +405,37 @@ export default class QueryParser {
     }
 
     // Calls rejectQuery if query has invalid Semantics:
-    private astHasValidSemantics(queryAST: InsightQueryAST): boolean {
-        // If query has GROUPBY section, can only display grouped/agg cols:
-        // !!! TODO: Check AGG cols here too
+    private astHasValidSemantics(
+        queryAST: InsightQueryAST,
+        querySectionREs: QuerySectionREs,
+    ): boolean {
+        // If query has GROUPBY section, can only DISPLAY grouped/agg cols:
         if (queryAST.groupby) {
+            // Get all agg Column Names
+            const aggColNames = queryAST.apply
+                ? queryAST.apply.map((applyDetails) => applyDetails.name)
+                : [];
             queryAST.display.forEach((colName: string) => {
-                if (!queryAST.groupby.includes(colName)) {
+                if (
+                    !queryAST.groupby.includes(colName) &&
+                    !aggColNames.includes(colName)
+                ) {
                     return this.rejectQuery(
                         `Invalid DISPLAY semantics when GROUPING - ${colName} not in GROUPBY or AGG`,
                     );
                 }
             });
+        } else {
+            // If no GROUPBY section, then by definition no APPLY section
+            // Column Names can only be default Columns
+            // !!! implement this properly
+            // queryAST.display.forEach((colName: string) => {
+            //     if (!querySectionREs.colNameRE.test(colName)) {
+            //         this.rejectQuery(
+            //             `Invalid column name in DISPLAY section: ${colName}`,
+            //         );
+            //     }
+            // });
         }
 
         return true;
@@ -337,7 +450,8 @@ export default class QueryParser {
 // const queryParser = new QueryParser();
 // console.log(
 //     queryParser.parseQuery(
-//         "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department.",
+// tslint:disable-next-line:max-line-length
+//         "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Average.",
 //     ),
 // );
 // Log.trace("DONE");
