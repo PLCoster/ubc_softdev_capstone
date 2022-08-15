@@ -1,0 +1,19 @@
+{
+    "title": "SELECT dept, MAX(pass) FROM coursesFourEntries GROUP BY dept",
+    "query": "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and maxPass, where maxPass is the MAX of Pass.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "coursesFourEntries_dept": "adhe",
+                    "maxPass": 42
+                },
+                {
+                    "coursesFourEntries_dept": "phar",
+                    "maxPass": 221
+                }
+            ]
+        }
+    }
+}
