@@ -1,0 +1,298 @@
+{
+    "title": "Complex courses query with: 2GB, 1F, 5D, 3A, 3S",
+    "query": "In courses dataset courses grouped by Department and Title, find entries whose Title includes \"biol\"; show Department, Title, avgGrade, minGrade and maxGrade, where avgGrade is the AVG of Average, minGrade is the MIN of Average and maxGrade is the MAX of Average; sort in descending order by avgGrade, minGrade and maxGrade.",
+    "response": {
+        "code": 200,
+        "body": {
+            "result": [
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "biology research",
+                    "avgGrade": 90.46,
+                    "minGrade": 89.26,
+                    "maxGrade": 92.1
+                },
+                {
+                    "courses_dept": "frst",
+                    "courses_title": "plnt molec biol",
+                    "avgGrade": 90,
+                    "minGrade": 90,
+                    "maxGrade": 90
+                },
+                {
+                    "courses_dept": "path",
+                    "courses_title": "tech mlc biol&ex",
+                    "avgGrade": 89.53,
+                    "minGrade": 87,
+                    "maxGrade": 91.55
+                },
+                {
+                    "courses_dept": "biof",
+                    "courses_title": "stat hi dim biol",
+                    "avgGrade": 88.5,
+                    "minGrade": 87.54,
+                    "maxGrade": 89.88
+                },
+                {
+                    "courses_dept": "medg",
+                    "courses_title": "biolgy of cancer",
+                    "avgGrade": 88.48,
+                    "minGrade": 87.33,
+                    "maxGrade": 90.52
+                },
+                {
+                    "courses_dept": "cell",
+                    "courses_title": "tpcs dev biol",
+                    "avgGrade": 88.13,
+                    "minGrade": 87,
+                    "maxGrade": 89.8
+                },
+                {
+                    "courses_dept": "eosc",
+                    "courses_title": "biol ocean sem",
+                    "avgGrade": 88,
+                    "minGrade": 86.5,
+                    "maxGrade": 89.5
+                },
+                {
+                    "courses_dept": "obst",
+                    "courses_title": "sem reprd biol",
+                    "avgGrade": 87.72,
+                    "minGrade": 85.4,
+                    "maxGrade": 90.33
+                },
+                {
+                    "courses_dept": "path",
+                    "courses_title": "biolgy of cancer",
+                    "avgGrade": 87.67,
+                    "minGrade": 84.33,
+                    "maxGrade": 91
+                },
+                {
+                    "courses_dept": "cell",
+                    "courses_title": "cell system biol",
+                    "avgGrade": 86.93,
+                    "minGrade": 85.63,
+                    "maxGrade": 87.78
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "biol of the cell",
+                    "avgGrade": 86.84,
+                    "minGrade": 85.14,
+                    "maxGrade": 89
+                },
+                {
+                    "courses_dept": "medi",
+                    "courses_title": "mole & cell biol",
+                    "avgGrade": 86.78,
+                    "minGrade": 84.59,
+                    "maxGrade": 90.68
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "cell biol intrfk",
+                    "avgGrade": 86.28,
+                    "minGrade": 86.28,
+                    "maxGrade": 86.28
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "evo cell biology",
+                    "avgGrade": 83.25,
+                    "minGrade": 82.46,
+                    "maxGrade": 84.03
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "adv cell biology",
+                    "avgGrade": 83.04,
+                    "minGrade": 79.69,
+                    "maxGrade": 85.25
+                },
+                {
+                    "courses_dept": "chbe",
+                    "courses_title": "biological eng",
+                    "avgGrade": 82.57,
+                    "minGrade": 78,
+                    "maxGrade": 84.25
+                },
+                {
+                    "courses_dept": "medg",
+                    "courses_title": "gn&cl biol cancr",
+                    "avgGrade": 82.19,
+                    "minGrade": 80.25,
+                    "maxGrade": 87.47
+                },
+                {
+                    "courses_dept": "dhyg",
+                    "courses_title": "oral microbiolog",
+                    "avgGrade": 81.05,
+                    "minGrade": 73.33,
+                    "maxGrade": 85.04
+                },
+                {
+                    "courses_dept": "civl",
+                    "courses_title": "biol wstwtr trt",
+                    "avgGrade": 80.64,
+                    "minGrade": 76.8,
+                    "maxGrade": 85.71
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "anim cell biol",
+                    "avgGrade": 80.1,
+                    "minGrade": 74.75,
+                    "maxGrade": 85
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "devlpmt neurbiol",
+                    "avgGrade": 79.8,
+                    "minGrade": 74.57,
+                    "maxGrade": 88.33
+                },
+                {
+                    "courses_dept": "frst",
+                    "courses_title": "soil biology",
+                    "avgGrade": 79.36,
+                    "minGrade": 73.11,
+                    "maxGrade": 85.57
+                },
+                {
+                    "courses_dept": "chbe",
+                    "courses_title": "biolog eng lab",
+                    "avgGrade": 79.03,
+                    "minGrade": 79.03,
+                    "maxGrade": 79.03
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "biol invertebrat",
+                    "avgGrade": 78.69,
+                    "minGrade": 78.69,
+                    "maxGrade": 78.7
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "pr conservt biol",
+                    "avgGrade": 77.98,
+                    "minGrade": 74.83,
+                    "maxGrade": 82.71
+                },
+                {
+                    "courses_dept": "phil",
+                    "courses_title": "phil of biol",
+                    "avgGrade": 77.53,
+                    "minGrade": 71.68,
+                    "maxGrade": 82
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "hist&phil biol",
+                    "avgGrade": 77.25,
+                    "minGrade": 74.78,
+                    "maxGrade": 80.14
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "developmtal biol",
+                    "avgGrade": 76.22,
+                    "minGrade": 72.09,
+                    "maxGrade": 84.65
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "comp neurobiolgy",
+                    "avgGrade": 76.14,
+                    "minGrade": 72.96,
+                    "maxGrade": 77.97
+                },
+                {
+                    "courses_dept": "eosc",
+                    "courses_title": "mrne microbiolgy",
+                    "avgGrade": 75.1,
+                    "minGrade": 72.68,
+                    "maxGrade": 77.74
+                },
+                {
+                    "courses_dept": "eosc",
+                    "courses_title": "biolgl oceangrhy",
+                    "avgGrade": 75.05,
+                    "minGrade": 65.31,
+                    "maxGrade": 83.1
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "biology of cell",
+                    "avgGrade": 74.54,
+                    "minGrade": 65.45,
+                    "maxGrade": 83.68
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "cell biology 2",
+                    "avgGrade": 73.66,
+                    "minGrade": 67.9,
+                    "maxGrade": 78.3
+                },
+                {
+                    "courses_dept": "cons",
+                    "courses_title": "conservat'n biol",
+                    "avgGrade": 73.63,
+                    "minGrade": 69.31,
+                    "maxGrade": 77.54
+                },
+                {
+                    "courses_dept": "elec",
+                    "courses_title": "biological mems",
+                    "avgGrade": 73.11,
+                    "minGrade": 73.11,
+                    "maxGrade": 73.11
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "human biology",
+                    "avgGrade": 72.94,
+                    "minGrade": 63,
+                    "maxGrade": 80.23
+                },
+                {
+                    "courses_dept": "educ",
+                    "courses_title": "teaching biology",
+                    "avgGrade": 69.97,
+                    "minGrade": 69.97,
+                    "maxGrade": 69.97
+                },
+                {
+                    "courses_dept": "micb",
+                    "courses_title": "int env micrbiol",
+                    "avgGrade": 69.74,
+                    "minGrade": 63.59,
+                    "maxGrade": 75.36
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "biol bact cell",
+                    "avgGrade": 68.75,
+                    "minGrade": 61.32,
+                    "maxGrade": 72.31
+                },
+                {
+                    "courses_dept": "micb",
+                    "courses_title": "intro microbiol",
+                    "avgGrade": 68.24,
+                    "minGrade": 68.24,
+                    "maxGrade": 68.24
+                },
+                {
+                    "courses_dept": "biol",
+                    "courses_title": "cell biology 1",
+                    "avgGrade": 65.06,
+                    "minGrade": 55.96,
+                    "maxGrade": 71.11
+                }
+            ]
+        }
+    }
+}
