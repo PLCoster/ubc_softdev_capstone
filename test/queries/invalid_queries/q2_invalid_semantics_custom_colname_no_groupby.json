@@ -1,0 +1,10 @@
+{
+    "title": "Invalid DISPLAY Semantics: APPLY type column name (avgGrade) used without GROUP/APPLY",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit and avgGrade.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

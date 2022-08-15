@@ -1,0 +1,10 @@
+{
+    "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (AVG)",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Department.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

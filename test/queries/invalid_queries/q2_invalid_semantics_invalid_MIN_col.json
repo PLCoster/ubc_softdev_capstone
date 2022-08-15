@@ -1,0 +1,10 @@
+{
+    "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (MIN)",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and countInstructor, where countInstructor is the MIN of Instructor.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

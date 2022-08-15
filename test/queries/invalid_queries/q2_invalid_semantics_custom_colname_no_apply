@@ -1,0 +1,10 @@
+{
+    "title": "Invalid DISPLAY/GROUP Semantics: APPLY type column name (avgGrade) used without APPLY definition",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (SUM)",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and countID, where countID is the SUM of ID.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
