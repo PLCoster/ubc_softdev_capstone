@@ -144,14 +144,28 @@ const rOrderRE = new RegExp(
 );
 
 // REs to validate entire query and extract DATASET, FILTER, DISPLAY, ORDER
+const cQueryDatasetGroupByFilterRE = new RegExp(
+    `${cDatasetRE.source}${cGroupByRE.source}, ${cFilterRE.source}`,
+);
+
+const cDisplayApplyOrderRE = new RegExp(
+    `show ${cDisplayRE.source}(?:, where ${cApplyRE.source})?(?:; ${cOrderRE.source})?`,
+);
+
 export const cQueryRE = new RegExp(
-    // tslint:disable-next-line:max-line-length
-    `^${cDatasetRE.source}${cGroupByRE.source}, ${cFilterRE.source}; show ${cDisplayRE.source}(?:, where ${cApplyRE.source})?(?:; ${cOrderRE.source})?[.]$`,
+    `^${cQueryDatasetGroupByFilterRE.source}; ${cDisplayApplyOrderRE.source}[.]$`,
+);
+
+const rQueryDatasetGroupByFilterRE = new RegExp(
+    `${rDatasetRE.source}${rGroupByRE.source}, ${rFilterRE.source}`,
+);
+
+const rDisplayApplyOrderRE = new RegExp(
+    `show ${rDisplayRE.source}(?:, where ${rApplyRE.source})?(?:; ${rOrderRE.source})?`,
 );
 
 export const rQueryRE = new RegExp(
-    // tslint:disable-next-line:max-line-length
-    `^${rDatasetRE.source}${rGroupByRE.source}, ${rFilterRE.source}; show ${rDisplayRE.source}(?:, where ${rApplyRE.source})?(?:; ${rOrderRE.source})?[.]$`,
+    `^${rQueryDatasetGroupByFilterRE.source}; ${rDisplayApplyOrderRE.source}[.]$`,
 );
 
 // RE to extract KIND and INPUT name from DATASET section of query
