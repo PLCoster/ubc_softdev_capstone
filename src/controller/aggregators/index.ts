@@ -2,3 +2,4 @@
 export * from "./IAggregator";
 
 export * from "./AVGAggregator";
+export * from "./MAXAggregator";
