@@ -121,6 +121,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -145,6 +146,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_uuid", "courses_avg", "courses_audit"],
             order: null,
         };
@@ -170,6 +172,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: [
                 "courses_audit",
                 "courses_avg",
@@ -205,6 +208,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_audit", "courses_pass"],
             order: { direction: OrderDirection.asc, keys: ["courses_pass"] },
         };
@@ -229,6 +233,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_audit", "courses_pass"],
             order: { direction: OrderDirection.desc, keys: ["courses_pass"] },
         };
@@ -253,6 +258,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_fail", "courses_pass"],
             order: {
                 direction: OrderDirection.asc,
@@ -280,6 +286,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: ["courses_dept", "courses_fail", "courses_pass"],
             order: {
                 direction: OrderDirection.desc,
@@ -345,6 +352,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_audit", 10),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -369,6 +377,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_audit", 10)),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -393,6 +402,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new GTFilter("courses_audit", 10),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -417,6 +427,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new GTFilter("courses_audit", 10)),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -441,6 +452,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new LTFilter("courses_audit", 10),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -465,6 +477,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new LTFilter("courses_audit", 10)),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -489,6 +502,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_dept", "math"),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -513,6 +527,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_dept", "math")),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -537,6 +552,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new INCFilter("courses_dept", "math"),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -561,6 +577,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new INCFilter("courses_dept", "math")),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -585,6 +602,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new BEGFilter("courses_dept", "math"),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -609,6 +627,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new BEGFilter("courses_dept", "math")),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -633,6 +652,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ENDFilter("courses_dept", "math"),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -657,6 +677,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new ENDFilter("courses_dept", "math")),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -688,6 +709,7 @@ describe("QueryParser Tests", function () {
                 new GTFilter("courses_audit", 1),
             ),
             groupby: null,
+            apply: null,
             display: ["courses_audit"],
             order: null,
         };
@@ -719,6 +741,7 @@ describe("QueryParser Tests", function () {
                 new GTFilter("courses_audit", 7),
             ),
             groupby: null,
+            apply: null,
             display: ["courses_instructor", "courses_dept", "courses_audit"],
             order: null,
         };
@@ -757,6 +780,7 @@ describe("QueryParser Tests", function () {
                 new EQFilter("courses_avg", 95),
             ),
             groupby: null,
+            apply: null,
             display: ["courses_dept", "courses_id", "courses_avg"],
             order: { direction: OrderDirection.asc, keys: ["courses_avg"] },
         };
@@ -781,6 +805,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: ["courses_dept"],
+            apply: null,
             display: ["courses_dept"],
             order: null,
         };
@@ -806,6 +831,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: ["courses_dept", "courses_instructor"],
+            apply: null,
             display: ["courses_dept", "courses_instructor"],
             order: null,
         };
@@ -831,6 +857,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
             groupby: ["courses_dept", "courses_title", "courses_instructor"],
+            apply: null,
             display: ["courses_dept", "courses_title", "courses_instructor"],
             order: null,
         };
@@ -859,6 +886,7 @@ describe("QueryParser Tests", function () {
             kind: InsightDatasetKind.Rooms,
             filter: new ALLFilter(),
             groupby: null,
+            apply: null,
             display: [
                 "rooms_fullname",
                 "rooms_shortname",
