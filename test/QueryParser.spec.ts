@@ -20,6 +20,13 @@ import {
     ANDFilter,
     ORFilter,
 } from "../src/controller/filters";
+import {
+    AVGAggregator,
+    MINAggregator,
+    MAXAggregator,
+    SUMAggregator,
+    COUNTAggregator,
+} from "../src/controller/aggregators";
 import Log from "../src/Util";
 
 describe("QueryParser Tests", function () {
@@ -75,11 +82,12 @@ describe("QueryParser Tests", function () {
         }
     });
 
-    it("parseQuery: Throws error when KIND is incorrect", () => {
-        const query = "In rooms dataset courses, find all entries; show Audit.";
+    it("parseQuery: Throws error when requested DISPLAY col (Seats) does not match KIND (courses)", () => {
+        const query =
+            "In courses dataset courses, find all entries; show Seats.";
 
-        const errMessage = `incorrect query syntax`;
-        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+        const errMessage = `Invalid column name in DISPLAY: Seats`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
@@ -93,12 +101,213 @@ describe("QueryParser Tests", function () {
         }
     });
 
-    it("parseQuery: Throws error when GROUPBY/DISPLAY semantics invalid", () => {
+    it("parseQuery: Throws error when requested DISPLAY col (Audit) does not match KIND (rooms)", () => {
+        const query = "In rooms dataset rooms, find all entries; show Audit.";
+
+        const errMessage = `Invalid column name in DISPLAY: Audit`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when requested GROUPBY col (Department) does not match KIND (rooms)", () => {
+        const query =
+            "In rooms dataset rooms grouped by Department, find all entries; show Department.";
+
+        const errMessage = `Invalid Query: incorrect query syntax`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when requested GROUPBY col (Full Name) does not match KIND (courses)", () => {
+        const query =
+            "In courses dataset courses grouped by Full Name, find all entries; show Full Name.";
+
+        const errMessage = `Invalid Query: incorrect query syntax`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when requested APPLY col (Average) does not match KIND (rooms)", () => {
+        const queryDisplayApply =
+            "show Full Name and avgGrade, where avgGrade is the AVG of Average.";
+        const query = `In rooms dataset rooms grouped by Full Name, find all entries; ${queryDisplayApply}.`;
+
+        const errMessage = `Invalid Query: incorrect query syntax`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when requested APPLY col (Seats) does not match KIND (courses)", () => {
+        const queryDisplayApply =
+            "show Department and maxSeats, where maxSeats is the MAX of Seats.";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${queryDisplayApply}.`;
+
+        const errMessage = `Invalid Query: incorrect query syntax`;
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when requested DISPLAY col (Audit) is not in GROUPBY for grouped query", () => {
         const query =
             "In courses dataset courses grouped by Department and Title, find all entries; show Department and Audit.";
 
         const errMessage =
             "Invalid DISPLAY semantics when GROUPING - courses_audit not in GROUPBY or AGG";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when aggregation is requested without grouping", () => {
+        const queryDisplayApply =
+            "show Department; sort in ascending order by maxSeats";
+        const query = `In courses dataset courses, find all entries; ${queryDisplayApply}.`;
+
+        const errMessage =
+            "Invalid ORDER semantics - column maxSeats not selected in DISPLAY";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when aggregation (maxAvg) is not specified", () => {
+        const query =
+            "In courses dataset courses grouped by Department, find all entries; show maxAvg.";
+
+        const errMessage =
+            "Invalid DISPLAY semantics when GROUPING - maxAvg not in GROUPBY or AGG";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when trying to sort using an unspecified aggregator in a grouped query", () => {
+        const queryDisplaySort =
+            "show Department; sort in ascending order by maxSeats.";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${queryDisplaySort}`;
+        const errMessage =
+            "Invalid ORDER semantics - column maxSeats not selected in DISPLAY";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when specifying two aggregators with the same name (minGrade)", () => {
+        const queryDatasetGroupBy =
+            "In courses dataset courses grouped by Department";
+        const queryApply =
+            "where minGrade is the MIN of Average and minGrade is the MAX of Average.";
+        const query = `${queryDatasetGroupBy}, find all entries; show Department, minGrade and maxGrade, ${queryApply}`;
+
+        const errMessage =
+            "Multiple Identical Aggregation Names found: minGrade";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
+    it("parseQuery: Throws error when using numeric aggregator on non-numeric column (MAX on UUID)", () => {
+        const queryDatasetGroupBy =
+            "In courses dataset courses grouped by Department";
+        const queryApply = "where maxID is the MAX of ID";
+        const query = `${queryDatasetGroupBy}, find all entries; show Department and maxID, ${queryApply}.`;
+
+        const errMessage = "Invalid Query: incorrect query syntax";
         const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
 
         let actualAST;
@@ -874,6 +1083,217 @@ describe("QueryParser Tests", function () {
         }
     });
 
+    it("parseQuery: Parses query with GROUPBY and AVG aggregator (S dept, AVG(avg) F courses GB dept)", () => {
+        const qDisplayApply =
+            "show Department and avgGrade, where avgGrade is the AVG of Average";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            apply: [
+                {
+                    colName: "Average",
+                    name: "avgGrade",
+                    operation: new AVGAggregator("avgGrade", "courses_avg"),
+                },
+            ],
+            display: ["courses_dept", "avgGrade"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with GROUPBY and MAX aggregator (S dept, MAX(avg) F courses GB dept)", () => {
+        const qDisplayApply =
+            "show Department and maxGrade, where maxGrade is the MAX of Average";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            apply: [
+                {
+                    colName: "Average",
+                    name: "maxGrade",
+                    operation: new MAXAggregator("maxGrade", "courses_avg"),
+                },
+            ],
+            display: ["courses_dept", "maxGrade"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with GROUPBY and MIN aggregator (S dept, MIN(Year) F courses GB dept)", () => {
+        const qDisplayApply =
+            "show Department and minYear, where minYear is the MIN of Year";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            apply: [
+                {
+                    colName: "Year",
+                    name: "minYear",
+                    operation: new MINAggregator("minYear", "courses_year"),
+                },
+            ],
+            display: ["courses_dept", "minYear"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with GROUPBY and SUM aggregator (S dept, SUM(Pass) F courses GB dept)", () => {
+        const qDisplayApply =
+            "show Department and sumPass, where sumPass is the SUM of Pass";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            apply: [
+                {
+                    colName: "Pass",
+                    name: "sumPass",
+                    operation: new MINAggregator("sumPass", "courses_pass"),
+                },
+            ],
+            display: ["courses_dept", "sumPass"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with GROUPBY and COUNT aggregator (S dept, COUNT(inst) F courses GB dept)", () => {
+        const qDisplayApply =
+            "show Department and countInst, where countInst is the COUNT of Instructor";
+        const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept"],
+            apply: [
+                {
+                    colName: "Instructor",
+                    name: "countInst",
+                    operation: new MINAggregator(
+                        "countInst",
+                        "courses_instructor",
+                    ),
+                },
+            ],
+            display: ["courses_dept", "countInst"],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it("parseQuery: Parses query with multi column GROUPBY and APPLY", () => {
+        const queryGroupFilter =
+            "Department, Title and Instructor, find all entries";
+        const queryDisplay =
+            "show Department, Title, Instructor, minGrade and maxGrade, ";
+        const queryApply =
+            "where minGrade is the MIN of Average and maxGrade is the MAX of Average";
+        const query = `In courses dataset courses grouped by ${queryGroupFilter}; ${queryDisplay}${queryApply}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "courses",
+            kind: InsightDatasetKind.Courses,
+            filter: new ALLFilter(),
+            groupby: ["courses_dept", "courses_title", "courses_instructor"],
+            apply: [
+                {
+                    colName: "Average",
+                    name: "minGrade",
+                    operation: new MINAggregator("minGrade", "courses_avg"),
+                },
+                {
+                    colName: "Average",
+                    name: "maxGrade",
+                    operation: new MAXAggregator("maxGrade", "courses_avg"),
+                },
+            ],
+            display: [
+                "courses_dept",
+                "courses_title",
+                "courses_instructor",
+                "minGrade",
+                "maxGrade",
+            ],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
     // ROOMS QUERIES
     it(`parseQuery: Parses a simple ROOMS query (SELECT * FROM rooms)`, () => {
         const queryDisplay =
@@ -901,6 +1321,147 @@ describe("QueryParser Tests", function () {
                 "rooms_seats",
             ],
             order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it(`parseQuery: Parses a ROOMS query with a FILTER (SELECT * FROM rooms WHERE fullname="*Hall*")`, () => {
+        const queryFilter = 'find entries whose Full Name includes "Hall"';
+        const queryDisplay =
+            "show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats";
+        const query = `In rooms dataset rooms, ${queryFilter}; ${queryDisplay}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "rooms",
+            kind: InsightDatasetKind.Rooms,
+            filter: new INCFilter("rooms_fullname", "Hall"),
+            groupby: null,
+            apply: null,
+            display: [
+                "rooms_fullname",
+                "rooms_shortname",
+                "rooms_number",
+                "rooms_name",
+                "rooms_address",
+                "rooms_type",
+                "rooms_furniture",
+                "rooms_href",
+                "rooms_lat",
+                "rooms_lon",
+                "rooms_seats",
+            ],
+            order: null,
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it(`parseQuery: Parses a ROOMS query with GROUP, FILTER, APPLY and SORT`, () => {
+        const queryGroup = "grouped by Full Name";
+        const queryFilter = 'find entries whose Full Name includes "Hall"';
+        const queryDisplayApply =
+            "show Full Name and maxSeats, where maxSeats is the MAX of Seats";
+        const querySort = "sort in descending order by maxSeats";
+
+        const query = `In rooms dataset rooms ${queryGroup}, ${queryFilter}; ${queryDisplayApply}; ${querySort}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "rooms",
+            kind: InsightDatasetKind.Rooms,
+            filter: new INCFilter("rooms_fullname", "Hall"),
+            groupby: ["rooms_fullname"],
+            apply: [
+                {
+                    colName: "Seats",
+                    name: "maxSeats",
+                    operation: new MAXAggregator("maxSeats", "rooms_seats"),
+                },
+            ],
+            display: ["rooms_fullname", "maxSeats"],
+            order: { direction: OrderDirection.desc, keys: ["maxSeats"] },
+        };
+        let actualAST;
+
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            assert.fail(
+                `No error should be thrown on valid query - ERROR: ${err.message}`,
+            );
+        } finally {
+            expect(actualAST).to.deep.equal(expectedAST);
+        }
+    });
+
+    it(`parseQuery: Parses a complex ROOMS query with multiple GROUP, FILTER, APPLY and SORT`, () => {
+        const qGroup = "grouped by Full Name, Address and Type";
+        const qFilter =
+            'find entries whose Seats is greater than 50 and Address includes "Mall"';
+        const qDisplay =
+            "show Full Name, Address, minSeats, maxSeats, sumSeats and Type";
+        const qApply =
+            "minSeats is the MIN of Seats, sumSeats is the SUM of Seats and maxSeats is the MAX of Seats";
+        const qSort =
+            "sort in ascending order by minSeats, maxSeats and sumSeats";
+
+        const query = `In rooms dataset rooms ${qGroup}, ${qFilter}; ${qDisplay}, where ${qApply}; ${qSort}.`;
+
+        const expectedAST: InsightQueryAST = {
+            id: "rooms",
+            kind: InsightDatasetKind.Rooms,
+            filter: new ANDFilter(
+                new GTFilter("rooms_seats", 50),
+                new INCFilter("rooms_address", "Mall"),
+            ),
+            groupby: ["rooms_fullname", "rooms_address", "rooms_type"],
+            apply: [
+                {
+                    colName: "Seats",
+                    name: "minSeats",
+                    operation: new MINAggregator("minSeats", "rooms_seats"),
+                },
+                {
+                    colName: "Seats",
+                    name: "sumSeats",
+                    operation: new SUMAggregator("sumSeats", "rooms_seats"),
+                },
+                {
+                    colName: "Seats",
+                    name: "maxSeats",
+                    operation: new MAXAggregator("maxSeats", "rooms_seats"),
+                },
+            ],
+            display: [
+                "rooms_fullname",
+                "rooms_address",
+                "minSeats",
+                "maxSeats",
+                "sumSeats",
+                "rooms_type",
+            ],
+            order: {
+                direction: OrderDirection.asc,
+                keys: ["minSeats", "maxSeats", "sumSeats"],
+            },
         };
         let actualAST;
 
