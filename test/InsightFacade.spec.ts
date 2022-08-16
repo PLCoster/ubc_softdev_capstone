@@ -433,7 +433,6 @@ describe("InsightFacade PerformQuery", () => {
                     } catch (err) {
                         response = err;
                     } finally {
-                        Log.trace(`RESPONSE: ${JSON.stringify(response.body)}`);
                         expect(response.code).to.equal(test.response.code);
 
                         if (test.response.code >= 400) {

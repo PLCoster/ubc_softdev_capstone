@@ -25,6 +25,14 @@ export enum InsightDatasetKind {
     Rooms = "rooms",
 }
 
+export enum InsightAggregatorKind {
+    AVG = "AVG",
+    MAX = "MAX",
+    MIN = "MIN",
+    SUM = "SUM",
+    COUNT = "COUNT",
+}
+
 export interface InsightDataset {
     id: string;
     kind: InsightDatasetKind;
