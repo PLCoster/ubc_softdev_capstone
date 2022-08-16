@@ -63,36 +63,51 @@ const rFilterRE = new RegExp(
 );
 
 // REs to capture DISPLAY section of query string
-const cDisplayColRE = new RegExp(`(?:${cColNameRE.source}|\\S+)`);
-
+const cDisplaySingleRE = new RegExp(`(?:${cColNameRE.source}|\\S+)`);
 const cDisplayTwoRE = new RegExp(
-    `(?:${cDisplayColRE.source} and ${cDisplayColRE.source})`,
+    `(?:${cDisplaySingleRE.source} and ${cDisplaySingleRE.source})`,
 );
 const cDisplayMultRE = new RegExp(
-    `(?:(?:${cDisplayColRE.source}, )+${cDisplayTwoRE.source})`,
+    `(?:(?:${cDisplaySingleRE.source}, )*${cDisplayTwoRE.source})`,
 );
 
-const rDisplaySingleRE = new RegExp(`(?:${rColNameRE.source})`);
+const rDisplaySingleRE = new RegExp(`(?:${rColNameRE.source}|\\S+)`);
 const rDisplayTwoRE = new RegExp(
-    `(?:(:?${rColNameRE.source}) and (?:${rColNameRE.source}))`,
+    `(?:${rDisplaySingleRE.source} and ${rDisplaySingleRE.source})`,
 );
 const rDisplayMultRE = new RegExp(
-    `(?:(?:(?:${rColNameRE.source}), )+(?:${rColNameRE.source}) and (?:${rColNameRE.source}))`,
+    `(?:(?:${rDisplaySingleRE.source}, )*${rDisplayTwoRE.source})`,
 );
 
 const cDisplayRE = new RegExp(
-    `(?<DISPLAY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplayColRE.source})`,
+    `(?<DISPLAY>${cDisplayMultRE.source}|${cDisplaySingleRE.source})`,
 );
 const rDisplayRE = new RegExp(
-    `(?<DISPLAY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source})`,
+    `(?<DISPLAY>${rDisplayMultRE.source}|${rDisplaySingleRE.source})`,
 );
 
 // REs to capture GROUPBY section of query string
+const cGroupBySingleRE = new RegExp(`(?:${cColNameRE.source})`);
+const cGroupByTwoRE = new RegExp(
+    `(?:${cGroupBySingleRE.source} and ${cGroupBySingleRE.source})`,
+);
+const cGroupByMultRE = new RegExp(
+    `(?:(?:${cGroupBySingleRE.source}, )*${cGroupByTwoRE.source})`,
+);
+
+const rGroupBySingleRE = new RegExp(`(?:${rColNameRE.source})`);
+const rGroupByTwoRE = new RegExp(
+    `(?:${rGroupBySingleRE.source} and ${rGroupBySingleRE.source})`,
+);
+const rGroupByMultRE = new RegExp(
+    `(?:(?:${rGroupBySingleRE.source}, )*${rGroupByTwoRE.source})`,
+);
+
 const cGroupByRE = new RegExp(
-    `(?: grouped by (?<GROUPBY>${cDisplayMultRE.source}|${cDisplayTwoRE.source}|${cDisplayColRE.source}))?`,
+    `(?: grouped by (?<GROUPBY>${cGroupByMultRE.source}|${cGroupBySingleRE.source}))?`,
 );
 const rGroupByRE = new RegExp(
-    `(?: grouped by (?<GROUPBY>${rDisplayMultRE.source}|${rDisplayTwoRE.source}|${rDisplaySingleRE.source}))?`,
+    `(?: grouped by (?<GROUPBY>${rGroupByMultRE.source}|${rGroupBySingleRE.source}))?`,
 );
 
 // REs to capture APPLY(aggregation) section of query string
@@ -113,7 +128,7 @@ const cApplyRE = new RegExp(
 );
 
 const rAggColRE = new RegExp(
-    `(?:${numAggRE.source} of ${cNumColRE.source}|${strOrNumAggRE.source} of (?:${cColNameRE.source}))`,
+    `(?:${numAggRE.source} of ${rNumColRE.source}|${strOrNumAggRE.source} of (?:${rColNameRE.source}))`,
 );
 
 const rSingleAggRE = new RegExp(`(?:\\S+ is the ${rAggColRE.source})`);
