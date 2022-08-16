@@ -1,6 +1,6 @@
 {
     "title": "S fn,add,seats,MIN(seats),Max(seats) F rooms W seats>50 & add='*Mall*' GROUPBY fn,add,seats OB mS",
-    "query": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes \"Mall\"; show Full Name, Address, minSeats, maxSeats and Type, where minSeats is the MIN of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats.",
+    "query": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes \"Mall\"; show Full Name, Address, minSeats, maxSeats, sumSeats and Type, where minSeats is the MIN of Seats, sumSeats is the SUM of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats, maxSeats and sumSeats.",
     "response": {
         "code": 200,
         "body": {
@@ -10,20 +10,7 @@
                     "rooms_address": "2053 Main Mall",
                     "minSeats": 53,
                     "maxSeats": 80,
-                    "rooms_type": "Open Design General Purpose"
-                },
-                {
-                    "rooms_fullname": "Henry Angus",
-                    "rooms_address": "2053 Main Mall",
-                    "minSeats": 54,
-                    "maxSeats": 60,
-                    "rooms_type": "Case Style"
-                },
-                {
-                    "rooms_fullname": "Hebb",
-                    "rooms_address": "2045 East Mall",
-                    "minSeats": 54,
-                    "maxSeats": 54,
+                    "sumSeats": 241,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -31,13 +18,31 @@
                     "rooms_address": "2205 East Mall",
                     "minSeats": 54,
                     "maxSeats": 54,
+                    "sumSeats": 54,
                     "rooms_type": "Open Design General Purpose"
+                },
+                {
+                    "rooms_fullname": "Hebb",
+                    "rooms_address": "2045 East Mall",
+                    "minSeats": 54,
+                    "maxSeats": 54,
+                    "sumSeats": 162,
+                    "rooms_type": "Open Design General Purpose"
+                },
+                {
+                    "rooms_fullname": "Henry Angus",
+                    "rooms_address": "2053 Main Mall",
+                    "minSeats": 54,
+                    "maxSeats": 60,
+                    "sumSeats": 228,
+                    "rooms_type": "Case Style"
                 },
                 {
                     "rooms_fullname": "Henry Angus",
                     "rooms_address": "2053 Main Mall",
                     "minSeats": 58,
                     "maxSeats": 260,
+                    "sumSeats": 662,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -45,13 +50,23 @@
                     "rooms_address": "2125 Main Mall",
                     "minSeats": 60,
                     "maxSeats": 60,
+                    "sumSeats": 60,
                     "rooms_type": "Small Group"
+                },
+                {
+                    "rooms_fullname": "Chemical and Biological Engineering Building",
+                    "rooms_address": "2360 East Mall V6T 1Z3",
+                    "minSeats": 60,
+                    "maxSeats": 60,
+                    "sumSeats": 60,
+                    "rooms_type": "Open Design General Purpose"
                 },
                 {
                     "rooms_fullname": "MacLeod",
                     "rooms_address": "2356 Main Mall",
                     "minSeats": 60,
                     "maxSeats": 84,
+                    "sumSeats": 204,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -59,13 +74,7 @@
                     "rooms_address": "1984 West Mall",
                     "minSeats": 60,
                     "maxSeats": 100,
-                    "rooms_type": "Open Design General Purpose"
-                },
-                {
-                    "rooms_fullname": "Chemical and Biological Engineering Building",
-                    "rooms_address": "2360 East Mall V6T 1Z3",
-                    "minSeats": 60,
-                    "maxSeats": 60,
+                    "sumSeats": 292,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -73,6 +82,7 @@
                     "rooms_address": "2424 Main Mall",
                     "minSeats": 65,
                     "maxSeats": 65,
+                    "sumSeats": 130,
                     "rooms_type": "Case Style"
                 },
                 {
@@ -80,6 +90,7 @@
                     "rooms_address": "2206 East Mall",
                     "minSeats": 66,
                     "maxSeats": 66,
+                    "sumSeats": 66,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -87,6 +98,7 @@
                     "rooms_address": "1874 East Mall",
                     "minSeats": 70,
                     "maxSeats": 70,
+                    "sumSeats": 70,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -94,6 +106,7 @@
                     "rooms_address": "2405 Wesbrook Mall",
                     "minSeats": 72,
                     "maxSeats": 72,
+                    "sumSeats": 72,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -101,6 +114,7 @@
                     "rooms_address": "2357 Main Mall",
                     "minSeats": 72,
                     "maxSeats": 72,
+                    "sumSeats": 72,
                     "rooms_type": "Case Style"
                 },
                 {
@@ -108,6 +122,7 @@
                     "rooms_address": "2357 Main Mall",
                     "minSeats": 74,
                     "maxSeats": 200,
+                    "sumSeats": 274,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -115,6 +130,7 @@
                     "rooms_address": "2207 Main Mall",
                     "minSeats": 80,
                     "maxSeats": 350,
+                    "sumSeats": 580,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -122,6 +138,7 @@
                     "rooms_address": "2194 Health Sciences Mall",
                     "minSeats": 88,
                     "maxSeats": 503,
+                    "sumSeats": 1132,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -129,13 +146,7 @@
                     "rooms_address": "2036 Main Mall",
                     "minSeats": 90,
                     "maxSeats": 265,
-                    "rooms_type": "Tiered Large Group"
-                },
-                {
-                    "rooms_fullname": "Chemical and Biological Engineering Building",
-                    "rooms_address": "2360 East Mall V6T 1Z3",
-                    "minSeats": 94,
-                    "maxSeats": 200,
+                    "sumSeats": 913,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -143,13 +154,15 @@
                     "rooms_address": "1822 East Mall",
                     "minSeats": 94,
                     "maxSeats": 94,
+                    "sumSeats": 94,
                     "rooms_type": "Case Style"
                 },
                 {
-                    "rooms_fullname": "Forest Sciences Centre",
-                    "rooms_address": "2424 Main Mall",
-                    "minSeats": 99,
-                    "maxSeats": 250,
+                    "rooms_fullname": "Chemical and Biological Engineering Building",
+                    "rooms_address": "2360 East Mall V6T 1Z3",
+                    "minSeats": 94,
+                    "maxSeats": 200,
+                    "sumSeats": 294,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -157,6 +170,15 @@
                     "rooms_address": "2205 East Mall",
                     "minSeats": 99,
                     "maxSeats": 99,
+                    "sumSeats": 99,
+                    "rooms_type": "Tiered Large Group"
+                },
+                {
+                    "rooms_fullname": "Forest Sciences Centre",
+                    "rooms_address": "2424 Main Mall",
+                    "minSeats": 99,
+                    "maxSeats": 250,
+                    "sumSeats": 349,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -164,6 +186,7 @@
                     "rooms_address": "1961 East Mall V6T 1Z1",
                     "minSeats": 112,
                     "maxSeats": 112,
+                    "sumSeats": 112,
                     "rooms_type": "Open Design General Purpose"
                 },
                 {
@@ -171,6 +194,7 @@
                     "rooms_address": "2356 Main Mall",
                     "minSeats": 123,
                     "maxSeats": 136,
+                    "sumSeats": 259,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -178,6 +202,7 @@
                     "rooms_address": "2350 Health Sciences Mall",
                     "minSeats": 125,
                     "maxSeats": 350,
+                    "sumSeats": 825,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -185,6 +210,7 @@
                     "rooms_address": "2202 Main Mall",
                     "minSeats": 144,
                     "maxSeats": 144,
+                    "sumSeats": 144,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -192,6 +218,7 @@
                     "rooms_address": "1961 East Mall V6T 1Z1",
                     "minSeats": 154,
                     "maxSeats": 154,
+                    "sumSeats": 154,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -199,6 +226,7 @@
                     "rooms_address": "2177 Wesbrook Mall V6T 1Z3",
                     "minSeats": 160,
                     "maxSeats": 160,
+                    "sumSeats": 160,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -206,6 +234,7 @@
                     "rooms_address": "2405 Wesbrook Mall",
                     "minSeats": 167,
                     "maxSeats": 236,
+                    "sumSeats": 403,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -213,6 +242,7 @@
                     "rooms_address": "2175 West Mall V6T 1Z4",
                     "minSeats": 187,
                     "maxSeats": 190,
+                    "sumSeats": 755,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -220,6 +250,7 @@
                     "rooms_address": "1984 West Mall",
                     "minSeats": 225,
                     "maxSeats": 225,
+                    "sumSeats": 225,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -227,6 +258,7 @@
                     "rooms_address": "2125 Main Mall",
                     "minSeats": 280,
                     "maxSeats": 280,
+                    "sumSeats": 280,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -234,6 +266,7 @@
                     "rooms_address": "2045 East Mall",
                     "minSeats": 375,
                     "maxSeats": 375,
+                    "sumSeats": 375,
                     "rooms_type": "Tiered Large Group"
                 },
                 {
@@ -241,6 +274,7 @@
                     "rooms_address": "2260 West Mall, V6T 1Z4",
                     "minSeats": 426,
                     "maxSeats": 426,
+                    "sumSeats": 426,
                     "rooms_type": "Tiered Large Group"
                 }
             ]
