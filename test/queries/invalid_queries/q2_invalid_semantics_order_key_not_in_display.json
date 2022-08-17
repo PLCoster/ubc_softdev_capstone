@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Order Key Semantics: ORDER keys must be in DISPLAY (Instructor is grouped but not displayed)",
+    "query": "In courses dataset courses grouped by Department and Instructor, find all entries; show Department and countTitle, where countTitle is the COUNT of Title; sort in ascending order by Instructor.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

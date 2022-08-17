@@ -1,0 +1,10 @@
+{
+    "title": "Invalid APPLY Semantics: aggregation name is reserved string (dataset)",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and MAX, where MAX is the MAX of Average.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
