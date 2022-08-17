@@ -225,10 +225,10 @@ const rSortDirectionColRE = new RegExp(
 
 // RE for RESERVED strings (INPUT cannot be equal to any of these):
 const keywordRE =
-    /(In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose|grouped|where)/;
+    /(?:In|dataset|find|all|show|and|or|sort|by|entries|is|the|of|whose|grouped|where)/;
 
 export const reservedRE = new RegExp(
-    `^${keywordRE.source}$|^${numberOPRE.source}$|^${stringOPRE.source}$`,
+    `^${keywordRE.source}$|^${numberOPRE.source}$|^${stringOPRE.source}$|^(?:${aggOpRE.source})$`,
 );
 
 // Interface and implentations that contain relevant RegExs for Course/Room queries
