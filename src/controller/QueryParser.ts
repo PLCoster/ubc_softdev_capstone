@@ -439,15 +439,6 @@ export default class QueryParser {
                     );
                 }
             });
-
-            // !!! All defined Apply columns should be displayed (?) otherwise throw an error:
-            aggColNames.forEach((colName: string) => {
-                if (!queryAST.display.includes(colName)) {
-                    return this.rejectQuery(
-                        `Invalid APPLY semantics - ${colName} is defined in APPLY but not in DISPLAY`,
-                    );
-                }
-            });
         }
 
         return true;
