@@ -301,8 +301,6 @@ export default class QueryParser {
         const applyDetails: InsightQueryASTApplyObject[] = [];
 
         // Extract the agg name, operation and key:
-        // !!!NOTE: perhaps should check if aggName is in DISPLAY or not? (UI does not check for this, no error)
-        // !!!Also could double check that Operation it Appropriate for ColName e.g. AVG cannot apply to 'Title'
         aggregators.forEach((aggStr) => {
             const aggMatchObject = aggStr.match(querySectionREs.aggNameOpColRE);
 
@@ -324,9 +322,16 @@ export default class QueryParser {
                 );
             }
 
-            // !!! Check here for AGG semantics using aggType
             const { Aggregator, aggType } =
                 queryAggNameToIAggregatorInfo[aggOp as InsightAggregatorKind];
+
+            // Confirm that aggregation type matches column type:
+            const colTypeRE = querySectionREs.colTypeREs[aggType];
+            if (!colTypeRE.test(aggCol)) {
+                this.rejectQuery(
+                    `Aggregator ${aggName} cannot be used with ${aggType} column ${aggCol}`,
+                );
+            }
 
             aggNames.add(aggName);
             applyDetails.push({
@@ -431,6 +436,15 @@ export default class QueryParser {
                 ) {
                     return this.rejectQuery(
                         `Invalid DISPLAY semantics when GROUPING - ${colName} not in GROUPBY or AGG`,
+                    );
+                }
+            });
+
+            // !!! All defined Apply columns should be displayed (?) otherwise throw an error:
+            aggColNames.forEach((colName: string) => {
+                if (!queryAST.display.includes(colName)) {
+                    return this.rejectQuery(
+                        `Invalid APPLY semantics - ${colName} is defined in APPLY but not in DISPLAY`,
                     );
                 }
             });

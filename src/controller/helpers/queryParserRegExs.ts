@@ -239,6 +239,7 @@ export interface QuerySectionREs {
     filterDetailRE: RegExp;
     aggNameOpColRE: RegExp;
     sortDirectionColRE: RegExp;
+    colTypeREs: { all: RegExp; numeric: RegExp };
 }
 
 export const courseQuerySectionREs: QuerySectionREs = {
@@ -248,6 +249,10 @@ export const courseQuerySectionREs: QuerySectionREs = {
     filterDetailRE: cFilterDetailsRE,
     aggNameOpColRE: cAggNameOpColRE,
     sortDirectionColRE: cSortDirectionColRE,
+    colTypeREs: {
+        all: new RegExp(`^${cColNameRE.source}$`),
+        numeric: new RegExp(`^${cNumColRE.source}$`),
+    },
 };
 
 export const roomsQuerySectionREs: QuerySectionREs = {
@@ -257,4 +262,8 @@ export const roomsQuerySectionREs: QuerySectionREs = {
     filterDetailRE: rFilterDetailsRE,
     aggNameOpColRE: rAggNameOpColRE,
     sortDirectionColRE: rSortDirectionColRE,
+    colTypeREs: {
+        all: new RegExp(`^${rColNameRE.source}$`),
+        numeric: new RegExp(`^${rNumColRE.source}$`),
+    },
 };

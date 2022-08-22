@@ -322,6 +322,28 @@ describe("QueryParser Tests", function () {
         }
     });
 
+    it("parseQuery: Throws error when apply column is specified, but not in display (MAX)", () => {
+        const queryDatasetGroupBy =
+            "In courses dataset courses grouped by Department";
+        const queryApply = "where MAX is the MAX of Average";
+        const query = `${queryDatasetGroupBy}, find all entries; show Department, ${queryApply}.`;
+
+        const errMessage =
+            "Invalid APPLY semantics - MAX is defined in APPLY but not in DISPLAY";
+        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+
+        let actualAST;
+        let errorMessage;
+        try {
+            actualAST = queryParser.parseQuery(query);
+        } catch (err) {
+            errorMessage = err.message;
+        } finally {
+            expect(errorMessage).to.equal(expectedErr);
+            expect(actualAST).to.equal(undefined);
+        }
+    });
+
     it("parseQuery: Parses simple query (SELECT audit FROM courses)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit.";
