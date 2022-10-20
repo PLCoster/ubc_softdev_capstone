@@ -51,7 +51,7 @@
     "dependencies": {
         "decimal.js": "9.0.1",
         "dotenv": "4.0.0",
-        "jszip": "3.5.0",
+        "jszip": "^3.5.0",
         "parse5": "5.0.0",
         "restify": "^4.3.X"
     },
@@ -60,7 +60,8 @@
         "clean": "rm -rf ./node_modules/; rm -f .yarnclean",
         "lint": "eslint ./src ./test --ext .ts --no-eslintrc -c ./.eslintrc.js",
         "build": "tsc && yarn lint",
-        "test": "mocha --require ts-node/register --timeout 10000",
-        "summary": "mocha --require ts-node/register --timeout 10000 -R dot"
+        "test": "mocha --require ts-node/register --timeout 100000",
+        "test:frontend": "karma start",
+        "start": "node src/App.js"
     }
 }
