@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Order Syntax - missing column name to order by",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by .",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

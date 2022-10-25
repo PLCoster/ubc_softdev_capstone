@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Order Syntax - multiple identical sort column names",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by Audit, Audit and Audit.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

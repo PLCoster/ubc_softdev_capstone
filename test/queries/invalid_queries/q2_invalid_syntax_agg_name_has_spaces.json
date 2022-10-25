@@ -1,0 +1,10 @@
+{
+    "title": "Invalid APPLY Semantics: aggregation name contains a space (max grade)",
+    "query": "In courses dataset courses grouped by Department, find all entries; show Department and max grade, where max grade is the MAX of Average.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}

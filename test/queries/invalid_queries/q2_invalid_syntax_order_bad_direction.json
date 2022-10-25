@@ -1,0 +1,10 @@
+{
+    "title": "Invalid Order Syntax - 'reverse' is not valid order direction, should be 'descending'",
+    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in reverse order by Audit.",
+    "response": {
+        "code": 400,
+        "body": {
+            "error": ""
+        }
+    }
+}
