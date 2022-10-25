@@ -226,10 +226,14 @@ export default class QueryParser {
                 }
 
                 // DISPLAY Section can contain allowed APPLY aggregator names
-                if (colName.includes("_") || reservedRE.test(colName)) {
+                if (
+                    colName.includes("_") ||
+                    colName.includes(" ") ||
+                    reservedRE.test(colName)
+                ) {
                     // Invalid APPLY column name
                     this.rejectQuery(
-                        `APPLY column names must not contain "_" or RESERVED, found ${colName}`,
+                        `APPLY column names must not contain "_", " " or RESERVED, found ${colName}`,
                     );
                 }
                 sectionCols.add(colName);
@@ -272,18 +276,36 @@ export default class QueryParser {
                 if (querySectionREs.colNameRE.test(colName)) {
                     return `${id}_${queryColNameStrToKeyStr[colName]}`;
                 } else {
+                    // Custom Aggregator Name for Ordering
+                    if (
+                        colName.includes("_") ||
+                        colName.includes(" ") ||
+                        reservedRE.test(colName)
+                    ) {
+                        // Invalid APPLY column name
+                        this.rejectQuery(
+                            `APPLY column names must not contain "_", " " or RESERVED, found ${colName} in ORDER`,
+                        );
+                    }
                     return colName;
                 }
             },
         );
 
         // Check query semantics - we can only sort by a key that is being displayed:
+        // !!! We should not have multiple identical order keys (? Not in UI SPEC)
+        const orderKeySet = new Set<string>();
         orderKeys.forEach((orderKey) => {
             if (!displayKeys.includes(orderKey)) {
                 this.rejectQuery(
                     `Invalid ORDER semantics - column ${orderKey} not selected in DISPLAY`,
                 );
+            } else if (orderKeySet.has(orderKey)) {
+                this.rejectQuery(
+                    `Invalid ORDER semantics - ordering by column ${orderKey} multiple times`,
+                );
             }
+            orderKeySet.add(orderKey);
         });
 
         return { direction: ordering, keys: orderKeys };
