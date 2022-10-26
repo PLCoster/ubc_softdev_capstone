@@ -6,9 +6,12 @@ import { expect } from "chai";
 import Server from "../src/rest/Server";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
+import { nextTick } from "process";
+import { assert } from "console";
 
 describe("Server Tests", function () {
-    let facade: InsightFacade = null;
+    // let facade: InsightFacade = null;
+    const SERVER_URL = "http://localhost:4321";
     let server: Server = null;
 
     chai.use(chaiHttp);
@@ -16,7 +19,7 @@ describe("Server Tests", function () {
     before(async function () {
         Log.test(`Before: ${this.test.parent.title}`);
 
-        facade = new InsightFacade();
+        // facade = new InsightFacade();
         server = new Server(4321);
 
         try {
@@ -34,12 +37,48 @@ describe("Server Tests", function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
     });
 
-    after(function () {
+    after(async function () {
         Log.test(`After: ${this.test.parent.title}`);
+
+        try {
+            await server.stop();
+            Log.test(`Server closed after running Server tests`);
+        } catch (err) {
+            Log.error(`ERROR WHEN TRYING TO STOP SERVER AFTER TESTING: ${err}`);
+        }
     });
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    it("GET /echo/:msg -> Returns Echo of Sent Message", function () {
+        const message = "hello world";
+        const expectedResponse = { result: `${message}...${message}` };
+
+        return chai
+            .request(SERVER_URL)
+            .get(`/echo/${message}`)
+            .then((res) => {
+                Log.test("Received Server Response");
+                expect(res.status).to.equal(
+                    200,
+                    "Response status should be 200",
+                );
+                expect(res.type).to.equal(
+                    "application/json",
+                    "Response body type should be JSON",
+                );
+
+                expect(res.body).to.deep.equal(
+                    expectedResponse,
+                    "Response body should have result key with echo message",
+                );
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(err);
+            });
     });
 
     // Sample on how to format PUT requests
