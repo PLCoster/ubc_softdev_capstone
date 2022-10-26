@@ -26,6 +26,11 @@ export default class InsightFacade implements IInsightFacade {
         this.datasetQuerier = new DatasetQuerier();
     }
 
+    // Initialise the UBC Insight System - Loading any Stored datasets from disk
+    public initialise(): Promise<boolean> {
+        return this.datasetLoader.loadDatasetsFromDisk();
+    }
+
     public addDataset(
         id: string,
         content: string,
