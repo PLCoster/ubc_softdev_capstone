@@ -1,34 +1,45 @@
-import Server from "../src/rest/Server";
-
-import InsightFacade from "../src/controller/InsightFacade";
 import chai = require("chai");
 import chaiHttp = require("chai-http");
 import Response = ChaiHttp.Response;
-import {expect} from "chai";
+import { expect } from "chai";
 
-describe("Facade D3", function () {
+import Server from "../src/rest/Server";
+import InsightFacade from "../src/controller/InsightFacade";
+import Log from "../src/Util";
 
+describe("Server Tests", function () {
     let facade: InsightFacade = null;
     let server: Server = null;
 
     chai.use(chaiHttp);
 
-    before(function () {
+    before(async function () {
+        Log.test(`Before: ${this.test.parent.title}`);
+
         facade = new InsightFacade();
         server = new Server(4321);
-        // TODO: start server here once and handle errors properly
-    });
 
-    after(function () {
-        // TODO: stop server here once!
+        try {
+            await server.start();
+        } catch (err) {
+            const errMessage = `Error in before hook when trying to start server: ${JSON.stringify(
+                err,
+            )}`;
+            Log.error(errMessage);
+            expect.fail(errMessage);
+        }
     });
 
     beforeEach(function () {
-        // might want to add some process logging here to keep track of what"s going on
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
+    });
+
+    after(function () {
+        Log.test(`After: ${this.test.parent.title}`);
     });
 
     afterEach(function () {
-        // might want to add some process logging here to keep track of what"s going on
+        Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
     // Sample on how to format PUT requests
