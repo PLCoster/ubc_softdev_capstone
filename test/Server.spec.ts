@@ -76,6 +76,8 @@ describe("Server Tests", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
+    // ECHO ROUTE TESTS
+
     it("GET /echo/:msg -> Returns Echo of Sent Message", function () {
         const message = "hello world";
         const expectedResponse = { result: `${message}...${message}` };
@@ -84,13 +86,13 @@ describe("Server Tests", function () {
             .request(SERVER_URL)
             .get(`/echo/${message}`)
             .then((res: Response) => {
+                Log.test(
+                    `Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+
                 expect(res.status).to.equal(
                     200,
                     "Response status should be 200",
-                );
-                expect(res.type).to.equal(
-                    "application/json",
-                    "Response body type should be JSON",
                 );
 
                 expect(res.body).to.deep.equal(
@@ -100,70 +102,545 @@ describe("Server Tests", function () {
             })
             .catch((err) => {
                 Log.error(`ERROR: ${err}`);
-                expect.fail(err);
+                expect.fail(JSON.stringify(err));
             });
     });
 
-    it("PUT /dataset/:id/:kind -> Loads a valid courses dataset, if ID not already loaded", function () {
-        const id = "courses";
+    // PUT ROUTE TESTS
+
+    it("PUT /dataset/:id/:kind with invalid dataset id (underscore) -> returns 400 and error", function () {
+        const id = "bad_courses_id";
         const kind = "courses";
         const filePath = "./test/data/courses/courses.zip";
-        Log.trace(`${__dirname}`);
-
-        const expectedResponse: InsightResponseSuccessBody = {
-            result: [id, kind, 100],
-        };
 
         return TestUtil.readFileAsync(filePath)
             .then((fileBuffer) => {
                 return chai
                     .request(SERVER_URL)
-                    .put(`/dataset/courses/courses`)
+                    .put(`/dataset/${id}/${kind}`)
                     .send(fileBuffer)
-                    .set("Content-Type", "application/x-zip-compressed");
-            })
-            .then((res: Response) => {
-                expect(res.status).to.equal(
-                    204,
-                    "Response status should be 204",
-                );
-                expect(res.type).to.equal(
-                    "application/json",
-                    "Response body type should be JSON",
-                );
-
-                expect(res.body).to.deep.equal(
-                    expectedResponse,
-                    "Response body should have result key with data about successfully loaded dataset",
-                );
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
             })
             .catch((err) => {
                 Log.error(`ERROR: ${err}`);
-                expect.fail(err);
+                expect.fail(JSON.stringify(err));
             });
     });
 
-    // Sample on how to format PUT requests
-    /*
-    it("PUT test for courses dataset", function () {
-        try {
-            return chai.request(SERVER_URL)
-                .put(ENDPOINT_URL)
-                .send(ZIP_FILE_DATA)
-                .set("Content-Type", "application/x-zip-compressed")
-                .then(function (res: Response) {
-                    // some logging here please!
-                    expect(res.status).to.be.equal(204);
-                })
-                .catch(function (err) {
-                    // some logging here please!
-                    expect.fail();
-                });
-        } catch (err) {
-            // and some more logging here!
-        }
-    });
-    */
+    it("PUT /dataset/:id/:kind with invalid dataset id (spaces) -> returns 400 and error", function () {
+        const id = "bad courses id";
+        const kind = "courses";
+        const filePath = "./test/data/courses/courses.zip";
 
-    // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with invalid dataset id (reserved) -> returns 400 and error", function () {
+        const id = "dataset";
+        const kind = "courses";
+        const filePath = "./test/data/courses/courses.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with invalid dataset kind -> returns 400 and error", function () {
+        const id = "courses";
+        const kind = "invalidKIND";
+        const filePath = "./test/data/courses/courses.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with no dataset body -> returns 400 and error", function () {
+        const id = "courses";
+        const kind = "courses";
+
+        return chai
+            .request(SERVER_URL)
+            .put(`/dataset/${id}/${kind}`)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                expect.fail("Response should have bad request status code");
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                expect(errRes.status).to.equal(400);
+                expect(errRes.response.body).to.have.property("error");
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with empty courses dataset -> returns 400 and error", function () {
+        const id = "courses";
+        const kind = "courses";
+        const filePath = "./test/data/courses/empty.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with empty rooms dataset -> returns 400 and error", function () {
+        const id = "rooms";
+        const kind = "rooms";
+        const filePath = "./test/data/rooms/empty.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with invalid courses dataset format -> returns 400 and error", function () {
+        const id = "courses";
+        const kind = "courses";
+        const filePath = "./test/data/courses/invalid_format.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with courses DS, kind = rooms -> returns 400 and error", function () {
+        const id = "courses";
+        const kind = "rooms";
+        const filePath = "./test/data/courses/courses.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with rooms DS, kind = courses -> returns 400 and error", function () {
+        const id = "rooms";
+        const kind = "courses";
+        const filePath = "./test/data/rooms/rooms.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with valid courses dataset, kind and id -> returns 204", function () {
+        const id = "courses";
+        const kind = "courses";
+        const filePath = "./test/data/courses/courses.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect(res.status).to.equal(
+                            204,
+                            "Response status should be 204",
+                        );
+                        // 204 Response Code Treated as having no body by Restify, no data sent to client
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect.fail("The request should be successful");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with another valid courses dataset, kind and unique id -> returns 204", function () {
+        const id = "coursesTwoEntries";
+        const kind = "courses";
+        const filePath = "./test/data/courses/two_entries.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect(res.status).to.equal(
+                            204,
+                            "Response status should be 204",
+                        );
+                        // 204 Response Code Treated as having no body by Restify, no data sent to client
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect.fail("The request should be successful");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with a valid courses dataset, kind but previously used id -> returns 400", function () {
+        const id = "courses";
+        const kind = "courses";
+        const filePath = "./test/data/courses/courses_large.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with a valid rooms dataset, kind but previously used id -> returns 400", function () {
+        const id = "courses";
+        const kind = "rooms";
+        const filePath = "./test/data/rooms/two_rooms.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect.fail(
+                            "Response should have bad request status code",
+                        );
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect(errRes.status).to.equal(400);
+                        expect(errRes.response.body).to.have.property("error");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with a valid rooms dataset, kind and unique id -> returns 204", function () {
+        const id = "rooms";
+        const kind = "rooms";
+        const filePath = "./test/data/rooms/rooms.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect(res.status).to.equal(
+                            204,
+                            "Response status should be 204",
+                        );
+                        // 204 Response Code Treated as having no body by Restify, no data sent to client
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect.fail("The request should be successful");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
+
+    it("PUT /dataset/:id/:kind with another valid rooms dataset, kind and unique id -> returns 204", function () {
+        const id = "roomsTwoEntries";
+        const kind = "rooms";
+        const filePath = "./test/data/rooms/two_rooms.zip";
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/${id}/${kind}`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed")
+                    .then((res: Response) => {
+                        Log.test(
+                            `Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                        );
+                        expect(res.status).to.equal(
+                            204,
+                            "Response status should be 204",
+                        );
+                        // 204 Response Code Treated as having no body by Restify, no data sent to client
+                    })
+                    .catch((errRes) => {
+                        Log.test(
+                            `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                        );
+                        expect.fail("The request should be successful");
+                    });
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(JSON.stringify(err));
+            });
+    });
 });
