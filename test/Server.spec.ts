@@ -1,13 +1,19 @@
+import { promises as fs } from "fs";
 import chai = require("chai");
 import chaiHttp = require("chai-http");
-import Response = ChaiHttp.Response;
 import { expect } from "chai";
 
+import Response = ChaiHttp.Response;
+
+import {
+    InsightResponseSuccessBody,
+    InsightResponseErrorBody,
+} from "../src/controller/IInsightFacade";
+
 import Server from "../src/rest/Server";
-import InsightFacade from "../src/controller/InsightFacade";
+import { CACHE_PATH } from "../src/controller/DatasetLoader";
 import Log from "../src/Util";
-import { nextTick } from "process";
-import { assert } from "console";
+import TestUtil from "./TestUtil";
 
 describe("Server Tests", function () {
     // let facade: InsightFacade = null;
@@ -22,6 +28,24 @@ describe("Server Tests", function () {
         // facade = new InsightFacade();
         server = new Server(4321);
 
+        // Check if caching directory exists, delete it if it does:
+        try {
+            await fs.access(CACHE_PATH);
+            Log.trace("Deleting Dataset Cache Prior to Server Tests");
+            await fs.rmdir(CACHE_PATH, { recursive: true }).catch((err) => {
+                const errMessage = `ERROR WHEN TRYING TO DELETE EXISTING CACHE PRIOR TO TESTING: ${err}`;
+                Log.error(errMessage);
+                expect.fail(errMessage);
+            });
+            Log.trace("Dataset Cache Deleted");
+        } catch (err) {
+            // fs.access throws an error if directory does not exist
+            Log.trace(
+                "Confirmed DatasetLoader Cache is Empty Before Running Tests",
+            );
+        }
+
+        // Start up the Server
         try {
             await server.start();
         } catch (err) {
@@ -59,8 +83,7 @@ describe("Server Tests", function () {
         return chai
             .request(SERVER_URL)
             .get(`/echo/${message}`)
-            .then((res) => {
-                Log.test("Received Server Response");
+            .then((res: Response) => {
                 expect(res.status).to.equal(
                     200,
                     "Response status should be 200",
@@ -73,6 +96,45 @@ describe("Server Tests", function () {
                 expect(res.body).to.deep.equal(
                     expectedResponse,
                     "Response body should have result key with echo message",
+                );
+            })
+            .catch((err) => {
+                Log.error(`ERROR: ${err}`);
+                expect.fail(err);
+            });
+    });
+
+    it("PUT /dataset/:id/:kind -> Loads a valid courses dataset, if ID not already loaded", function () {
+        const id = "courses";
+        const kind = "courses";
+        const filePath = "./test/data/courses/courses.zip";
+        Log.trace(`${__dirname}`);
+
+        const expectedResponse: InsightResponseSuccessBody = {
+            result: [id, kind, 100],
+        };
+
+        return TestUtil.readFileAsync(filePath)
+            .then((fileBuffer) => {
+                return chai
+                    .request(SERVER_URL)
+                    .put(`/dataset/courses/courses`)
+                    .send(fileBuffer)
+                    .set("Content-Type", "application/x-zip-compressed");
+            })
+            .then((res: Response) => {
+                expect(res.status).to.equal(
+                    204,
+                    "Response status should be 204",
+                );
+                expect(res.type).to.equal(
+                    "application/json",
+                    "Response body type should be JSON",
+                );
+
+                expect(res.body).to.deep.equal(
+                    expectedResponse,
+                    "Response body should have result key with data about successfully loaded dataset",
                 );
             })
             .catch((err) => {
