@@ -50,12 +50,15 @@ const roomAttrNameToQueryKeyTranslator: {
     number: ["number", identity],
     shortname_number: ["name", identity],
     address: ["address", identity],
-    // !!! lat and lon fields to be added
+    // lat and lon fields are handled via API / caching
     seats: ["seats", parseFloat],
     type: ["type", identity],
     furniture: ["furniture", identity],
     link: ["href", identity],
 };
+
+// Path to store cached datasets after loading
+export const CACHE_PATH = path.join(__dirname, "../../.cache/");
 
 /**
  * Class responsible for loading, storing, saving to disk and deleting InsightFacade Datasets
@@ -70,53 +73,55 @@ export default class DatasetLoader {
         Log.trace("DatasetLoader::init()");
         this.loadedInsightDatasets = {};
         this.datasets = {};
-        this.cachePath = path.join(__dirname, "../../.cache/");
+        this.cachePath = CACHE_PATH;
         this.buildingGeoData = {};
     }
 
     // Loads any previously cached datasets from disk into memory, for querying
     public loadDatasetsFromDisk(): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            if (!this.initialiseCache) {
-                // Cache did not exist on disk, no cached datasets to load
-                return resolve(true);
-            }
+            this.initialiseCache().then((existingCache) => {
+                if (!existingCache) {
+                    Log.trace("DatasetLoader::No Cached Datasets to be Loaded");
+                    return resolve(true);
+                } else {
+                    // Otherwise need to load cached datasets from disk
+                    fs.readdir(this.cachePath).then((files: string[]) => {
+                        // !!! Add error handling if loading a file fails for some reason??
+                        // Could delete the offending file and try again
+                        return Promise.all(
+                            files.map((fileName) =>
+                                fs.readFile(this.cachePath + fileName, "utf-8"),
+                            ),
+                        )
+                            .then((datasetJSONS: string[]) => {
+                                // Load datasets into memory for querying:
+                                datasetJSONS.forEach((dataJSON: string) => {
+                                    const { id, kind, numRows, data } =
+                                        JSON.parse(dataJSON);
 
-            // Otherwise need to load cached datasets from disk
-            fs.readdir(this.cachePath).then((files: string[]) => {
-                // !!! Add error handling if loading a file fails for some reason??
-                // Could delete the offending file and try again
-                return Promise.all(
-                    files.map((fileName) =>
-                        fs.readFile(this.cachePath + fileName, "utf-8"),
-                    ),
-                )
-                    .then((datasetJSONS: string[]) => {
-                        // Load datasets into memory for querying:
-                        datasetJSONS.forEach((dataJSON: string) => {
-                            const { id, kind, numRows, data } =
-                                JSON.parse(dataJSON);
+                                    this.loadedInsightDatasets[id] = {
+                                        id,
+                                        kind,
+                                        numRows,
+                                    };
+                                    this.datasets[id] = data;
+                                });
 
-                            this.loadedInsightDatasets[id] = {
-                                id,
-                                kind,
-                                numRows,
-                            };
-                            this.datasets[id] = data;
-                        });
+                                Log.trace(
+                                    "DatasetLoader::Loaded all Cached Datasets from Disk",
+                                );
 
-                        Log.trace(
-                            "DatasetLoader::Loaded all Cached Datasets from Disk",
-                        );
-
-                        return resolve(true);
-                    })
-                    .catch((err) => {
-                        Log.trace(
-                            `ERROR WHEN LOADING DATASET(S) FROM DISK: ${err}`,
-                        );
-                        reject(false);
+                                return resolve(true);
+                            })
+                            .catch((err) => {
+                                Log.trace(
+                                    `ERROR WHEN LOADING DATASET(S) FROM DISK: ${err}`,
+                                );
+                                reject(false);
+                            });
                     });
+                }
             });
         });
     }
