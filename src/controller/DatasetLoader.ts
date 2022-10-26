@@ -57,6 +57,9 @@ const roomAttrNameToQueryKeyTranslator: {
     link: ["href", identity],
 };
 
+/**
+ * Class responsible for loading, storing, saving to disk and deleting InsightFacade Datasets
+ */
 export default class DatasetLoader {
     private loadedInsightDatasets: { [key: string]: InsightDataset };
     private datasets: { [key: string]: InsightCourseDataObject[] };
@@ -71,6 +74,54 @@ export default class DatasetLoader {
         this.buildingGeoData = {};
     }
 
+    // Loads any previously cached datasets from disk into memory, for querying
+    public loadDatasetsFromDisk(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if (!this.initialiseCache) {
+                // Cache did not exist on disk, no cached datasets to load
+                return resolve(true);
+            }
+
+            // Otherwise need to load cached datasets from disk
+            fs.readdir(this.cachePath).then((files: string[]) => {
+                // !!! Add error handling if loading a file fails for some reason??
+                // Could delete the offending file and try again
+                return Promise.all(
+                    files.map((fileName) =>
+                        fs.readFile(this.cachePath + fileName, "utf-8"),
+                    ),
+                )
+                    .then((datasetJSONS: string[]) => {
+                        // Load datasets into memory for querying:
+                        datasetJSONS.forEach((dataJSON: string) => {
+                            const { id, kind, numRows, data } =
+                                JSON.parse(dataJSON);
+
+                            this.loadedInsightDatasets[id] = {
+                                id,
+                                kind,
+                                numRows,
+                            };
+                            this.datasets[id] = data;
+                        });
+
+                        Log.trace(
+                            "DatasetLoader::Loaded all Cached Datasets from Disk",
+                        );
+
+                        return resolve(true);
+                    })
+                    .catch((err) => {
+                        Log.trace(
+                            `ERROR WHEN LOADING DATASET(S) FROM DISK: ${err}`,
+                        );
+                        reject(false);
+                    });
+            });
+        });
+    }
+
+    // Load a Single Dataset from Base64 Encoded Zip File, Cache it on Disk and Store in Memory for Queries
     public loadDataset(
         id: string,
         content: string,
@@ -110,18 +161,16 @@ export default class DatasetLoader {
                 );
 
                 // Cache dataset to disk
-                try {
-                    // Check if cacheing directory exists:
-                    await fs.access(this.cachePath);
-                } catch (err) {
-                    // Error is thrown if cache directory does not exist
-                    await fs.mkdir(this.cachePath);
-                } finally {
-                    await fs.writeFile(
-                        path.join(this.cachePath, `${id}.json`),
-                        JSON.stringify(processedData),
-                    );
-                }
+                await this.initialiseCache();
+                await fs.writeFile(
+                    path.join(this.cachePath, `${id}.json`),
+                    JSON.stringify({
+                        id,
+                        kind,
+                        numRows: processedData.length,
+                        data: processedData,
+                    }),
+                );
 
                 // Return success response including dataset info
                 return resolve({
@@ -142,7 +191,7 @@ export default class DatasetLoader {
         });
     }
 
-    // Deletes a given dataset if it is loaded, otherwise returns an error
+    // Deletes a given dataset (in memory and on disk) if it is loaded, otherwise returns an error
     public deleteDataset(id: string): Promise<InsightResponse> {
         return new Promise(async (resolve, reject) => {
             if (this.loadedInsightDatasets.hasOwnProperty(id)) {
@@ -216,6 +265,21 @@ export default class DatasetLoader {
     // Returns the path to the cached datasets directory
     public getCachePath(): string {
         return this.cachePath;
+    }
+
+    // Determines if the Dataset Cache directory already exists on disk, if not then creates it
+    private async initialiseCache(): Promise<boolean> {
+        let cachedDatasets = true;
+        try {
+            // Check if cacheing directory exists:
+            await fs.access(this.cachePath);
+        } catch (err) {
+            // Error is thrown if cache directory does not exist
+            cachedDatasets = false;
+            await fs.mkdir(this.cachePath);
+        }
+
+        return cachedDatasets;
     }
 
     // Check that dataset kind is valid
