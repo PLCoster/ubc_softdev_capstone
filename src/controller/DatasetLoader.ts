@@ -11,6 +11,7 @@ import {
     InsightCourseDataObject,
 } from "./IInsightFacade";
 
+import { reservedRE } from "./helpers/queryParserRegExs";
 import Log from "../Util";
 
 // Interface types for parse5 processed XML AST
@@ -297,8 +298,14 @@ export default class DatasetLoader {
     }
 
     // Check that dataset id is valid and not already loaded
+    // Valid ids cannot contain underscores, spaces or equal to RESERVED strings
     private validateDatasetId(id: string) {
-        if (!id) {
+        if (
+            !id ||
+            id.includes("_") ||
+            id.includes(" ") ||
+            reservedRE.test(id)
+        ) {
             throw new Error(
                 `DatasetLoader.loadDataset ERROR: Invalid Dataset Id Given: ${id}`,
             );
