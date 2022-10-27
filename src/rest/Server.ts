@@ -85,6 +85,7 @@ export default class Server {
                     that.rest.get("/echo/:msg", Server.echo);
 
                     // API Endpoints
+                    that.rest.get("/datasets", Server.getLoadedDatasets);
                     that.rest.put("/dataset/:id/:kind", Server.loadDataset);
 
                     // This must be the last endpoint!
@@ -110,6 +111,30 @@ export default class Server {
                 }
             });
         });
+    }
+
+    // Handles GET requests to /datasets
+    // Returns list of loaded dataset names
+    private static getLoadedDatasets(
+        req: restify.Request,
+        res: restify.Response,
+        next: restify.Next,
+    ) {
+        Log.info("Server::getLoadedDatasets");
+
+        Server.insightFacade
+            .listDatasets()
+            .then((result: InsightResponse) => {
+                Log.info(
+                    `Server::listDatasets successful - responding ${result.code}`,
+                );
+                res.send(result.code, result.body);
+            })
+            .catch((err) => {
+                Log.error(`ERROR in Server.getLoadedDatasets: ${err}`);
+                res.send(500);
+            })
+            .finally(() => next());
     }
 
     // Handles PUT requests to /dataset/:id/:kind
@@ -140,9 +165,7 @@ export default class Server {
                 );
                 res.send(result.code, result.body);
             })
-            .finally(() => {
-                return next();
-            });
+            .finally(() => next());
     }
 
     // The next two methods handle the echo service.
