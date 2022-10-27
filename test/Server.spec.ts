@@ -695,4 +695,154 @@ describe("Server Tests", function () {
                 expect.fail("GET /datasets should have a successful response");
             });
     });
+
+    // DELETE DATASET(S) (DELETE) ROUTE TESTS
+    it("DELETE /dataset/:id with non-existent id -> returns 404", function () {
+        const id = "nonExistentID";
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .del(`/dataset/${id}`)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    404,
+                    "Expect response status to be 404",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    it("DELETE /dataset/:id with loaded courses dataset id -> deletes dataset and returns 204", function () {
+        const id = "coursesTwoEntries";
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .del(`/dataset/${id}`)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    204,
+                    "Expect response status to be 204",
+                );
+                // 204 status response does not receive body
+            });
+    });
+
+    it("DELETE /dataset/:id with id that has been deleted -> returns 404", function () {
+        const id = "coursesTwoEntries";
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .del(`/dataset/${id}`)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    404,
+                    "Expect response status to be 404",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    it("DELETE /dataset/:id with loaded rooms dataset id -> deletes dataset and returns 204", function () {
+        const id = "roomsTwoEntries";
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .del(`/dataset/${id}`)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    204,
+                    "Expect response status to be 204",
+                );
+                // 204 status response does not receive body
+            });
+    });
+
+    // DATASETS AVAILABLE (GET) ROUTE TEST AFTER DELETING 2 DATASETS (2 Remaining)
+    it("GET /datasets after adding 4 datasets -> returns 200 and list of datasets", function () {
+        const expectedBody: InsightResponseSuccessBody = {
+            result: [
+                { id: "courses", kind: "courses", numRows: 49044 },
+                { id: "rooms", kind: "rooms", numRows: 284 },
+            ],
+        };
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .get("/datasets")
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    200,
+                    "Response should have success (200) status code",
+                );
+                expect(response.type).to.equal("application/json");
+                expect(response.body).to.deep.equal(expectedBody);
+            });
+    });
 });
