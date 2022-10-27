@@ -696,6 +696,71 @@ describe("Server Tests", function () {
             });
     });
 
+    // QUERY DATASETS (POST) ROUTE TESTS
+    it("POST /query with valid query on loaded dataset -> returns 200 and query result", function () {
+        const kind = "courses";
+        const id = "coursesTwoEntries";
+        const dataset = `In ${kind} dataset ${id}, `;
+        const filter = "find all entries; ";
+        const display =
+            "show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.";
+
+        const queryString = dataset + filter + display;
+        const expectedResult = [
+            {
+                coursesTwoEntries_audit: 0,
+                coursesTwoEntries_avg: 86.65,
+                coursesTwoEntries_dept: "adhe",
+                coursesTwoEntries_fail: 0,
+                coursesTwoEntries_id: "327",
+                coursesTwoEntries_instructor: "smulders, dave",
+                coursesTwoEntries_pass: 23,
+                coursesTwoEntries_title: "teach adult",
+                coursesTwoEntries_uuid: "17255",
+                coursesTwoEntries_year: 2010,
+            },
+            {
+                coursesTwoEntries_audit: 10,
+                coursesTwoEntries_avg: 80.13,
+                coursesTwoEntries_dept: "phar",
+                coursesTwoEntries_fail: 25,
+                coursesTwoEntries_id: "454",
+                coursesTwoEntries_instructor: "carr, roxane",
+                coursesTwoEntries_pass: 221,
+                coursesTwoEntries_title: "ped geri drg thp",
+                coursesTwoEntries_uuid: "83080",
+                coursesTwoEntries_year: 2014,
+            },
+        ];
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryString)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    200,
+                    "Expect response status to be 200",
+                );
+                expect(response.body).to.have.property("result");
+                Log.info(JSON.stringify(response.body));
+                expect(response.body.result).to.deep.equal(expectedResult);
+            });
+    });
+
     // DELETE DATASET(S) (DELETE) ROUTE TESTS
     it("DELETE /dataset/:id with non-existent id -> returns 404", function () {
         const id = "nonExistentID";
