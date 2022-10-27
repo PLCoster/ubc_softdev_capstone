@@ -87,6 +87,7 @@ export default class Server {
                     // API Endpoints
                     that.rest.get("/datasets", Server.getLoadedDatasets);
                     that.rest.put("/dataset/:id/:kind", Server.loadDataset);
+                    that.rest.del("/dataset/:id", Server.deleteDatasetByID);
 
                     // This must be the last endpoint!
                     that.rest.get("/.*", Server.getStatic);
@@ -162,6 +163,32 @@ export default class Server {
             .catch((result: InsightResponse) => {
                 Log.info(
                     `Server::loadDataset failed - responding ${result.code}`,
+                );
+                res.send(result.code, result.body);
+            })
+            .finally(() => next());
+    }
+
+    // Handles DELETE requests to /dataset/:id
+    // Deletes dataset of corresponding id if it exists in InsightFacade
+    private static deleteDatasetByID(
+        req: restify.Request,
+        res: restify.Response,
+        next: restify.Next,
+    ) {
+        const { id } = req.params;
+
+        Server.insightFacade
+            .removeDataset(id)
+            .then((result: InsightResponse) => {
+                Log.info(
+                    `Server::deleteDatasetByID successful - responding ${result.code}`,
+                );
+                res.send(result.code, result.body);
+            })
+            .catch((result: InsightResponse) => {
+                Log.info(
+                    `Server::deleteDatasetByID failed - responding ${result.code}`,
                 );
                 res.send(result.code, result.body);
             })
