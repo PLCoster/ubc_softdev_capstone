@@ -87,6 +87,7 @@ export default class Server {
                     // API Endpoints
                     that.rest.get("/datasets", Server.getLoadedDatasets);
                     that.rest.put("/dataset/:id/:kind", Server.loadDataset);
+                    that.rest.post("/query", Server.queryDataset);
                     that.rest.del("/dataset/:id", Server.deleteDatasetByID);
 
                     // This must be the last endpoint!
@@ -159,6 +160,36 @@ export default class Server {
                     `Server::loadDataset successful - responding ${result.code}`,
                 );
                 res.send(result.code, result.body); // Body not actually sent with 204 status code
+            })
+            .catch((result: InsightResponse) => {
+                Log.info(
+                    `Server::loadDataset failed - responding ${result.code}`,
+                );
+                res.send(result.code, result.body);
+            })
+            .finally(() => next());
+    }
+
+    // Handles POST requests to /query
+    // Queries Dataset if dataset exists and query is valid
+    private static queryDataset(
+        req: restify.Request,
+        res: restify.Response,
+        next: restify.Next,
+    ) {
+        Log.info(
+            "Server::queryDataset - params: " + JSON.stringify(req.params),
+        );
+
+        const queryStr = req.body || "";
+
+        Server.insightFacade
+            .performQuery(queryStr)
+            .then((result: InsightResponse) => {
+                Log.info(
+                    `Server::loadDataset successful - responding ${result.code}`,
+                );
+                res.send(result.code, result.body);
             })
             .catch((result: InsightResponse) => {
                 Log.info(
