@@ -204,7 +204,7 @@ export default class DatasetLoader {
                 delete this.loadedInsightDatasets[id];
                 delete this.datasets[id];
 
-                // Cache dataset to disk
+                // Delete dataset on disk
                 try {
                     // Check if cacheing directory exists:
                     await fs.access(this.cachePath);
