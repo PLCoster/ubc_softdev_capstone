@@ -6,8 +6,8 @@ import { expect } from "chai";
 import Response = ChaiHttp.Response;
 
 import {
+    InsightDataset,
     InsightResponseSuccessBody,
-    InsightResponseErrorBody,
 } from "../src/controller/IInsightFacade";
 
 import Server from "../src/rest/Server";
@@ -106,8 +106,30 @@ describe("Server Tests", function () {
             });
     });
 
-    // PUT ROUTE TESTS
+    // INITIAL DATASETS AVAILABLE (GET) ROUTE TEST
+    it("GET /datasets with no datasets added -> returns 200 and empty list of datasets", function () {
+        const expectedBody: InsightResponseSuccessBody = { result: [] }; // Start tests with no datasets loaded
 
+        return chai
+            .request(SERVER_URL)
+            .get("/datasets")
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                expect(res.status).to.equal(200);
+                expect(res.type).to.equal("application/json");
+                expect(res.body).to.deep.equal(expectedBody);
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                expect.fail("GET /datasets should have a successful response");
+            });
+    });
+
+    // DATASET LOADING (PUT) ROUTE TESTS
     it("PUT /dataset/:id/:kind with invalid dataset id (underscore) -> returns 400 and error", function () {
         const id = "bad_courses_id";
         const kind = "courses";
@@ -641,6 +663,36 @@ describe("Server Tests", function () {
             .catch((err) => {
                 Log.error(`ERROR: ${err}`);
                 expect.fail(JSON.stringify(err));
+            });
+    });
+
+    // DATASETS AVAILABLE (GET) ROUTE TEST AFTER LOADING 4 DATASETS
+    it("GET /datasets after adding 4 datasets -> returns 200 and list of datasets", function () {
+        const expectedBody: InsightResponseSuccessBody = {
+            result: [
+                { id: "courses", kind: "courses", numRows: 49044 },
+                { id: "coursesTwoEntries", kind: "courses", numRows: 2 },
+                { id: "rooms", kind: "rooms", numRows: 284 },
+                { id: "roomsTwoEntries", kind: "rooms", numRows: 2 },
+            ],
+        };
+
+        return chai
+            .request(SERVER_URL)
+            .get("/datasets")
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                expect(res.status).to.equal(200);
+                expect(res.type).to.equal("application/json");
+                expect(res.body).to.deep.equal(expectedBody);
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                expect.fail("GET /datasets should have a successful response");
             });
     });
 });
