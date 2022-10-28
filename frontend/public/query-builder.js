@@ -6,12 +6,12 @@
  * @returns query object adhering to the query EBNF
  */
 CampusExplorer.buildQuery = () => {
-    const query = { WHERE: {}, OPTIONS: { COLUMNS: [] } };
-
     // Get currently active form
     const form = document.querySelector(".tab-panel.active form");
 
-    const id = form.getAttribute("data-type");
+    const id = form.getAttribute("data-type"); // currently ID and KIND are equal
+
+    const query = { ID: id, KIND: id, WHERE: {}, OPTIONS: { COLUMNS: [] } };
 
     // !!! GET FILTER CONDITIONS
 
