@@ -16,7 +16,10 @@ CampusExplorer.sendQuery = (query) => {
             console.log("XML REQUEST ERROR RESPONSE: ", this.response);
             reject(this.response);
         };
+
+        // Send query with appropriate method, header and body
         req.open("POST", "/query");
-        req.send(query);
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.send(JSON.stringify(query));
     });
 };
