@@ -3,6 +3,7 @@ import {
     InsightQueryAST,
     InsightQueryASTApplyObject,
     InsightAggregatorKind,
+    InsightEBNFQuery,
 } from "./IInsightFacade";
 import { OrderDirection } from "./DatasetQuerier";
 import { QuerySectionREs } from "./helpers/queryParserRegExs";
@@ -20,36 +21,61 @@ import {
 import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
 import { queryAggNameToIAggregatorInfo } from "./helpers/queryAggNameToIAggregatorInfo";
 
-const queryColNameStrToKeyStr: { [key: string]: string } = {
-    "Audit": "audit",
-    "Average": "avg",
-    "Department": "dept",
-    "Fail": "fail",
-    "ID": "id",
-    "Instructor": "instructor",
-    "Pass": "pass",
-    "Title": "title",
-    "UUID": "uuid",
-    "Year": "year",
-    "Full Name": "fullname",
-    "Short Name": "shortname",
-    "Number": "number",
-    "Name": "name",
-    "Address": "address",
-    "Type": "type",
-    "Furniture": "furniture",
-    "Link": "href",
-    "Latitude": "lat",
-    "Longitude": "lon",
-    "Seats": "seats",
+const strQueryColNamesToKeyAndType: {
+    [key in InsightDatasetKind]: {
+        [key: string]: { key: string; type: "numeric" | "string" };
+    };
+} = {
+    courses: {
+        Audit: { key: "audit", type: "numeric" },
+        Average: { key: "avg", type: "numeric" },
+        Department: { key: "dept", type: "string" },
+        Fail: { key: "fail", type: "numeric" },
+        ID: { key: "id", type: "string" },
+        Instructor: { key: "instructor", type: "string" },
+        Pass: { key: "pass", type: "numeric" },
+        Title: { key: "title", type: "string" },
+        UUID: { key: "uuid", type: "string" },
+        Year: { key: "year", type: "numeric" },
+    },
+    rooms: {
+        "Full Name": { key: "fullname", type: "string" },
+        "Short Name": { key: "shortname", type: "string" },
+        "Number": { key: "number", type: "string" },
+        "Name": { key: "name", type: "string" },
+        "Address": { key: "address", type: "string" },
+        "Type": { key: "type", type: "string" },
+        "Furniture": { key: "furniture", type: "string" },
+        "Link": { key: "href", type: "string" },
+        "Latitude": { key: "lat", type: "numeric" },
+        "Longitude": { key: "lon", type: "numeric" },
+        "Seats": { key: "seats", type: "numeric" },
+    },
 };
+
+// Produce flat object of mappings from String Query Column Name to Query Key
+// !!! Refactor alongside String Query Parser Refactoring
+const queryColNameStrToKeyStr: { [key: string]: string } = (() => {
+    const result: { [key: string]: string } = {};
+    Object.keys(strQueryColNamesToKeyAndType).forEach(
+        (kind: InsightDatasetKind) => {
+            Object.entries(strQueryColNamesToKeyAndType[kind]).forEach(
+                ([strQueryColName, { key: colQueryKey }]) => {
+                    result[strQueryColName] = colQueryKey;
+                },
+            );
+        },
+    );
+
+    return result;
+})();
 
 export default class QueryParser {
     constructor() {
         Log.trace("QueryParser::init()");
     }
 
-    public parseQuery(queryStr: string) {
+    public parseQuery(queryStr: string): InsightQueryAST {
         // Try to match queryStr as valid courses or rooms dataset query
         let queryMatchObj: RegExpMatchArray;
         let querySectionREs: QuerySectionREs;
@@ -124,6 +150,61 @@ export default class QueryParser {
         }
 
         this.astHasValidSemantics(queryAST, querySectionREs);
+        return queryAST;
+    }
+
+    // Translates an EBNF Query Object to InsightQueryAST for DataQuerier
+    public translateEBNFQuery(query: InsightEBNFQuery): InsightQueryAST {
+        const { ID: id, KIND: kind } = query;
+
+        // Validate id and kind
+        if (id.includes("_") || id.includes(" ") || reservedRE.test(id)) {
+            this.rejectQuery(
+                `Invalid Query: Dataset ID cannot contain '_', ' ' or equal RESERVED, got: ${id}`,
+            );
+        }
+
+        if (!(kind in InsightDatasetKind)) {
+            this.rejectQuery(
+                `Invalid Query: Dataset KIND must be 'courses' or 'rooms', got: ${kind}`,
+            );
+        }
+
+        const filter = this.parseWHERE(query.WHERE);
+        const display = query.OPTIONS.COLUMNS;
+
+        if (!display.length) {
+            this.rejectQuery(`Invalid Query: No COLUMNS selected for display`);
+        }
+
+        // Begin constructing QueryAST
+        const queryAST: InsightQueryAST = {
+            id,
+            kind,
+            filter,
+            groupby: null,
+            apply: null,
+            display,
+            order: null,
+        };
+
+        if (query.OPTIONS.ORDER) {
+            queryAST.order = this.parseORDER(query.OPTIONS.ORDER);
+        }
+
+        // Query desires Grouping
+        if (query.TRANSFORMATIONS.GROUP) {
+            queryAST.groupby = query.TRANSFORMATIONS.GROUP;
+
+            if (query.TRANSFORMATIONS.APPLY) {
+                queryAST.apply = this.parseAPPLY(
+                    id,
+                    kind,
+                    query.TRANSFORMATIONS.APPLY,
+                );
+            }
+        }
+
         return queryAST;
     }
 
@@ -464,6 +545,149 @@ export default class QueryParser {
         }
 
         return true;
+    }
+
+    /**
+     * Parses the WHERE section of EBNF Query Object
+     * Returns an IFilter representing the given combination of Filters
+     *
+     * @param whereObj the nested WHERE (FILTER) Object from the EBNF Query Object
+     */
+    private parseWHERE(whereObj: any): IFilter {
+        // If no Filter conditions, return all rows
+        if (Object.keys(whereObj).length === 0) {
+            return new ALLFilter();
+        }
+
+        // !!! Implement complete filter building
+        return new ALLFilter();
+    }
+
+    /**
+     * Parses the ORDER section of EBNF Query Object
+     * Returns a Query AST 'order' object for DatasetQuerier
+     *
+     * @param orderObj the ORDER section of the EBNF Query
+     */
+    private parseORDER(
+        orderObj: string | { dir: "UP" | "DOWN"; keys: string[] },
+    ): {
+        direction: OrderDirection;
+        keys: string[];
+    } {
+        if (typeof orderObj === "string") {
+            return { direction: OrderDirection.asc, keys: [orderObj] };
+        }
+
+        const { dir, keys } = orderObj;
+
+        if (dir === "UP") {
+            return { direction: OrderDirection.asc, keys };
+        } else {
+            return { direction: OrderDirection.desc, keys };
+        }
+    }
+
+    /**
+     * Parses the APPLY section of EBNF Query Object
+     * Returns a Query AST 'apply' Array of InsightQueryASTApplyObject for DataQuerier
+     *
+     * @param id id of the dataset we are applying the query to
+     * @param kind the dataset kind we are applying the query to
+     * @param applyArr the APPLY section of the EBNF Query
+     */
+    private parseAPPLY(
+        id: string,
+        kind: InsightDatasetKind,
+        applyARR: Array<{
+            [key: string]: { [key in InsightAggregatorKind]: string };
+        }>,
+    ): InsightQueryASTApplyObject[] {
+        const applyObjArr: InsightQueryASTApplyObject[] = [];
+
+        applyARR.forEach((apply) => {
+            const name = Object.keys(apply)[0];
+            const aggName = Object.keys(
+                apply[name],
+            )[0] as InsightAggregatorKind;
+
+            // Check Aggregation Name is Valid
+            if (!Object.values(InsightAggregatorKind).includes(aggName)) {
+                this.rejectQuery(
+                    `Invalid Query: Unrecognised Aggregation Operation: ${aggName}`,
+                );
+            }
+
+            const aggInfo = queryAggNameToIAggregatorInfo[aggName];
+            const colName = apply[name][aggName];
+
+            // Check the name of the column to be aggregated is valid
+            const [strColName, { key: colKey, type: colType }] =
+                this.validateEBNFColName(id, kind, colName);
+
+            const operation = new aggInfo.Aggregator(name, colName);
+
+            // Ensure the aggregation operation is valid for the given column:
+            if (aggInfo.aggType === "numeric" && colType !== "numeric") {
+                this.rejectQuery(
+                    `Invalid Query: Aggregation type ${aggName} cannot be applied to ${strColName} column`,
+                );
+            }
+
+            applyObjArr.push({ name, operation, colName });
+        });
+
+        return applyObjArr;
+    }
+
+    /**
+     * Helper function to validate that a given column name in EBNF Query Qbject is valid
+     * e.g. courses_avg is valid for a 'courses' kind dataset, where courses_furniture
+     * would be invalid
+     * @param id the id of the dataset that is being queried
+     * @param kind the dataset kind of the dataset being queried (courses | rooms)
+     * @param queryColName the column name in the EBNF Query Object
+     */
+    private validateEBNFColName(
+        id: string,
+        kind: InsightDatasetKind,
+        queryColName: string,
+    ) {
+        const nameSections = queryColName.split("_");
+
+        if (nameSections.length !== 2) {
+            this.rejectQuery(
+                `Invalid Query: Invalid column name in Query: ${queryColName}`,
+            );
+        }
+
+        const [colID, colName] = nameSections;
+
+        if (colID !== id) {
+            this.rejectQuery(
+                `Invalid Query: Invalid column name ${queryColName} for dataset id ${id}`,
+            );
+        }
+
+        // Check that the colName is valid for the dataset kind
+        const validColNames = Object.entries(
+            strQueryColNamesToKeyAndType[kind],
+        );
+
+        const colMatch = validColNames.filter(
+            ([stringColName, { key, type }]) => {
+                return key === colName;
+            },
+        );
+
+        if (!colMatch.length) {
+            this.rejectQuery(
+                `Invalid Query: Invalid column name ${queryColName} for dataset kind ${kind}`,
+            );
+        }
+
+        // Otherwise the column name is valid for dataset id and kind, return info:
+        return colMatch[0];
     }
 
     private rejectQuery(message: string) {

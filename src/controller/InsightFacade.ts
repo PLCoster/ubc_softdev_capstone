@@ -3,6 +3,7 @@ import {
     InsightResponse,
     InsightDatasetKind,
     InsightCourseDataObject,
+    InsightEBNFQuery,
     InsightQueryAST,
 } from "./IInsightFacade";
 
@@ -43,12 +44,19 @@ export default class InsightFacade implements IInsightFacade {
         return this.datasetLoader.deleteDataset(id);
     }
 
-    public performQuery(query: string): Promise<InsightResponse> {
+    public performQuery(
+        query: string | InsightEBNFQuery,
+    ): Promise<InsightResponse> {
         return new Promise((resolve, reject) => {
             // Parse the query, get the relevant dataset and then apply query to data
             try {
-                const queryAST: InsightQueryAST =
-                    this.queryParser.parseQuery(query);
+                let queryAST: InsightQueryAST;
+                if (typeof query === "string") {
+                    queryAST = this.queryParser.parseQuery(query);
+                } else {
+                    queryAST = this.queryParser.translateEBNFQuery(query);
+                }
+
                 const dataset: InsightCourseDataObject[] =
                     this.datasetLoader.getDataset(queryAST.id, queryAST.kind);
                 const requestedData: InsightCourseDataObject[] =

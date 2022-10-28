@@ -43,6 +43,22 @@ export interface InsightCourseDataObject {
     [key: string]: string | number;
 }
 
+export interface InsightEBNFQuery {
+    ID: string;
+    KIND: InsightDatasetKind;
+    WHERE: any;
+    OPTIONS: {
+        COLUMNS: string[];
+        ORDER?: string | { dir: "UP" | "DOWN"; keys: string[] };
+    };
+    TRANSFORMATIONS?: {
+        GROUP: string[];
+        APPLY?: Array<{
+            [key: string]: { [key in InsightAggregatorKind]: string };
+        }>;
+    };
+}
+
 export interface InsightQueryASTApplyObject {
     name: string;
     operation: IAggregator;
@@ -134,7 +150,7 @@ export interface IInsightFacade {
      * 200: the query was successfully answered. The result should be sent in JSON according in the response body.
      * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
      */
-    performQuery(query: string): Promise<InsightResponse>;
+    performQuery(query: string | InsightEBNFQuery): Promise<InsightResponse>;
 
     /**
      * List a list of datasets and their types.
@@ -144,7 +160,7 @@ export interface IInsightFacade {
      * The body of this InsightResponse will contain an InsightDataset[]
      *
      * Return codes:
-     * 200: The list of added datasets was sucessfully returned.
+     * 200: The list of added datasets was successfully returned.
      */
     listDatasets(): Promise<InsightResponse>;
 }
