@@ -164,7 +164,7 @@ export default class QueryParser {
             );
         }
 
-        if (!(kind in InsightDatasetKind)) {
+        if (!Object.values(InsightDatasetKind).includes(kind)) {
             this.rejectQuery(
                 `Invalid Query: Dataset KIND must be 'courses' or 'rooms', got: ${kind}`,
             );
@@ -193,7 +193,7 @@ export default class QueryParser {
         }
 
         // Query desires Grouping
-        if (query.TRANSFORMATIONS.GROUP) {
+        if (query.TRANSFORMATIONS && query.TRANSFORMATIONS.GROUP) {
             queryAST.groupby = query.TRANSFORMATIONS.GROUP;
 
             if (query.TRANSFORMATIONS.APPLY) {
