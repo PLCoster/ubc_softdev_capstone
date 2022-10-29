@@ -1,3 +1,166 @@
 {
-    "query1":{"WHERE": {"IS": {"courses_dept": "cpsc"} }, "OPTIONS": {"COLUMNS": ["courses_dept", "courses_id"], "ORDER": "courses_id"} },
+    "courses_query0_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_audit",
+                "courses_avg",
+                "courses_dept",
+                "courses_fail",
+                "courses_id",
+                "courses_instructor",
+                "courses_pass",
+                "courses_title",
+                "courses_uuid",
+                "courses_year"
+            ]
+        }
+    },
+
+    "courses_query1_single_col_single_order_asc": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_audit"],
+            "ORDER": "courses_audit"
+        }
+    },
+
+    "courses_query2_single_col_single_order_desc": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_pass"],
+            "ORDER": { "dir": "DOWN", "keys": ["courses_pass"] }
+        }
+    },
+
+    "courses_query3_multiple_col_multiple_order_asc": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_audit",
+                "courses_avg",
+                "courses_fail",
+                "courses_pass",
+                "courses_year"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": ["courses_avg", "courses_fail", "courses_pass"]
+            }
+        }
+    },
+
+    "courses_query4_multiple_col_multiple_order_desc": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_audit",
+                "courses_avg",
+                "courses_fail",
+                "courses_pass",
+                "courses_year"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "courses_audit",
+                    "courses_fail",
+                    "courses_pass",
+                    "courses_year"
+                ]
+            }
+        }
+    },
+
+    "query1": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "IS": { "courses_dept": "cpsc" } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_id"],
+            "ORDER": "courses_id"
+        }
+    },
+
+    "rooms_query0_all": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address",
+                "rooms_fullname",
+                "rooms_furniture",
+                "rooms_href",
+                "rooms_lat",
+                "rooms_lon",
+                "rooms_name",
+                "rooms_number",
+                "rooms_seats",
+                "rooms_shortname",
+                "rooms_type"
+            ]
+        }
+    },
+
+    "rooms_query1_single_col_single_order_asc": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["rooms_type"],
+            "ORDER": "rooms_type"
+        }
+    },
+
+    "rooms_query2_single_col_single_order_desc": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["rooms_lon"],
+            "ORDER": { "dir": "DOWN", "keys": ["rooms_lon"] }
+        }
+    },
+
+    "rooms_query3_multiple_col_multiple_order_asc": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address",
+                "rooms_fullname",
+                "rooms_number",
+                "rooms_seats"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": ["rooms_fullname", "rooms_number", "rooms_seats"]
+            }
+        }
+    },
+
+    "rooms_query4_multiple_col_multiple_order_desc": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["rooms_address", "rooms_lat", "rooms_lon"],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["rooms_address", "rooms_lat", "rooms_lon"]
+            }
+        }
+    }
 }

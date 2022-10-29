@@ -1,3 +1,23 @@
 {
-    "query1": "simple query IS comparison for department with two columns and old order syntax"
+    "courses_query0_all": "simple courses query for all entries, all columns",
+
+    "courses_query1_single_col_single_order_asc": "courses query for single column, order ascending by the same column",
+
+    "courses_query2_single_col_single_order_desc": "courses query for a single column, order descending by the same column",
+
+    "courses_query3_multiple_col_multiple_order_asc": "courses query for multiple columns, order ascending by multiple columns",
+
+    "courses_query4_multiple_col_multiple_order_desc": "courses query for multiple columns, order descending by multiple columns",
+
+    "query1": "simple query IS comparison for department with two columns and old order syntax",
+
+    "rooms_query0_all": "simple rooms query for all entries, all columns",
+
+    "rooms_query1_single_col_single_order_asc": "rooms query for single column, order ascending by the same column",
+
+    "rooms_query2_single_col_single_order_desc": "rooms query for a single column, order descending by the same column",
+
+    "rooms_query3_multiple_col_multiple_order_asc": "rooms query for multiple columns, order ascending by multiple columns",
+
+    "rooms_query4_multiple_col_multiple_order_desc": "rooms query for multiple columns, order descending by multiple columns"
 }
