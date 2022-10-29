@@ -54,6 +54,7 @@ export default class InsightFacade implements IInsightFacade {
                 if (typeof query === "string") {
                     queryAST = this.queryParser.parseQuery(query);
                 } else {
+                    query = query as InsightEBNFQuery;
                     queryAST = this.queryParser.translateEBNFQuery(query);
                 }
 
