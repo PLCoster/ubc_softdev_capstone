@@ -9,12 +9,14 @@ CampusExplorer.sendQuery = (query) => {
         console.log("Sending new XML REQUEST");
         const req = new XMLHttpRequest();
         req.onload = function () {
-            console.log("XML REQUEST SUCCESS RESPONSE: ", this.response);
-            resolve(this.response);
+            const result = JSON.parse(this.response);
+            console.log("XML REQUEST SUCCESS RESPONSE: ", result);
+            resolve(result);
         };
         req.onerror = function () {
-            console.log("XML REQUEST ERROR RESPONSE: ", this.response);
-            reject(this.response);
+            const result = JSON.parse(this.response);
+            console.log("XML REQUEST ERROR RESPONSE: ", result);
+            reject(result);
         };
 
         // Send query with appropriate method, header and body
