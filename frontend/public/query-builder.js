@@ -17,19 +17,22 @@ CampusExplorer.buildQuery = () => {
 
     // GET DISPLAY COLUMNS
     query.OPTIONS.COLUMNS.push(
-        ...parseCheckboxes(
-            id,
-            form.querySelector(".form-group.columns"),
-            query,
-        ),
+        ...parseCheckboxes(id, form.querySelector(".form-group.columns")),
     );
 
-    // !!! GET ORDER
+    // GET ORDER
+    const queryOrder = parseOrder(id, form.querySelector(".form-group.order"));
+
+    console.log(queryOrder);
+
+    if (queryOrder) {
+        query.OPTIONS.ORDER = queryOrder;
+    }
 
     // !!! GET GROUPS
 
     // !!! GET TRANSFORMATIONS
-
+    console.log("FINAL QUERY: ", query);
     return query;
 };
 
@@ -38,7 +41,7 @@ CampusExplorer.buildQuery = () => {
  * from Columns and Groups Section of input form
  *
  * @param {string} id - dataset id ("courses" or "rooms")
- * @param {HTMLElement} colForm - for containing the checkboxes to parse
+ * @param {HTMLElement} colForm - form containing the checkboxes to parse
  */
 function parseCheckboxes(id, colForm) {
     const colArray = [];
@@ -50,4 +53,31 @@ function parseCheckboxes(id, colForm) {
     });
 
     return colArray;
+}
+
+function parseOrder(id, orderForm) {
+    // Get keys of any selected Order columns
+    const keys = Array.from(
+        orderForm.querySelectorAll('select option[selected="selected"]'),
+    ).map((orderEl) => `${id}_${orderEl.getAttribute("value")}`);
+
+    // No ORDER keys selected
+    if (keys.length === 0) {
+        return null;
+    }
+
+    // Is Descending Checkbox checked
+    const dir =
+        orderForm.querySelector(
+            '.control.descending input[checked="checked"]',
+        ) === null
+            ? "UP"
+            : "DOWN";
+
+    // 'Old' EBNF order syntax
+    if (dir === "UP" && keys.length === 1) {
+        return keys[0];
+    } else {
+        return { dir, keys };
+    }
 }
