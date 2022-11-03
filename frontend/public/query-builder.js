@@ -29,7 +29,17 @@ CampusExplorer.buildQuery = () => {
         query.OPTIONS.ORDER = queryOrder;
     }
 
-    // !!! GET GROUPS
+    // GET GROUP
+    const queryGroup = parseCheckboxes(
+        id,
+        form.querySelector(".form-group.groups"),
+    );
+
+    console.log(queryGroup);
+
+    if (queryGroup.length > 0) {
+        query.TRANSFORMATIONS = { GROUP: queryGroup };
+    }
 
     // !!! GET TRANSFORMATIONS
     console.log("FINAL QUERY: ", query);
@@ -42,6 +52,7 @@ CampusExplorer.buildQuery = () => {
  *
  * @param {string} id - dataset id ("courses" or "rooms")
  * @param {HTMLElement} colForm - form containing the checkboxes to parse
+ * @returns {string[]} - array of strings {id}_{column key} representing the checked options
  */
 function parseCheckboxes(id, colForm) {
     const colArray = [];
@@ -55,6 +66,13 @@ function parseCheckboxes(id, colForm) {
     return colArray;
 }
 
+/**
+ * Extracts ORDER section of query object from form input
+ *
+ * @param {string} id - dataset id ("courses" or "rooms")
+ * @param {HTMLElement} orderForm - form element for ORDER section of query
+ * @returns - ORDER object for query object
+ */
 function parseOrder(id, orderForm) {
     // Get keys of any selected Order columns
     const keys = Array.from(
