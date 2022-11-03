@@ -589,8 +589,11 @@ export default class QueryParser {
             const queryGroup = query.TRANSFORMATIONS.GROUP;
             const queryApply = query.TRANSFORMATIONS.APPLY;
 
-            if (!queryGroup || queryGroup.length === 0) {
-                // !!! what if GROUP is not an array?
+            if (
+                !queryGroup ||
+                !Array.isArray(queryGroup) ||
+                queryGroup.length === 0
+            ) {
                 this.rejectQuery(
                     `Invalid Query: Empty or invalid GROUP operation - all TRANSFORMATIONS require min. 1 GROUP key`,
                 );
