@@ -9,6 +9,10 @@
 
     "courses_query4_multiple_col_multiple_order_desc": "courses query for multiple columns, order descending by multiple columns",
 
+    "courses_query5_single_group_single_col": "courses query for all entries with a single group column being displayed",
+
+    "courses_query6_multiple_group_multiple_col_two_order_desc": "courses query for all entries grouping and displaying multiple columns, ordered by two columns descending",
+
     "query1": "simple query IS comparison for department with two columns and old order syntax",
 
     "rooms_query0_all": "simple rooms query for all entries, all columns",
@@ -19,5 +23,9 @@
 
     "rooms_query3_multiple_col_multiple_order_asc": "rooms query for multiple columns, order ascending by multiple columns",
 
-    "rooms_query4_multiple_col_multiple_order_desc": "rooms query for multiple columns, order descending by multiple columns"
+    "rooms_query4_multiple_col_multiple_order_desc": "rooms query for multiple columns, order descending by multiple columns",
+
+    "rooms_query5_single_group_single_col": "rooms query for all entries with a single group column being displayed",
+
+    "rooms_query6_multiple_group_multiple_col_two_order_desc": "rooms query for all entries grouping and displaying multiple columns, ordered by two columns descending"
 }
