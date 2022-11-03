@@ -43,13 +43,23 @@ export interface InsightCourseDataObject {
     [key: string]: string | number;
 }
 
+export enum InsightEBNFQueryOrderDir {
+    UP = "UP",
+    DOWN = "DOWN",
+}
+
+export interface InsightEBNFQueryOrderObject {
+    dir: InsightEBNFQueryOrderDir;
+    keys: string[];
+}
+
 export interface InsightEBNFQuery {
     ID: string;
     KIND: InsightDatasetKind;
     WHERE: any;
     OPTIONS: {
         COLUMNS: string[];
-        ORDER?: string | { dir: "UP" | "DOWN"; keys: string[] };
+        ORDER?: string | InsightEBNFQueryOrderObject;
     };
     TRANSFORMATIONS?: {
         GROUP: string[];
