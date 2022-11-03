@@ -666,15 +666,25 @@ export default class QueryParser {
             }
 
             // We can only DISPLAY/COLUMNS that are GROUP or APPLY
-            const applyColNames = queryApply ? Object.keys(queryApply) : [];
+            const applyColNames = queryApply
+                ? queryApply.map((applyObj) => Object.keys(applyObj)[0])
+                : [];
 
             queryColumns.forEach((colName) => {
-                if (
-                    !this.validateEBNFColName(query.ID, query.KIND, colName) &&
-                    !applyColNames.includes(colName)
-                ) {
+                // If it is a valid column name it must be in GROUP
+                const validColName = this.validateEBNFColName(
+                    query.ID,
+                    query.KIND,
+                    colName,
+                );
+                if (validColName && !queryGroup.includes(colName)) {
                     this.rejectQuery(
-                        `Invalid Query: Invalid column name ${colName} in COLUMNS`,
+                        `Invalid Query: When GROUP present COLUMNS must be in GROUP or APPLY, got: ${colName}`,
+                    );
+                } else if (!validColName && !applyColNames.includes(colName)) {
+                    // Not a regular columns and we have not defined it as an aggregator name
+                    this.rejectQuery(
+                        `Invalid Query: Unrecognised column name ${colName} in COLUMNS`,
                     );
                 }
             });
@@ -693,14 +703,14 @@ export default class QueryParser {
         if (query.OPTIONS.ORDER) {
             const queryOrder = query.OPTIONS.ORDER;
 
-            // Basic Ordering
-            if (
-                typeof queryOrder === "string" &&
-                !queryColumns.includes(queryOrder)
-            ) {
-                this.rejectQuery(
-                    `Invalid Query: ORDER columns must be in COLUMNS, got ${queryOrder}`,
-                );
+            if (typeof queryOrder === "string") {
+                // Basic Ordering Format - single query order ASCENDING
+                // ORDER column must also be in COLUMNS / DISPLAY
+                if (!queryColumns.includes(queryOrder)) {
+                    this.rejectQuery(
+                        `Invalid Query: ORDER columns must be in COLUMNS, got ${queryOrder}`,
+                    );
+                }
             } else {
                 const queryOrderObj = queryOrder as InsightEBNFQueryOrderObject;
 
