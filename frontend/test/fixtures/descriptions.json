@@ -13,6 +13,10 @@
 
     "courses_query6_multiple_group_multiple_col_two_order_desc": "courses query for all entries grouping and displaying multiple columns, ordered by two columns descending",
 
+    "courses_query7_group_id_title_COUNT_instructor": "courses query for all entries, grouping by id and title, with COUNT instructors, ordered ascending by COUNT instructors",
+
+    "courses_query8_group_two_apply_multiple": "courses query for all entries, grouping by two columns and applying AVG, MIN, MAX, SUM aggregators, ordered ascending by two keys",
+
     "query1": "simple query IS comparison for department with two columns and old order syntax",
 
     "rooms_query0_all": "simple rooms query for all entries, all columns",
@@ -27,5 +31,9 @@
 
     "rooms_query5_single_group_single_col": "rooms query for all entries with a single group column being displayed",
 
-    "rooms_query6_multiple_group_multiple_col_two_order_desc": "rooms query for all entries grouping and displaying multiple columns, ordered by two columns descending"
+    "rooms_query6_multiple_group_multiple_col_two_order_desc": "rooms query for all entries grouping and displaying multiple columns, ordered by two columns descending",
+
+    "rooms_query7_group_address_SUM_seats": "rooms query for all entries, grouping by address and SUM seats, displaying both, ordered descending by SUM seats",
+
+    "rooms_query8_group_multiple_apply_multiple": "rooms query for all entries, grouping by multiple columns and applying all aggregators, ordered descending by multiple keys"
 }
