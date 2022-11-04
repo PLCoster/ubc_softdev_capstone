@@ -225,7 +225,7 @@
         }
     },
 
-    "courses_query16_single_END_filter_none": {
+    "courses_query17_single_END_filter_none": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "NOT": { "END": { "courses_title": "engineering" } } },
@@ -234,12 +234,64 @@
         }
     },
 
-    "courses_query17_single_NOT_INC_filter_any": {
+    "courses_query18_single_NOT_INC_filter_any": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "NOT": { "INC": { "courses_dept": "ch" } } },
         "OPTIONS": {
             "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
+    "courses_query19_two_filters_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "AND": [
+                { "IS": { "courses_dept": "adhe" } },
+                { "NOT": { "INC": { "courses_instructor": "dave" } } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
+    "courses_query20_two_filters_any": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "OR": [
+                { "GT": { "courses_pass": 1000 } },
+                { "GT": { "courses_fail": 100 } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_fail",
+                "courses_pass",
+                "courses_title"
+            ]
+        }
+    },
+
+    "courses_query21_two_filters_none": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "AND": [
+                { "IS": { "courses_dept": "math" } },
+                { "NOT": { "LT": { "courses_pass": 100 } } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_fail",
+                "courses_pass",
+                "courses_title"
+            ]
         }
     },
 
