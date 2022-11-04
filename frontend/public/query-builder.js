@@ -1,29 +1,37 @@
-const columnKeys = {
-    courses: new Set([
-        "audit",
-        "avg",
-        "dept",
-        "fail",
-        "id",
-        "instructor",
-        "pass",
-        "title",
-        "uuid",
-        "year",
-    ]),
-    rooms: new Set([
-        "fullname",
-        "shortname",
-        "number",
-        "name",
-        "address",
-        "type",
-        "furniture",
-        "href",
-        "lat",
-        "lon",
-        "seats",
-    ]),
+function identity(value) {
+    return value;
+}
+
+function parseNum(value) {
+    return Number(value);
+}
+
+const columnKeysAndParsers = {
+    courses: {
+        audit: parseNum,
+        avg: parseNum,
+        dept: identity,
+        fail: parseNum,
+        id: identity,
+        instructor: identity,
+        pass: parseNum,
+        title: identity,
+        uuid: identity,
+        year: parseNum,
+    },
+    rooms: {
+        fullname: identity,
+        shortname: identity,
+        number: identity,
+        name: identity,
+        address: identity,
+        type: identity,
+        furniture: identity,
+        href: identity,
+        lat: parseNum,
+        lon: parseNum,
+        seats: parseNum,
+    },
 };
 
 /**
@@ -76,13 +84,13 @@ CampusExplorer.buildQuery = () => {
         query.TRANSFORMATIONS.APPLY = queryApply;
     }
 
-    console.log("FINAL QUERY: ", query);
+    console.log("BUILT QUERY: ", query);
     return query;
 };
 
 // 'all' => Join Conditions with AND
 // 'any' => Join Conditions with OR
-// 'none' => NOT each condition, Join with AND
+// 'none' => NOT each condition, Join with AND (or OR each condition and NOT the result)
 function parseWhere(id, whereForm) {
     // Initially no condition is checked - default to 'all' in this case
     const conditionType =
@@ -114,13 +122,14 @@ function parseWhere(id, whereForm) {
                 '.control.operators select option[selected="selected"]',
             ).value;
 
+            // !!! We could choose to ignore filters where value is not set?
             const value = conditionGroup.querySelector(
                 ".control.term input",
             ).value;
 
-            // !!! We could choose to ignore filters where value is not set?
+            const parsedValue = columnKeysAndParsers[id][colKey](value);
 
-            conditionArray.push({ not, colKey, filter, value });
+            conditionArray.push({ not, colKey, filter, value: parsedValue });
         },
     );
 
@@ -130,7 +139,7 @@ function parseWhere(id, whereForm) {
     }
 
     // Otherwise build and return nested WHERE Filters
-    return buildWhereFilters(
+    return buildWhereConditions(
         id,
         conditionType,
         conditionArray,
@@ -138,24 +147,58 @@ function parseWhere(id, whereForm) {
     );
 }
 
-function buildWhereFilters(id, conditionType, conditionArray, currentIndex) {
+function buildWhereConditions(id, conditionType, conditionArray, currentIndex) {
     // If we are on the last condition, just return that condition
     if (currentIndex === 0) {
-        return buildSingleFilter(id, conditionType, conditionArray[0]);
+        return buildSingleCondition(id, conditionType, conditionArray[0]);
     }
 
-    throw new Error("Not implemented");
+    // Otherwise join the current filter with the next filter using desired conditional
+    let conditional = "AND";
+    if (conditionType === "any") {
+        conditional = "OR";
+    }
+
+    const rightFilter = this.buildSingleCondition(
+        id,
+        conditionType,
+        conditionArray[currentIndex],
+    );
+
+    const leftFilter = this.buildWhereConditions(
+        id,
+        conditionType,
+        conditionArray,
+        currentIndex - 1,
+    );
+
+    return { [conditional]: [leftFilter, rightFilter] };
 }
 
-function buildSingleFilter(id, conditionType, conditionObj) {
-    const { not, colKey, filter, value } = conditionObj;
+function buildSingleCondition(id, conditionType, conditionObj) {
+    let { not, colKey, filter, value } = conditionObj;
 
     let negation =
         not && conditionType === "none"
             ? false
             : not || conditionType === "none";
 
-    // !!! check value for type of filter required??
+    // IS conditional WildCard checking:
+    if (filter === "IS") {
+        const startWC = value.startsWith("*");
+        const endWC = value.endsWith("*");
+
+        if (startWC && endWC) {
+            filter = "INC";
+            value = value.slice(1, -1);
+        } else if (startWC) {
+            filter = "END";
+            value = value.slice(1);
+        } else if (endWC) {
+            filter = "BEG";
+            value = value.slice(0, -1);
+        }
+    }
 
     const filterObj = { [filter]: { [`${id}_${colKey}`]: value } };
 
@@ -182,7 +225,7 @@ function parseCheckboxes(id, colForm) {
     selectedColEls.forEach((colEl) => {
         const colVal = colEl.getAttribute("value");
 
-        if (columnKeys[id].has(colVal)) {
+        if (columnKeysAndParsers[id][colVal]) {
             // Standard Column Name
             colArray.push(`${id}_${colVal}`);
         } else {
@@ -207,7 +250,7 @@ function parseOrder(id, orderForm) {
         orderForm.querySelectorAll('select option[selected="selected"]'),
     ).map((orderEl) => {
         const colVal = orderEl.getAttribute("value");
-        return columnKeys[id].has(colVal) ? `${id}_${colVal}` : colVal;
+        return columnKeysAndParsers[id][colVal] ? `${id}_${colVal}` : colVal;
     });
 
     // No ORDER keys selected
