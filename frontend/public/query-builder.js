@@ -41,7 +41,7 @@ CampusExplorer.buildQuery = () => {
 
     const query = { ID: id, KIND: id, WHERE: {}, OPTIONS: { COLUMNS: [] } };
 
-    // !!! GET FILTER CONDITIONS
+    query.WHERE = parseWhere(id, form.querySelector(".form-group.conditions"));
 
     // GET DISPLAY COLUMNS
     query.OPTIONS.COLUMNS.push(
@@ -79,6 +79,92 @@ CampusExplorer.buildQuery = () => {
     console.log("FINAL QUERY: ", query);
     return query;
 };
+
+// 'all' => Join Conditions with AND
+// 'any' => Join Conditions with OR
+// 'none' => NOT each condition, Join with AND
+function parseWhere(id, whereForm) {
+    // Initially no condition is checked - default to 'all' in this case
+    const conditionType =
+        whereForm.querySelector(
+            '.control-group.condition-type input[checked="checked"]',
+        ) === null
+            ? "all"
+            : whereForm
+                  .querySelector(
+                      '.control-group.condition-type input[checked="checked"]',
+                  )
+                  .getAttribute("value");
+
+    // Get Desired Filter Details From Form:
+    const conditionArray = [];
+
+    Array.from(whereForm.querySelectorAll(".control-group.condition")).forEach(
+        (conditionGroup) => {
+            const not =
+                conditionGroup.querySelector(
+                    '.control.not input[checked="checked"]',
+                ) !== null;
+
+            const colKey = conditionGroup.querySelector(
+                '.control.fields select option[selected="selected"]',
+            ).value;
+
+            const filter = conditionGroup.querySelector(
+                '.control.operators select option[selected="selected"]',
+            ).value;
+
+            const value = conditionGroup.querySelector(
+                ".control.term input",
+            ).value;
+
+            // !!! We could choose to ignore filters where value is not set?
+
+            conditionArray.push({ not, colKey, filter, value });
+        },
+    );
+
+    // If no conditions, return empty WHERE clause
+    if (!conditionArray.length) {
+        return {};
+    }
+
+    // Otherwise build and return nested WHERE Filters
+    return buildWhereFilters(
+        id,
+        conditionType,
+        conditionArray,
+        conditionArray.length - 1,
+    );
+}
+
+function buildWhereFilters(id, conditionType, conditionArray, currentIndex) {
+    // If we are on the last condition, just return that condition
+    if (currentIndex === 0) {
+        return buildSingleFilter(id, conditionType, conditionArray[0]);
+    }
+
+    throw new Error("Not implemented");
+}
+
+function buildSingleFilter(id, conditionType, conditionObj) {
+    const { not, colKey, filter, value } = conditionObj;
+
+    let negation =
+        not && conditionType === "none"
+            ? false
+            : not || conditionType === "none";
+
+    // !!! check value for type of filter required??
+
+    const filterObj = { [filter]: { [`${id}_${colKey}`]: value } };
+
+    if (negation) {
+        return { NOT: filterObj };
+    } else {
+        return filterObj;
+    }
+}
 
 /**
  * Parses and returns array of selected column names
@@ -145,6 +231,13 @@ function parseOrder(id, orderForm) {
     }
 }
 
+/**
+ * Extracts APPLY section of query object from from input
+ *
+ * @param {string} id - dataset id ("courses" or "rooms")
+ * @param {HTMLElement} applyForm - form element corresponding to APPLY section of query
+ * @returns - Array of APPLY Objects for query object
+ */
 function parseApply(id, applyForm) {
     const applyObjects = [];
 
