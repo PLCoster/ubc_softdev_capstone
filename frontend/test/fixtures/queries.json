@@ -153,6 +153,96 @@
         }
     },
 
+    "courses_query9_single_EQ_filter_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "EQ": { "courses_avg": 90 } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_avg", "courses_dept", "courses_title"]
+        }
+    },
+
+    "courses_query10_single_EQ_filter_any": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "EQ": { "courses_avg": 90 } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_avg", "courses_dept", "courses_title"]
+        }
+    },
+
+    "courses_query11_single_EQ_filter_none": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "NOT": { "EQ": { "courses_avg": 90 } } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_avg", "courses_dept", "courses_title"]
+        }
+    },
+
+    "courses_query12_single_GT_filter_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "GT": { "courses_pass": 50 } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_pass", "courses_title"]
+        }
+    },
+
+    "courses_query13_single_NOT_GT_filter_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "NOT": { "GT": { "courses_pass": 50 } } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_pass", "courses_title"]
+        }
+    },
+
+    "courses_query14_single_LT_filter_none": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "NOT": { "LT": { "courses_fail": 100 } } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_fail", "courses_title"]
+        }
+    },
+
+    "courses_query15_single_IS_filter_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "IS": { "courses_dept": "math" } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
+    "courses_query16_single_BEG_filter_any": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "BEG": { "courses_instructor": "smulders" } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
+    "courses_query16_single_END_filter_none": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "NOT": { "END": { "courses_title": "engineering" } } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
+    "courses_query17_single_NOT_INC_filter_any": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "NOT": { "INC": { "courses_dept": "ch" } } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_instructor", "courses_title"]
+        }
+    },
+
     "query1": {
         "ID": "courses",
         "KIND": "courses",

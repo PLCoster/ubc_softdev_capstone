@@ -17,6 +17,26 @@
 
     "courses_query8_group_two_apply_multiple": "courses query for all entries, grouping by two columns and applying AVG, MIN, MAX, SUM aggregators, ordered ascending by two keys",
 
+    "courses_query9_single_EQ_filter_all": "courses query for entries with single EQ filter (Average EQ 90), on 'all of the following' setting",
+
+    "courses_query10_single_EQ_filter_any": "courses query for entries with single EQ filter (Average EQ 90), on 'any of the following' setting",
+
+    "courses_query11_single_EQ_filter_none": "courses query for entries with single EQ filter (Average EQ 90), on 'none of the following' setting",
+
+    "courses_query12_single_GT_filter_all": "courses query for entries with single GT filter (Pass GT 50), on 'all of the following' setting",
+
+    "courses_query13_single_NOT_GT_filter_all": "courses query for entries with single NOT GT filter (Pass GT 50), on 'all of the following' setting",
+
+    "courses_query14_single_LT_filter_none": "courses query for entries with single LT filter (Fail LT 100), on 'none of the following' setting",
+
+    "courses_query15_single_IS_filter_all": "courses query for entries with single IS filter (Department IS 'math'), on 'all of the following' setting",
+
+    "courses_query16_single_BEG_filter_any": "courses query for entries with single BEG filter (Instructor IS 'smulders*'), on 'any of the following' setting",
+
+    "courses_query16_single_END_filter_none": "courses query for entries with single END filter (Title IS '*engineering'), on 'none of the following' setting",
+
+    "courses_query17_single_NOT_INC_filter_any": "courses query for entries with single NOT INC filter (Department IS '*ch*'), on 'any of the following' setting",
+
     "query1": "simple query IS comparison for department with two columns and old order syntax",
 
     "rooms_query0_all": "simple rooms query for all entries, all columns",
