@@ -21,12 +21,12 @@ export const queryAggNameToIAggregatorInfo: {
             aggColName: string,
             applyColName: string,
         ) => IAggregator;
-        aggType: "numeric" | "all";
+        aggType: "number" | "all";
     };
 } = {
-    AVG: { Aggregator: AVGAggregator, aggType: "numeric" },
-    MAX: { Aggregator: MAXAggregator, aggType: "numeric" },
-    MIN: { Aggregator: MINAggregator, aggType: "numeric" },
-    SUM: { Aggregator: SUMAggregator, aggType: "numeric" },
+    AVG: { Aggregator: AVGAggregator, aggType: "number" },
+    MAX: { Aggregator: MAXAggregator, aggType: "number" },
+    MIN: { Aggregator: MINAggregator, aggType: "number" },
+    SUM: { Aggregator: SUMAggregator, aggType: "number" },
     COUNT: { Aggregator: COUNTAggregator, aggType: "all" },
 };

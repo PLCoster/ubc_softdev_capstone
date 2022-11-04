@@ -20,25 +20,28 @@ import {
     courseQuerySectionREs,
     roomsQuerySectionREs,
 } from "./helpers/queryParserRegExs";
-import { conditionStringToIFilterInfo } from "./helpers/conditionStringToIFilterInfo";
+import {
+    conditionStringToIFilterInfo,
+    conditionKeyToIFilterInfo,
+} from "./helpers/conditionStringToIFilterInfo";
 import { queryAggNameToIAggregatorInfo } from "./helpers/queryAggNameToIAggregatorInfo";
 
 const strQueryColNamesToKeyAndType: {
     [key in InsightDatasetKind]: {
-        [key: string]: { key: string; type: "numeric" | "string" };
+        [key: string]: { key: string; type: "number" | "string" };
     };
 } = {
     courses: {
-        Audit: { key: "audit", type: "numeric" },
-        Average: { key: "avg", type: "numeric" },
+        Audit: { key: "audit", type: "number" },
+        Average: { key: "avg", type: "number" },
         Department: { key: "dept", type: "string" },
-        Fail: { key: "fail", type: "numeric" },
+        Fail: { key: "fail", type: "number" },
         ID: { key: "id", type: "string" },
         Instructor: { key: "instructor", type: "string" },
-        Pass: { key: "pass", type: "numeric" },
+        Pass: { key: "pass", type: "number" },
         Title: { key: "title", type: "string" },
         UUID: { key: "uuid", type: "string" },
-        Year: { key: "year", type: "numeric" },
+        Year: { key: "year", type: "number" },
     },
     rooms: {
         "Full Name": { key: "fullname", type: "string" },
@@ -49,9 +52,9 @@ const strQueryColNamesToKeyAndType: {
         "Type": { key: "type", type: "string" },
         "Furniture": { key: "furniture", type: "string" },
         "Link": { key: "href", type: "string" },
-        "Latitude": { key: "lat", type: "numeric" },
-        "Longitude": { key: "lon", type: "numeric" },
-        "Seats": { key: "seats", type: "numeric" },
+        "Latitude": { key: "lat", type: "number" },
+        "Longitude": { key: "lon", type: "number" },
+        "Seats": { key: "seats", type: "number" },
     },
 };
 
@@ -163,6 +166,7 @@ export default class QueryParser {
         const { ID: id, KIND: kind } = query;
 
         const filter = this.parseWHERE(query.WHERE);
+        Log.trace(filter.toString());
         const display = query.OPTIONS.COLUMNS;
 
         // Begin constructing QueryAST
@@ -546,11 +550,11 @@ export default class QueryParser {
      */
     private validateEBNFQuery(query: InsightEBNFQuery): boolean {
         // Validate Dataset Name
-        if (!query.ID) {
+        if (!query.ID || typeof query.ID !== "string") {
             this.rejectQuery(`Invalid Query: No Dataset ID was given`);
         }
 
-        const queryID = query.ID;
+        const queryID: string = query.ID;
 
         // Validate id and kind
         if (
@@ -569,6 +573,16 @@ export default class QueryParser {
                 `Invalid Query: Dataset KIND can only be 'courses' or 'rooms', got: ${query.KIND}`,
             );
         }
+
+        // Validate WHERE Section of query
+        if (!query.WHERE || typeof query.WHERE !== "object") {
+            this.rejectQuery(
+                `Invalid Query: Query contained no valid WHERE section - include WHERE:{} if no filters are required`,
+            );
+        }
+
+        // Recursively validate all of WHERE
+        this.validateWhere(queryID, query.KIND, query.WHERE);
 
         // Validate COLUMNS Section of query
         if (
@@ -654,10 +668,7 @@ export default class QueryParser {
                         );
 
                     // Ensure the aggregation operation is valid for the given column:
-                    if (
-                        aggInfo.aggType === "numeric" &&
-                        colType !== "numeric"
-                    ) {
+                    if (aggInfo.aggType === "number" && colType !== "number") {
                         this.rejectQuery(
                             `Invalid Query: Aggregation type ${aggName} cannot be applied to ${strColName} column`,
                         );
@@ -751,8 +762,105 @@ export default class QueryParser {
         return true;
     }
 
+    private validateWhere(
+        datasetID: string,
+        datasetKind: InsightDatasetKind,
+        whereObj: any,
+    ): boolean {
+        const conditionKey = Object.keys(whereObj)[0];
+
+        if (!conditionKey || Object.keys(whereObj).length > 1) {
+            this.rejectQuery(
+                `Invalid Query: Invalid WHERE section of query: ${JSON.stringify(
+                    whereObj,
+                )}`,
+            );
+        }
+
+        // Logical combination conditional -> process all sub-conditionals
+        if (conditionKey === "AND" || conditionKey === "OR") {
+            const conditionArr = whereObj[conditionKey];
+            if (
+                !conditionArr ||
+                !Array.isArray(conditionArr) ||
+                conditionArr.length !== 2
+            ) {
+                this.rejectQuery(
+                    `Invalid Query: Invalid WHERE logical condition: ${JSON.stringify(
+                        whereObj,
+                    )}`,
+                );
+            }
+
+            conditionArr.forEach((subCondition: any) => {
+                this.validateWhere(datasetID, datasetKind, subCondition);
+            });
+
+            return true;
+        }
+
+        // NOT logical conditional -> Validate its sub-condition
+        if (conditionKey === "NOT") {
+            const subCondition = whereObj[conditionKey];
+            return this.validateWhere(datasetID, datasetKind, subCondition);
+        }
+
+        // Single conditional
+        if (conditionKeyToIFilterInfo.hasOwnProperty(conditionKey)) {
+            if (
+                typeof whereObj[conditionKey] !== "object" ||
+                Object.keys(whereObj[conditionKey]).length !== 1
+            ) {
+                this.rejectQuery(
+                    `Invalid Query: Invalid WHERE single condition: ${JSON.stringify(
+                        whereObj,
+                    )}`,
+                );
+            }
+
+            // Check colName is valid for dataset ID and Kind
+            const colName = Object.keys(whereObj[conditionKey])[0];
+            this.validateEBNFColName(datasetID, datasetKind, colName);
+
+            // Check that condition value, conditionKey and column are all
+            // the same type (number or string):
+            const colKey = colName.split("_")[1];
+            const [stringColName, { type: colType }] =
+                this.getColDetailsFromKeyAndKind(colKey, datasetKind);
+
+            const conditionVal = whereObj[conditionKey][colName];
+            const valueType = typeof conditionVal;
+            const { conditionType } = conditionKeyToIFilterInfo[conditionKey];
+
+            if (valueType !== conditionType || colType !== conditionType) {
+                this.rejectQuery(
+                    `Invalid Query: Type mismatch in WHERE condition: ${JSON.stringify(
+                        whereObj,
+                    )}`,
+                );
+            }
+
+            // If the type is string, check that the string is valid (no '*' or '"')
+            if (
+                valueType === "string" &&
+                (conditionVal.includes("*") || conditionVal.includes('"'))
+            ) {
+                this.rejectQuery(
+                    `Invalid Query: WHERE condition string cannot include '*' or '_', got: ${conditionVal}`,
+                );
+            }
+
+            return true;
+        } else {
+            // Invalid condition key in WHERE
+            this.rejectQuery(
+                `Invalid Query: Invalid key in WHERE: ${conditionKey}`,
+            );
+        }
+    }
+
     /**
-     * Helper function to validate that a given column name in EBNF Query Qbject is valid
+     * Helper function to validate that a given column name in EBNF Query Object is valid
      * e.g. courses_avg is valid for a 'courses' kind dataset, where courses_furniture
      * would be invalid
      * @param datasetID the id of the dataset that is being queried
@@ -803,7 +911,7 @@ export default class QueryParser {
     private getColDetailsFromKeyAndKind(
         colKey: string,
         datasetKind: InsightDatasetKind,
-    ): [string, { key: string; type: "numeric" | "string" }] {
+    ): [string, { key: string; type: "number" | "string" }] {
         const validColNames = Object.entries(
             strQueryColNamesToKeyAndType[datasetKind],
         );
@@ -819,7 +927,8 @@ export default class QueryParser {
 
     /**
      * Parses the WHERE section of EBNF Query Object
-     * Returns an IFilter representing the given combination of Filters
+     * Assumes the Query Object has been validated
+     * Returns an IFilter representing the given combination of Conditions
      *
      * @param whereObj the nested WHERE (FILTER) Object from the EBNF Query Object
      */
@@ -829,8 +938,24 @@ export default class QueryParser {
             return new ALLFilter();
         }
 
-        // !!! Implement complete filter building
-        return new ALLFilter();
+        const conditionKey = Object.keys(whereObj)[0];
+
+        if (conditionKey === "AND" || conditionKey === "OR") {
+            const filter = conditionKey === "AND" ? ANDFilter : ORFilter;
+            return new filter(
+                this.parseWHERE(whereObj[conditionKey][0]),
+                this.parseWHERE(whereObj[conditionKey][1]),
+            );
+        } else if (conditionKey === "NOT") {
+            return new NOTFilter(this.parseWHERE(whereObj[conditionKey]));
+        } else {
+            // Single condition filter
+            const { filter } = conditionKeyToIFilterInfo[conditionKey];
+            const colName = Object.keys(whereObj[conditionKey])[0];
+            const columnValue = whereObj[conditionKey][colName];
+
+            return new filter(colName, columnValue);
+        }
     }
 
     /**
