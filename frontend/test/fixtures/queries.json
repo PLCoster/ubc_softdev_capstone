@@ -432,7 +432,7 @@
         }
     },
 
-    "query1": {
+    "ex_query1": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "IS": { "courses_dept": "cpsc" } },
@@ -584,6 +584,103 @@
                 { "maxSeats": { "MAX": "rooms_seats" } },
                 { "roomCount": { "COUNT": "rooms_number" } },
                 { "averageSeats": { "AVG": "rooms_seats" } }
+            ]
+        }
+    },
+
+    "rooms_query_9_two_filter_three_group_three_apply": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {
+            "AND": [
+                { "GT": { "rooms_seats": 50 } },
+                { "INC": { "rooms_address": "Mall" } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address",
+                "rooms_fullname",
+                "rooms_type",
+                "minSeats",
+                "maxSeats",
+                "sumSeats"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": ["minSeats", "maxSeats", "sumSeats"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["rooms_address", "rooms_fullname", "rooms_type"],
+            "APPLY": [
+                { "minSeats": { "MIN": "rooms_seats" } },
+                { "maxSeats": { "MAX": "rooms_seats" } },
+                { "sumSeats": { "SUM": "rooms_seats" } }
+            ]
+        }
+    },
+
+    "rooms_query_10_two_filter_three_group_three_apply": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {
+            "OR": [
+                { "GT": { "rooms_seats": 50 } },
+                { "INC": { "rooms_type": "General Purpose" } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address",
+                "rooms_fullname",
+                "rooms_type",
+                "minSeats",
+                "maxSeats",
+                "sumSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["minSeats", "maxSeats", "sumSeats"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["rooms_address", "rooms_fullname", "rooms_type"],
+            "APPLY": [
+                { "minSeats": { "MIN": "rooms_seats" } },
+                { "maxSeats": { "MAX": "rooms_seats" } },
+                { "sumSeats": { "SUM": "rooms_seats" } }
+            ]
+        }
+    },
+
+    "rooms_query_11_two_filter_three_group_two_apply": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {
+            "AND": [
+                { "NOT": { "GT": { "rooms_seats": 50 } } },
+                { "NOT": { "LT": { "rooms_seats": 25 } } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_address",
+                "rooms_fullname",
+                "rooms_type",
+                "numRooms",
+                "sumSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["numRooms", "sumSeats"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["rooms_address", "rooms_fullname", "rooms_type"],
+            "APPLY": [
+                { "numRooms": { "COUNT": "rooms_number" } },
+                { "sumSeats": { "SUM": "rooms_seats" } }
             ]
         }
     }

@@ -51,7 +51,7 @@
 
     "courses_query25_filter_two_group_two_apply": "complex courses query with a filter, two GROUP, two APPLY, multiple column ordering by APPLY columns",
 
-    "query1": "simple query IS comparison for department with two columns and old order syntax",
+    "ex_query1": "simple query IS comparison for department with two columns and old order syntax",
 
     "rooms_query0_all": "simple rooms query for all entries, all columns",
 
@@ -69,5 +69,11 @@
 
     "rooms_query7_group_address_SUM_seats": "rooms query for all entries, grouping by address and SUM seats, displaying both, ordered descending by SUM seats",
 
-    "rooms_query8_group_multiple_apply_multiple": "rooms query for all entries, grouping by multiple columns and applying all aggregators, ordered descending by multiple keys"
+    "rooms_query8_group_multiple_apply_multiple": "rooms query for all entries, grouping by multiple columns and applying all aggregators, ordered descending by multiple keys",
+
+    "rooms_query_9_two_filter_three_group_three_apply": "complex rooms query with two filters on 'all of the following' setting, three GROUP, three APPLY, multiple column ordering by APPLY columns",
+
+    "rooms_query_10_two_filter_three_group_three_apply": "complex rooms query with two filters on 'any of the following' setting, three GROUP, three APPLY, multiple column ordering by APPLY columns",
+
+    "rooms_query_11_two_filter_three_group_two_apply": "complex rooms query with two filters on 'none of the following' setting, three GROUP, two APPLY, multiple column ordering by APPLY columns"
 }
