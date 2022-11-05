@@ -581,8 +581,10 @@ export default class QueryParser {
             );
         }
 
-        // Recursively validate all of WHERE
-        this.validateWhere(queryID, query.KIND, query.WHERE);
+        if (Object.keys(query.WHERE).length > 0) {
+            // Recursively validate all of WHERE
+            this.validateWhere(queryID, query.KIND, query.WHERE);
+        }
 
         // Validate COLUMNS Section of query
         if (
