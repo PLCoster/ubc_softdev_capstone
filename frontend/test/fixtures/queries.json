@@ -295,6 +295,143 @@
         }
     },
 
+    "courses_query22_multiple_filters_all": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "AND": [
+                {
+                    "AND": [
+                        { "INC": { "courses_dept": "math" } },
+                        { "GT": { "courses_avg": 85 } }
+                    ]
+                },
+                { "NOT": { "EQ": { "courses_fail": 0 } } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg",
+                "courses_dept",
+                "courses_fail",
+                "courses_pass",
+                "courses_title",
+                "courses_year"
+            ]
+        }
+    },
+
+    "courses_query23_multiple_filters_any": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "OR": [
+                {
+                    "OR": [
+                        {
+                            "OR": [
+                                {
+                                    "INC": {
+                                        "courses_instructor": "macdonald"
+                                    }
+                                },
+                                {
+                                    "INC": {
+                                        "courses_instructor": "bauerschmidt"
+                                    }
+                                }
+                            ]
+                        },
+                        { "INC": { "courses_instructor": "bennet" } }
+                    ]
+                },
+                { "INC": { "courses_instructor": "pollack" } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_instructor",
+                "courses_title",
+                "courses_year"
+            ]
+        }
+    },
+
+    "courses_query24_multiple_filters_none": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "AND": [
+                {
+                    "AND": [
+                        {
+                            "AND": [
+                                {
+                                    "AND": [
+                                        {
+                                            "IS": {
+                                                "courses_dept": "math"
+                                            }
+                                        },
+                                        {
+                                            "NOT": {
+                                                "INC": {
+                                                    "courses_instructor": "bauerschmidt"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "NOT": {
+                                        "INC": {
+                                            "courses_instructor": "bennet"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "NOT": {
+                                "INC": { "courses_instructor": "pollack" }
+                            }
+                        }
+                    ]
+                },
+                { "NOT": { "IS": { "courses_instructor": "" } } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_instructor",
+                "courses_title",
+                "courses_year"
+            ]
+        }
+    },
+
+    "courses_query25_filter_two_group_two_apply": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "INC": { "courses_title": "biol" } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_title", "avgGrade", "sumPass"],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["sumPass", "avgGrade"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept", "courses_title"],
+            "APPLY": [
+                { "avgGrade": { "AVG": "courses_avg" } },
+                { "sumPass": { "SUM": "courses_pass" } }
+            ]
+        }
+    },
+
     "query1": {
         "ID": "courses",
         "KIND": "courses",

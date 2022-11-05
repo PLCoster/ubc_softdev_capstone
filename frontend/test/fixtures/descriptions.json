@@ -43,6 +43,14 @@
 
     "courses_query21_two_filters_none": "courses query with two filters (Department IS NOT 'math' AND Pass LT 100), on 'none of the following' setting",
 
+    "courses_query22_multiple_filters_all": "courses query with three filters, on 'all of the following' setting",
+
+    "courses_query23_multiple_filters_any": "courses query with four filters, on 'any of the following' setting",
+
+    "courses_query24_multiple_filters_none": "courses query with five filters, on 'none of the following' setting",
+
+    "courses_query25_filter_two_group_two_apply": "complex courses query with a filter, two GROUP, two APPLY, multiple column ordering by APPLY columns",
+
     "query1": "simple query IS comparison for department with two columns and old order syntax",
 
     "rooms_query0_all": "simple rooms query for all entries, all columns",
