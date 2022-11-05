@@ -697,7 +697,204 @@ describe("Server Tests", function () {
     });
 
     // QUERY DATASETS (POST) ROUTE TESTS
-    it("POST /query with valid query on loaded dataset -> returns 200 and query result", function () {
+    it("POST /query with invalid query string -> returns 400 and error", function () {
+        const kind = "courses";
+        const id = "coursesTwoEntries";
+        const dataset = `In ${kind} dataset ${id}, `;
+        const filter = "WHERE *; ";
+        const display =
+            "SELECT Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.";
+
+        const queryString = dataset + filter + display;
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryString)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    400,
+                    "Expect response status to be 400",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    it("POST /query with invalid query object -> returns 400 and error", function () {
+        const queryObj = {
+            FROM: "coursesTwoEntries",
+            KIND: "courses",
+            WHERE: {},
+            OPTIONS: {
+                SELECT: [
+                    "coursesTwoEntries_audit",
+                    "coursesTwoEntries_avg",
+                    "coursesTwoEntries_dept",
+                    "coursesTwoEntries_fail",
+                    "coursesTwoEntries_id",
+                    "coursesTwoEntries_instructor",
+                    "coursesTwoEntries_pass",
+                    "coursesTwoEntries_title",
+                    "coursesTwoEntries_uuid",
+                    "coursesTwoEntries_year",
+                ],
+            },
+        };
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryObj)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    400,
+                    "Expect response status to be 400",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    it("POST /query with valid query string for unloaded dataset -> returns 400 and error", function () {
+        const kind = "courses";
+        const id = "unloadedCoursesDataset";
+        const dataset = `In ${kind} dataset ${id}, `;
+        const filter = "find all entries; ";
+        const display =
+            "show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.";
+
+        const queryString = dataset + filter + display;
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryString)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    400,
+                    "Expect response status to be 400",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    it("POST /query with valid query object for unloaded dataset -> returns 400 and error", function () {
+        const queryObj = {
+            ID: "unloadedCoursesDataset",
+            KIND: "courses",
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "coursesTwoEntries_audit",
+                    "coursesTwoEntries_avg",
+                    "coursesTwoEntries_dept",
+                    "coursesTwoEntries_fail",
+                    "coursesTwoEntries_id",
+                    "coursesTwoEntries_instructor",
+                    "coursesTwoEntries_pass",
+                    "coursesTwoEntries_title",
+                    "coursesTwoEntries_uuid",
+                    "coursesTwoEntries_year",
+                ],
+            },
+        };
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryObj)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    400,
+                    "Expect response status to be 400",
+                );
+                expect(response.response.body).to.have.property("error");
+            });
+    });
+
+    const coursesQueryExpectedResult = [
+        {
+            coursesTwoEntries_audit: 0,
+            coursesTwoEntries_avg: 86.65,
+            coursesTwoEntries_dept: "adhe",
+            coursesTwoEntries_fail: 0,
+            coursesTwoEntries_id: "327",
+            coursesTwoEntries_instructor: "smulders, dave",
+            coursesTwoEntries_pass: 23,
+            coursesTwoEntries_title: "teach adult",
+            coursesTwoEntries_uuid: "17255",
+            coursesTwoEntries_year: 2010,
+        },
+        {
+            coursesTwoEntries_audit: 10,
+            coursesTwoEntries_avg: 80.13,
+            coursesTwoEntries_dept: "phar",
+            coursesTwoEntries_fail: 25,
+            coursesTwoEntries_id: "454",
+            coursesTwoEntries_instructor: "carr, roxane",
+            coursesTwoEntries_pass: 221,
+            coursesTwoEntries_title: "ped geri drg thp",
+            coursesTwoEntries_uuid: "83080",
+            coursesTwoEntries_year: 2014,
+        },
+    ];
+
+    it("POST /query with valid courses query string on loaded dataset -> returns 200 and query result", function () {
         const kind = "courses";
         const id = "coursesTwoEntries";
         const dataset = `In ${kind} dataset ${id}, `;
@@ -706,32 +903,7 @@ describe("Server Tests", function () {
             "show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.";
 
         const queryString = dataset + filter + display;
-        const expectedResult = [
-            {
-                coursesTwoEntries_audit: 0,
-                coursesTwoEntries_avg: 86.65,
-                coursesTwoEntries_dept: "adhe",
-                coursesTwoEntries_fail: 0,
-                coursesTwoEntries_id: "327",
-                coursesTwoEntries_instructor: "smulders, dave",
-                coursesTwoEntries_pass: 23,
-                coursesTwoEntries_title: "teach adult",
-                coursesTwoEntries_uuid: "17255",
-                coursesTwoEntries_year: 2010,
-            },
-            {
-                coursesTwoEntries_audit: 10,
-                coursesTwoEntries_avg: 80.13,
-                coursesTwoEntries_dept: "phar",
-                coursesTwoEntries_fail: 25,
-                coursesTwoEntries_id: "454",
-                coursesTwoEntries_instructor: "carr, roxane",
-                coursesTwoEntries_pass: 221,
-                coursesTwoEntries_title: "ped geri drg thp",
-                coursesTwoEntries_uuid: "83080",
-                coursesTwoEntries_year: 2014,
-            },
-        ];
+
         let response: Response | any;
 
         return chai
@@ -756,8 +928,183 @@ describe("Server Tests", function () {
                     "Expect response status to be 200",
                 );
                 expect(response.body).to.have.property("result");
-                Log.info(JSON.stringify(response.body));
-                expect(response.body.result).to.deep.equal(expectedResult);
+                expect(response.body.result).to.deep.equal(
+                    coursesQueryExpectedResult,
+                );
+            });
+    });
+
+    it("POST /query with valid courses query object on loaded dataset -> returns 200 and query result", function () {
+        const queryObj = {
+            ID: "coursesTwoEntries",
+            KIND: "courses",
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "coursesTwoEntries_audit",
+                    "coursesTwoEntries_avg",
+                    "coursesTwoEntries_dept",
+                    "coursesTwoEntries_fail",
+                    "coursesTwoEntries_id",
+                    "coursesTwoEntries_instructor",
+                    "coursesTwoEntries_pass",
+                    "coursesTwoEntries_title",
+                    "coursesTwoEntries_uuid",
+                    "coursesTwoEntries_year",
+                ],
+            },
+        };
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryObj)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    200,
+                    "Expect response status to be 200",
+                );
+                expect(response.body).to.have.property("result");
+                expect(response.body.result).to.deep.equal(
+                    coursesQueryExpectedResult,
+                );
+            });
+    });
+
+    const roomsQueryExpectedResult = [
+        {
+            roomsTwoEntries_fullname: "Allard Hall (LAW)",
+            roomsTwoEntries_shortname: "ALRD",
+            roomsTwoEntries_number: "105",
+            roomsTwoEntries_name: "ALRD_105",
+            roomsTwoEntries_address: "1822 East Mall",
+            roomsTwoEntries_lat: 49.2699,
+            roomsTwoEntries_lon: -123.25318,
+            roomsTwoEntries_seats: 94,
+            roomsTwoEntries_type: "Case Style",
+            roomsTwoEntries_furniture: "Classroom-Fixed Tables/Movable Chairs",
+            roomsTwoEntries_href:
+                "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/ALRD-105",
+        },
+        {
+            roomsTwoEntries_fullname: "Aquatic Ecosystems Research Laboratory",
+            roomsTwoEntries_shortname: "AERL",
+            roomsTwoEntries_number: "120",
+            roomsTwoEntries_name: "AERL_120",
+            roomsTwoEntries_address: "2202 Main Mall",
+            roomsTwoEntries_lat: 49.26372,
+            roomsTwoEntries_lon: -123.25099,
+            roomsTwoEntries_seats: 144,
+            roomsTwoEntries_type: "Tiered Large Group",
+            roomsTwoEntries_furniture: "Classroom-Fixed Tablets",
+            roomsTwoEntries_href:
+                "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/AERL-120",
+        },
+    ];
+
+    it("POST /query with valid rooms query string on loaded dataset -> returns 200 and query result", function () {
+        const kind = "rooms";
+        const id = "roomsTwoEntries";
+        const dataset = `In ${kind} dataset ${id}, `;
+        const filter = "find all entries; ";
+        const display =
+            "show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.";
+
+        const queryString = dataset + filter + display;
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryString)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    200,
+                    "Expect response status to be 200",
+                );
+                expect(response.body).to.have.property("result");
+                expect(response.body.result).to.deep.equal(
+                    roomsQueryExpectedResult,
+                );
+            });
+    });
+
+    it("POST /query with valid rooms query object on loaded dataset -> returns 200 and query result", function () {
+        const queryObj = {
+            ID: "roomsTwoEntries",
+            KIND: "rooms",
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "roomsTwoEntries_fullname",
+                    "roomsTwoEntries_shortname",
+                    "roomsTwoEntries_number",
+                    "roomsTwoEntries_name",
+                    "roomsTwoEntries_address",
+                    "roomsTwoEntries_lat",
+                    "roomsTwoEntries_lon",
+                    "roomsTwoEntries_seats",
+                    "roomsTwoEntries_type",
+                    "roomsTwoEntries_furniture",
+                    "roomsTwoEntries_href",
+                ],
+            },
+        };
+
+        let response: Response | any;
+
+        return chai
+            .request(SERVER_URL)
+            .post(`/query`)
+            .send(queryObj)
+            .then((res: Response) => {
+                Log.test(
+                    `Successful Response Received: [Status: ${res.status}, Type: ${res.type}]`,
+                );
+                response = res;
+            })
+            .catch((errRes) => {
+                Log.test(
+                    `Bad Response Received: [Status: ${errRes.status}, Type: ${errRes.response.type}]`,
+                );
+                response = errRes;
+            })
+            .then(() => {
+                expect(response.status).to.equal(
+                    200,
+                    "Expect response status to be 200",
+                );
+                expect(response.body).to.have.property("result");
+                expect(response.body.result).to.deep.equal(
+                    roomsQueryExpectedResult,
+                );
             });
     });
 
