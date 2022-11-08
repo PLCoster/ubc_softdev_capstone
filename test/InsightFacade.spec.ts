@@ -17,6 +17,7 @@ import TestUtil from "./TestUtil";
 export interface ITestQuery {
     title: string;
     query: any; // make any to allow testing structurally invalid queries
+    EBNFQuery?: any; // as above
     response: InsightResponse;
     filename: string; // This is injected when reading the file
 }
@@ -423,7 +424,7 @@ describe("InsightFacade PerformQuery", () => {
 
     // Dynamically create and run a test for each query in testQueries
     it("Should run test queries", () => {
-        describe("Dynamic InsightFacade PerformQuery tests", () => {
+        describe("Dynamic InsightFacade PerformQuery tests with String Queries", () => {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, async () => {
                     let response: InsightResponse;
@@ -449,6 +450,44 @@ describe("InsightFacade PerformQuery", () => {
                         }
                     }
                 });
+            }
+        });
+
+        describe("Dynamic InsightFacade PerformQuery tests with EBNF AST Queries", () => {
+            for (const test of testQueries) {
+                if (test.EBNFQuery) {
+                    it(`[${test.filename}] ${test.title}`, async () => {
+                        let response: InsightResponse;
+
+                        try {
+                            response = await insightFacade.performQuery(
+                                test.EBNFQuery,
+                            );
+                        } catch (err) {
+                            response = err;
+                        } finally {
+                            expect(response.code).to.equal(test.response.code);
+
+                            if (test.response.code >= 400) {
+                                expect(response.body).to.have.property("error");
+                            } else {
+                                expect(response.body).to.have.property(
+                                    "result",
+                                );
+                                const expectedResult = (
+                                    test.response
+                                        .body as InsightResponseSuccessBody
+                                ).result;
+                                const actualResult = (
+                                    response.body as InsightResponseSuccessBody
+                                ).result;
+                                expect(actualResult).to.deep.equal(
+                                    expectedResult,
+                                );
+                            }
+                        }
+                    });
+                }
             }
         });
     });
