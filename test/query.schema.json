@@ -11,7 +11,10 @@
             "maxLength": 100
         },
         "query": {
-            "description": "The query that will be sent to performQuery"
+            "description": "The query string that will be sent to performQuery"
+        },
+        "EBNFQuery": {
+            "description": "The equivalent query in EBNF Object format"
         },
         "response": {
             "description": "The expected response from performQuery",
