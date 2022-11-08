@@ -3,12 +3,12 @@
     "query": "In courses dataset coursesSingleEntry, find all entries; show Title.",
     "response": {
         "code": 200,
-        "body": {
-            "result": [
-                {
-                    "coursesSingleEntry_title": "teach adult"
-                }
-            ]
-        }
+        "body": { "result": [{ "coursesSingleEntry_title": "teach adult" }] }
+    },
+    "EBNFQuery": {
+        "ID": "coursesSingleEntry",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesSingleEntry_title"] }
     }
 }

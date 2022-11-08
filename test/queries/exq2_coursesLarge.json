@@ -287,5 +287,28 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courseslarge",
+        "KIND": "courses",
+        "WHERE": {
+            "OR": [
+                {
+                    "AND": [
+                        { "GT": { "courseslarge_avg": 90 } },
+                        { "IS": { "courseslarge_dept": "adhe" } }
+                    ]
+                },
+                { "EQ": { "courseslarge_avg": 95 } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courseslarge_dept",
+                "courseslarge_id",
+                "courseslarge_avg"
+            ],
+            "ORDER": { "dir": "UP", "keys": ["courseslarge_avg"] }
+        }
     }
 }

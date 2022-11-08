@@ -56,5 +56,14 @@
                 { "courseslarge_dept": "math", "courseslarge_avg": 99.78 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courseslarge",
+        "KIND": "courses",
+        "WHERE": { "GT": { "courseslarge_avg": 97 } },
+        "OPTIONS": {
+            "COLUMNS": ["courseslarge_dept", "courseslarge_avg"],
+            "ORDER": { "dir": "UP", "keys": ["courseslarge_avg"] }
+        }
     }
 }

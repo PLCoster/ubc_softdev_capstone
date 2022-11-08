@@ -105,5 +105,12 @@
                 { "courses_dept": "math", "courses_title": "msc major essay" }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "IS": { "courses_dept": "math" } },
+        "OPTIONS": { "COLUMNS": ["courses_dept", "courses_title"] },
+        "TRANSFORMATIONS": { "GROUP": ["courses_dept", "courses_title"] }
     }
 }

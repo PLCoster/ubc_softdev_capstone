@@ -18,5 +18,24 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": { "IS": { "coursesTwoEntries_instructor": "smulders, dave" } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesTwoEntries_audit",
+                "coursesTwoEntries_avg",
+                "coursesTwoEntries_dept",
+                "coursesTwoEntries_fail",
+                "coursesTwoEntries_id",
+                "coursesTwoEntries_instructor",
+                "coursesTwoEntries_pass",
+                "coursesTwoEntries_title",
+                "coursesTwoEntries_uuid"
+            ],
+            "ORDER": { "dir": "UP", "keys": ["coursesTwoEntries_id"] }
+        }
     }
 }

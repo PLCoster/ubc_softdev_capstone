@@ -5,15 +5,19 @@
         "code": 200,
         "body": {
             "result": [
-                {
-                    "coursesFourEntries_dept": "adhe",
-                    "maxPass": 42
-                },
-                {
-                    "coursesFourEntries_dept": "phar",
-                    "maxPass": 221
-                }
+                { "coursesFourEntries_dept": "adhe", "maxPass": 42 },
+                { "coursesFourEntries_dept": "phar", "maxPass": 221 }
             ]
+        }
+    },
+    "EBNFQuery": {
+        "ID": "coursesFourEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesFourEntries_dept", "maxPass"] },
+        "TRANSFORMATIONS": {
+            "GROUP": ["coursesFourEntries_dept"],
+            "APPLY": [{ "maxPass": { "MAX": "coursesFourEntries_pass" } }]
         }
     }
 }

@@ -20,5 +20,25 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "roomsSingleRoom_fullname",
+                "roomsSingleRoom_shortname",
+                "roomsSingleRoom_number",
+                "roomsSingleRoom_name",
+                "roomsSingleRoom_address",
+                "roomsSingleRoom_type",
+                "roomsSingleRoom_furniture",
+                "roomsSingleRoom_href",
+                "roomsSingleRoom_lat",
+                "roomsSingleRoom_lon",
+                "roomsSingleRoom_seats"
+            ]
+        }
     }
 }

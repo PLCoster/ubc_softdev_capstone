@@ -10,5 +10,11 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["roomsSingleRoom_fullname"] }
     }
 }

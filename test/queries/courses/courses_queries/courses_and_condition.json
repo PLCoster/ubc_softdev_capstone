@@ -34,5 +34,16 @@
                 { "courses_audit": 2 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "AND": [
+                { "IS": { "courses_dept": "math" } },
+                { "GT": { "courses_audit": 1 } }
+            ]
+        },
+        "OPTIONS": { "COLUMNS": ["courses_audit"] }
     }
 }

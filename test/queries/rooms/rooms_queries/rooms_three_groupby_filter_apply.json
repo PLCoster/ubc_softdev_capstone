@@ -313,5 +313,22 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": { "INC": { "rooms_address": "Mall" } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "rooms_shortname",
+                "rooms_type",
+                "minSeats"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["rooms_fullname", "rooms_shortname", "rooms_type"],
+            "APPLY": [{ "minSeats": { "MIN": "rooms_seats" } }]
+        }
     }
 }

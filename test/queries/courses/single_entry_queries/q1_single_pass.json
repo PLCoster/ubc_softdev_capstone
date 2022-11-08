@@ -3,12 +3,12 @@
     "query": "In courses dataset coursesSingleEntry, find all entries; show Pass.",
     "response": {
         "code": 200,
-        "body": {
-            "result": [
-                {
-                    "coursesSingleEntry_pass": 23
-                }
-            ]
-        }
+        "body": { "result": [{ "coursesSingleEntry_pass": 23 }] }
+    },
+    "EBNFQuery": {
+        "ID": "coursesSingleEntry",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesSingleEntry_pass"] }
     }
 }

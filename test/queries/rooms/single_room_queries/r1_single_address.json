@@ -3,12 +3,12 @@
     "query": "In rooms dataset roomsSingleRoom, find all entries; show Address.",
     "response": {
         "code": 200,
-        "body": {
-            "result": [
-                {
-                    "roomsSingleRoom_address": "2202 Main Mall"
-                }
-            ]
-        }
+        "body": { "result": [{ "roomsSingleRoom_address": "2202 Main Mall" }] }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["roomsSingleRoom_address"] }
     }
 }

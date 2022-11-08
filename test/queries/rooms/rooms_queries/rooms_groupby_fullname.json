@@ -50,5 +50,12 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["rooms_fullname"] },
+        "TRANSFORMATIONS": { "GROUP": ["rooms_fullname"] }
     }
 }

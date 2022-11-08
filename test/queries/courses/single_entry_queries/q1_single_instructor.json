@@ -4,11 +4,13 @@
     "response": {
         "code": 200,
         "body": {
-            "result": [
-                {
-                    "coursesSingleEntry_instructor": "smulders, dave"
-                }
-            ]
+            "result": [{ "coursesSingleEntry_instructor": "smulders, dave" }]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesSingleEntry",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesSingleEntry_instructor"] }
     }
 }

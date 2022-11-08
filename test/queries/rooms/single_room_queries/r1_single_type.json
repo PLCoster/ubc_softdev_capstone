@@ -3,12 +3,12 @@
     "query": "In rooms dataset roomsSingleRoom, find all entries; show Type.",
     "response": {
         "code": 200,
-        "body": {
-            "result": [
-                {
-                    "roomsSingleRoom_type": "Tiered Large Group"
-                }
-            ]
-        }
+        "body": { "result": [{ "roomsSingleRoom_type": "Tiered Large Group" }] }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["roomsSingleRoom_type"] }
     }
 }

@@ -192,5 +192,17 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["rooms_fullname", "rooms_lat", "rooms_lon"],
+            "ORDER": { "dir": "UP", "keys": ["rooms_lat", "rooms_lon"] }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["rooms_fullname", "rooms_lat", "rooms_lon"]
+        }
     }
 }

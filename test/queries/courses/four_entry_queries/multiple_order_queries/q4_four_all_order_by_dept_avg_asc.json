@@ -55,5 +55,28 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesFourEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesFourEntries_audit",
+                "coursesFourEntries_avg",
+                "coursesFourEntries_dept",
+                "coursesFourEntries_fail",
+                "coursesFourEntries_id",
+                "coursesFourEntries_instructor",
+                "coursesFourEntries_pass",
+                "coursesFourEntries_title",
+                "coursesFourEntries_uuid",
+                "coursesFourEntries_year"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": ["coursesFourEntries_dept", "coursesFourEntries_avg"]
+            }
+        }
     }
 }

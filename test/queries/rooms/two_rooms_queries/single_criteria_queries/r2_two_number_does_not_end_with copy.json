@@ -20,5 +20,25 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "roomsTwoRooms",
+        "KIND": "rooms",
+        "WHERE": { "NOT": { "END": { "roomsTwoRooms_number": "5" } } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "roomsTwoRooms_fullname",
+                "roomsTwoRooms_shortname",
+                "roomsTwoRooms_number",
+                "roomsTwoRooms_name",
+                "roomsTwoRooms_address",
+                "roomsTwoRooms_type",
+                "roomsTwoRooms_furniture",
+                "roomsTwoRooms_href",
+                "roomsTwoRooms_lat",
+                "roomsTwoRooms_lon",
+                "roomsTwoRooms_seats"
+            ]
+        }
     }
 }

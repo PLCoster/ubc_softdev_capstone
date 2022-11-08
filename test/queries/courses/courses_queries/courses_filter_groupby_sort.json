@@ -622,5 +622,17 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "GT": { "courses_avg": 95 } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_title", "courses_avg"],
+            "ORDER": { "dir": "DOWN", "keys": ["courses_avg"] }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept", "courses_title", "courses_avg"]
+        }
     }
 }

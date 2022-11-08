@@ -5,10 +5,14 @@
         "code": 200,
         "body": {
             "result": [
-                {
-                    "roomsSingleRoom_furniture": "Classroom-Fixed Tablets"
-                }
+                { "roomsSingleRoom_furniture": "Classroom-Fixed Tablets" }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["roomsSingleRoom_furniture"] }
     }
 }

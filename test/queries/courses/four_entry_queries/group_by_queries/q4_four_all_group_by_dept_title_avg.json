@@ -27,5 +27,24 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesFourEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesFourEntries_dept",
+                "coursesFourEntries_title",
+                "coursesFourEntries_avg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "coursesFourEntries_dept",
+                "coursesFourEntries_title",
+                "coursesFourEntries_avg"
+            ]
+        }
     }
 }

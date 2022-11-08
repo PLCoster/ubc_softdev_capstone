@@ -4,5 +4,15 @@
     "response": {
         "code": 200,
         "body": { "result": [{ "courses_dept": "cpsc", "avgGrade": 77.58 }] }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "IS": { "courses_dept": "cpsc" } },
+        "OPTIONS": { "COLUMNS": ["courses_dept", "avgGrade"] },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "avgGrade": { "AVG": "courses_avg" } }]
+        }
     }
 }

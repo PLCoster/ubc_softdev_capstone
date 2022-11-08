@@ -19,5 +19,24 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesSingleEntry",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesSingleEntry_audit",
+                "coursesSingleEntry_avg",
+                "coursesSingleEntry_dept",
+                "coursesSingleEntry_fail",
+                "coursesSingleEntry_id",
+                "coursesSingleEntry_instructor",
+                "coursesSingleEntry_pass",
+                "coursesSingleEntry_title",
+                "coursesSingleEntry_uuid",
+                "coursesSingleEntry_year"
+            ]
+        }
     }
 }

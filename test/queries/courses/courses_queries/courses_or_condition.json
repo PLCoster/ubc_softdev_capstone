@@ -292,5 +292,18 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {
+            "OR": [
+                { "INC": { "courses_instructor": "bentall" } },
+                { "GT": { "courses_audit": 7 } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_instructor", "courses_dept", "courses_audit"]
+        }
     }
 }

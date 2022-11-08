@@ -294,5 +294,31 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "INC": { "courses_title": "biol" } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_title",
+                "avgGrade",
+                "minGrade",
+                "maxGrade"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["avgGrade", "minGrade", "maxGrade"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept", "courses_title"],
+            "APPLY": [
+                { "avgGrade": { "AVG": "courses_avg" } },
+                { "minGrade": { "MIN": "courses_avg" } },
+                { "maxGrade": { "MAX": "courses_avg" } }
+            ]
+        }
     }
 }

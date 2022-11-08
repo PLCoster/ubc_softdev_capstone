@@ -3,12 +3,12 @@
     "query": "In rooms dataset roomsSingleRoom, find all entries; show Name.",
     "response": {
         "code": 200,
-        "body": {
-            "result": [
-                {
-                    "roomsSingleRoom_name": "AERL_120"
-                }
-            ]
-        }
+        "body": { "result": [{ "roomsSingleRoom_name": "AERL_120" }] }
+    },
+    "EBNFQuery": {
+        "ID": "roomsSingleRoom",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["roomsSingleRoom_name"] }
     }
 }

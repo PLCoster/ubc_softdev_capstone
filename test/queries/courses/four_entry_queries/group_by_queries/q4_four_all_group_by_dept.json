@@ -5,13 +5,16 @@
         "code": 200,
         "body": {
             "result": [
-                {
-                    "coursesFourEntries_dept": "adhe"
-                },
-                {
-                    "coursesFourEntries_dept": "phar"
-                }
+                { "coursesFourEntries_dept": "adhe" },
+                { "coursesFourEntries_dept": "phar" }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "coursesFourEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesFourEntries_dept"] },
+        "TRANSFORMATIONS": { "GROUP": ["coursesFourEntries_dept"] }
     }
 }

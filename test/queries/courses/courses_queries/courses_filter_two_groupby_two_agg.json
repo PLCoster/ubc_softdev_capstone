@@ -253,5 +253,21 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": { "INC": { "courses_title": "biol" } },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "courses_title", "avgGrade", "sumPass"],
+            "ORDER": { "dir": "DOWN", "keys": ["sumPass", "avgGrade"] }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept", "courses_title"],
+            "APPLY": [
+                { "avgGrade": { "AVG": "courses_avg" } },
+                { "sumPass": { "SUM": "courses_pass" } }
+            ]
+        }
     }
 }

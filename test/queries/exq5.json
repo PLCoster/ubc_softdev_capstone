@@ -17,5 +17,19 @@
                 }
             ]
         }
+    },
+    "EBNFQuery": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {
+            "AND": [
+                { "IS": { "rooms_shortname": "ESB" } },
+                { "GT": { "rooms_seats": 100 } }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": ["rooms_shortname", "rooms_number", "rooms_seats"],
+            "ORDER": { "dir": "UP", "keys": ["rooms_seats"] }
+        }
     }
 }

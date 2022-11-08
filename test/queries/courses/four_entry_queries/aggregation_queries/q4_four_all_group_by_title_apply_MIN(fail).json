@@ -5,15 +5,22 @@
         "code": 200,
         "body": {
             "result": [
-                {
-                    "coursesFourEntries_title": "teach adult",
-                    "minFail": 0
-                },
+                { "coursesFourEntries_title": "teach adult", "minFail": 0 },
                 {
                     "coursesFourEntries_title": "ped geri drg thp",
                     "minFail": 25
                 }
             ]
+        }
+    },
+    "EBNFQuery": {
+        "ID": "coursesFourEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": { "COLUMNS": ["coursesFourEntries_title", "minFail"] },
+        "TRANSFORMATIONS": {
+            "GROUP": ["coursesFourEntries_title"],
+            "APPLY": [{ "minFail": { "MIN": "coursesFourEntries_fail" } }]
         }
     }
 }
