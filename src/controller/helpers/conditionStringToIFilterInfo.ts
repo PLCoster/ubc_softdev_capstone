@@ -16,6 +16,7 @@ import {
  */
 
 interface IFilterInfo {
+    key: string;
     filter: new (...args: any) => IFilter;
     conditionType: "number" | "string";
     valueParser: (val: string) => number | string;
@@ -27,84 +28,98 @@ const stringValueParser = (val: string) => val.slice(1, -1);
 
 export const conditionStringToIFilterInfo: { [key: string]: IFilterInfo } = {
     "is equal to": {
+        key: "EQ",
         filter: EQFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: false,
     },
     "is not equal to": {
+        key: "EQ",
         filter: EQFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: true,
     },
     "is greater than": {
+        key: "GT",
         filter: GTFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: false,
     },
     "is not greater than": {
+        key: "GT",
         filter: GTFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: true,
     },
     "is less than": {
+        key: "LT",
         filter: LTFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: false,
     },
     "is not less than": {
+        key: "LT",
         filter: LTFilter,
         conditionType: "number",
         valueParser: parseFloat,
         negation: true,
     },
     "is": {
+        key: "IS",
         filter: EQFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: false,
     },
     "is not": {
+        key: "IS",
         filter: EQFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: true,
     },
     "includes": {
+        key: "INC",
         filter: INCFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: false,
     },
     "does not include": {
+        key: "INC",
         filter: INCFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: true,
     },
     "begins with": {
+        key: "BEG",
         filter: BEGFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: false,
     },
     "does not begin with": {
+        key: "BEG",
         filter: BEGFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: true,
     },
     "ends with": {
+        key: "END",
         filter: ENDFilter,
         conditionType: "string",
         valueParser: stringValueParser,
         negation: false,
     },
     "does not end with": {
+        key: "END",
         filter: ENDFilter,
         conditionType: "string",
         valueParser: stringValueParser,
