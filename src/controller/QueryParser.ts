@@ -166,7 +166,6 @@ export default class QueryParser {
         const { ID: id, KIND: kind } = query;
 
         const filter = this.parseWHERE(query.WHERE);
-        Log.trace(filter.toString());
         const display = query.OPTIONS.COLUMNS;
 
         // Begin constructing QueryAST
@@ -615,6 +614,8 @@ export default class QueryParser {
                 );
             }
 
+            const customAggNames = new Set();
+
             // Validate APPLY Section of Query Object
             if (queryApply !== undefined) {
                 if (!Array.isArray(queryApply) || queryApply.length === 0) {
@@ -625,7 +626,7 @@ export default class QueryParser {
 
                 queryApply.forEach((apply) => {
                     const name = Object.keys(apply)[0];
-                    const aggName = Object.keys(
+                    const aggOp = Object.keys(
                         apply[name],
                     )[0] as InsightAggregatorKind;
 
@@ -641,17 +642,24 @@ export default class QueryParser {
                         );
                     }
 
-                    // Check Aggregation Operation Name is valid
-                    if (
-                        !Object.values(InsightAggregatorKind).includes(aggName)
-                    ) {
+                    // Check custom Aggregation Name is unique
+                    if (customAggNames.has(name)) {
                         this.rejectQuery(
-                            `Invalid Query: Unrecognised Aggregation Operation: ${aggName}`,
+                            `Invalid Query: Multiple aggregations with the same now not allowed: ${name}`,
                         );
                     }
 
-                    const aggInfo = queryAggNameToIAggregatorInfo[aggName];
-                    const colName = apply[name][aggName];
+                    customAggNames.add(name);
+
+                    // Check Aggregation Operation Name is valid
+                    if (!Object.values(InsightAggregatorKind).includes(aggOp)) {
+                        this.rejectQuery(
+                            `Invalid Query: Unrecognised Aggregation Operation: ${aggOp}`,
+                        );
+                    }
+
+                    const aggInfo = queryAggNameToIAggregatorInfo[aggOp];
+                    const colName = apply[name][aggOp];
 
                     // Check the name of the column to be aggregated is valid
                     if (
@@ -672,7 +680,7 @@ export default class QueryParser {
                     // Ensure the aggregation operation is valid for the given column:
                     if (aggInfo.aggType === "number" && colType !== "number") {
                         this.rejectQuery(
-                            `Invalid Query: Aggregation type ${aggName} cannot be applied to ${strColName} column`,
+                            `Invalid Query: Aggregation type ${aggOp} cannot be applied to ${strColName} column`,
                         );
                     }
                 });
@@ -997,7 +1005,7 @@ export default class QueryParser {
         id: string,
         kind: InsightDatasetKind,
         applyARR: Array<{
-            [key: string]: { [key in InsightAggregatorKind]: string };
+            [key: string]: { [key in InsightAggregatorKind]?: string };
         }>,
     ): InsightQueryASTApplyObject[] {
         const applyObjArr: InsightQueryASTApplyObject[] = [];
