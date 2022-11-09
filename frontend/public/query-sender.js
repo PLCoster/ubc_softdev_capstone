@@ -6,8 +6,9 @@
  */
 CampusExplorer.sendQuery = (query) => {
     return new Promise((resolve, reject) => {
-        console.log("Sending new XML REQUEST");
+        console.log("Sending new QUERY XML REQUEST");
         const req = new XMLHttpRequest();
+
         req.onload = function () {
             const result = JSON.parse(this.response);
             console.log("XML REQUEST SUCCESS RESPONSE: ", result);
