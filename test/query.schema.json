@@ -10,11 +10,11 @@
             "minLength": 5,
             "maxLength": 100
         },
-        "query": {
+        "queryString": {
             "description": "The query string that will be sent to performQuery"
         },
-        "EBNFQuery": {
-            "description": "The equivalent query in EBNF Object format"
+        "queryAST": {
+            "description": "The equivalent query in EBNF AST Object format - note that not every string query has an equivalent AST"
         },
         "response": {
             "description": "The expected response from performQuery",
@@ -32,5 +32,5 @@
         }
     },
     "additionalProperties": false,
-    "required": ["title", "query", "response"]
+    "required": ["title", "queryString", "response"]
 }
