@@ -60,8 +60,8 @@
         "clean": "rm -rf ./node_modules/; rm -f .yarnclean",
         "lint": "eslint ./src ./test --ext .ts --no-eslintrc -c ./.eslintrc.js",
         "build": "tsc && yarn lint",
-        "test": "mocha --require ts-node/register --timeout 100000",
-        "test:frontend": "karma start",
-        "start": "node src/App.js"
+        "test": "NODE_ENV=test mocha --require ts-node/register --timeout 100000",
+        "test:frontend": "NODE_ENV=test karma start",
+        "start": "NODE_ENV=production node src/App.js"
     }
 }
