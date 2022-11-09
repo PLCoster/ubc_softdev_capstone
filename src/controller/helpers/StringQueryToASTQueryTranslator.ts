@@ -9,10 +9,9 @@ import {
     InsightASTQueryOrderDir,
     InsightASTQuery,
 } from "../IInsightFacade";
-import { OrderDirection } from "../DatasetQuerier";
+
 import { QuerySectionREs } from "./queryParserRegExs";
 
-import { IFilter, ALLFilter, NOTFilter, ANDFilter, ORFilter } from "../filters";
 import Log from "../../Util";
 
 import {
@@ -27,62 +26,17 @@ import {
     conditionKeyToIFilterInfo,
 } from "./conditionStringToIFilterInfo";
 import { queryAggNameToIAggregatorInfo } from "./queryAggNameToIAggregatorInfo";
-
-const strQueryColNamesToKeyAndType: {
-    [key in InsightDatasetKind]: {
-        [key: string]: { key: string; type: "number" | "string" };
-    };
-} = {
-    courses: {
-        Audit: { key: "audit", type: "number" },
-        Average: { key: "avg", type: "number" },
-        Department: { key: "dept", type: "string" },
-        Fail: { key: "fail", type: "number" },
-        ID: { key: "id", type: "string" },
-        Instructor: { key: "instructor", type: "string" },
-        Pass: { key: "pass", type: "number" },
-        Title: { key: "title", type: "string" },
-        UUID: { key: "uuid", type: "string" },
-        Year: { key: "year", type: "number" },
-    },
-    rooms: {
-        "Full Name": { key: "fullname", type: "string" },
-        "Short Name": { key: "shortname", type: "string" },
-        "Number": { key: "number", type: "string" },
-        "Name": { key: "name", type: "string" },
-        "Address": { key: "address", type: "string" },
-        "Type": { key: "type", type: "string" },
-        "Furniture": { key: "furniture", type: "string" },
-        "Link": { key: "href", type: "string" },
-        "Latitude": { key: "lat", type: "number" },
-        "Longitude": { key: "lon", type: "number" },
-        "Seats": { key: "seats", type: "number" },
-    },
-};
-
-// Produce flat object of mappings from String Query Column Name to Query Key
-// !!! Refactor alongside String Query Parser Refactoring
-const queryColNameStrToKeyStr: { [key: string]: string } = (() => {
-    const result: { [key: string]: string } = {};
-    Object.keys(strQueryColNamesToKeyAndType).forEach(
-        (kind: InsightDatasetKind) => {
-            Object.entries(strQueryColNamesToKeyAndType[kind]).forEach(
-                ([strQueryColName, { key: colQueryKey }]) => {
-                    result[strQueryColName] = colQueryKey;
-                },
-            );
-        },
-    );
-
-    return result;
-})();
+import {
+    queryColNameStrToKeyStr,
+    strQueryColNamesToKeyAndType,
+} from "./columnKeyInfo";
 
 // This class translates a valid query string into an Query AST Object
 // Used to translate tests previously written for string queries to AST Queries
 // SEE DRIVER SCRIPT BELOW
 export default class StringQueryToASTQueryTranslator {
     constructor() {
-        Log.trace("QueryParser::init()");
+        Log.trace("StringQueryToASTQueryTranslator::init()");
     }
 
     public translateQuery(queryStr: string): InsightASTQuery {
@@ -882,7 +836,7 @@ export default class StringQueryToASTQueryTranslator {
     }
 
     private rejectQuery(message: string) {
-        throw new Error(`queryParser.parseQuery ERROR: ${message}`);
+        throw new Error(`StringQueryToASTQueryTranslator ERROR: ${message}`);
     }
 }
 
