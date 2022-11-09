@@ -8,7 +8,8 @@ import {
 } from "./IInsightFacade";
 
 import DatasetLoader from "./DatasetLoader";
-import QueryParser from "./QueryParser";
+import QueryStringParser from "./QueryStringParser";
+import QueryASTTranslator from "./QueryASTTranslator";
 import DatasetQuerier from "./DatasetQuerier";
 import Log from "../Util";
 
@@ -17,13 +18,15 @@ import Log from "../Util";
  */
 export default class InsightFacade implements IInsightFacade {
     private datasetLoader: DatasetLoader;
-    private queryParser: QueryParser;
+    private queryStringParser: QueryStringParser;
+    private queryASTTranslator: QueryASTTranslator;
     private datasetQuerier: DatasetQuerier;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetLoader = new DatasetLoader();
-        this.queryParser = new QueryParser();
+        this.queryStringParser = new QueryStringParser();
+        this.queryASTTranslator = new QueryASTTranslator();
         this.datasetQuerier = new DatasetQuerier();
     }
 
@@ -52,10 +55,12 @@ export default class InsightFacade implements IInsightFacade {
             try {
                 let queryAST: InsightDataQuery;
                 if (typeof query === "string") {
-                    queryAST = this.queryParser.parseQuery(query);
+                    // query String -> DataQuery
+                    queryAST = this.queryStringParser.parseQueryString(query);
                 } else {
+                    // QueryAST -> DataQuery
                     query = query as InsightASTQuery;
-                    queryAST = this.queryParser.translateASTQuery(query);
+                    queryAST = this.queryASTTranslator.translateQueryAST(query);
                 }
 
                 const dataset: InsightCourseDataObject[] =
