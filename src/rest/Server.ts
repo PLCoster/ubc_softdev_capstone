@@ -76,7 +76,6 @@ export default class Server {
                             "Access-Control-Allow-Headers",
                             "X-Requested-With",
                         );
-                        res.setHeader("content-type", "application/json");
                         return next();
                     });
 
@@ -181,19 +180,19 @@ export default class Server {
             "Server::queryDataset - params: " + JSON.stringify(req.params),
         );
 
-        const queryStr = req.body || "";
+        const query = req.body || "";
 
         Server.insightFacade
-            .performQuery(queryStr)
+            .performQuery(query)
             .then((result: InsightResponse) => {
                 Log.info(
-                    `Server::loadDataset successful - responding ${result.code}`,
+                    `Server::queryDataset successful - responding ${result.code}`,
                 );
                 res.send(result.code, result.body);
             })
             .catch((result: InsightResponse) => {
                 Log.info(
-                    `Server::loadDataset failed - responding ${result.code}`,
+                    `Server::queryDataset failed - responding ${result.code}`,
                 );
                 res.send(result.code, result.body);
             })
