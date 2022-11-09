@@ -574,7 +574,7 @@ export default class QueryParser {
         }
 
         // Validate WHERE Section of query
-        if (!query.WHERE || typeof query.WHERE !== "object") {
+        if (query.WHERE === undefined || typeof query.WHERE !== "object") {
             this.rejectQuery(
                 `Invalid Query: Query contained no valid WHERE section - include WHERE:{} if no filters are required`,
             );
@@ -587,8 +587,8 @@ export default class QueryParser {
 
         // Validate COLUMNS Section of query
         if (
-            !query.OPTIONS ||
-            !query.OPTIONS.COLUMNS ||
+            query.OPTIONS === undefined ||
+            query.OPTIONS.COLUMNS === undefined ||
             !Array.isArray(query.OPTIONS.COLUMNS) ||
             query.OPTIONS.COLUMNS.length === 0
         ) {
@@ -721,7 +721,7 @@ export default class QueryParser {
         }
 
         // Validate ORDER Section - Can only ORDER by DISPLAY/COLUMNS
-        if (query.OPTIONS.ORDER) {
+        if (query.OPTIONS.ORDER !== undefined) {
             const queryOrder = query.OPTIONS.ORDER;
 
             if (typeof queryOrder === "string") {
@@ -751,12 +751,15 @@ export default class QueryParser {
                 if (
                     !queryOrderKeys ||
                     !Array.isArray(queryOrderKeys) ||
-                    !queryOrderKeys
+                    !queryOrderKeys.length
                 ) {
                     this.rejectQuery(
                         `Invalid Query: No keys specified in 'keys' property of ORDER: ${queryOrder}`,
                     );
                 }
+
+                // No ORDER key can be duplicated
+                const orderKeys = new Set();
 
                 // All ORDER keys must be in DISPLAY/COLUMNS
                 queryOrderKeys.forEach((key) => {
@@ -765,6 +768,13 @@ export default class QueryParser {
                             `Invalid Query: Cannot ORDER by column not in COLUMNS, got: ${key}`,
                         );
                     }
+
+                    if (orderKeys.has(key)) {
+                        this.rejectQuery(
+                            `Invalid Query: Cannot ORDER by the same column multiple times: ${key}`,
+                        );
+                    }
+                    orderKeys.add(key);
                 });
             }
         }
