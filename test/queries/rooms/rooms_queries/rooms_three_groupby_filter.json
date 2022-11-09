@@ -1,6 +1,6 @@
 {
     "title": "SELECT fullname, address, type FROM rooms WHERE address='*MALL*' GROUPBY fullname, address, type",
-    "query": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Address includes \"Mall\"; show Full Name, Address and Type.",
+    "queryString": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Address includes \"Mall\"; show Full Name, Address and Type.",
     "response": {
         "code": 200,
         "body": {
@@ -263,7 +263,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "rooms",
         "KIND": "rooms",
         "WHERE": { "INC": { "rooms_address": "Mall" } },

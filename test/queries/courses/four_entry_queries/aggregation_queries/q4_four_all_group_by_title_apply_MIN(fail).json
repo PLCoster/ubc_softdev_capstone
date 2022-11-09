@@ -1,6 +1,6 @@
 {
     "title": "SELECT title, MIN(fail) FROM coursesFourEntries GROUP BY title",
-    "query": "In courses dataset coursesFourEntries grouped by Title, find all entries; show Title and minFail, where minFail is the MIN of Fail.",
+    "queryString": "In courses dataset coursesFourEntries grouped by Title, find all entries; show Title and minFail, where minFail is the MIN of Fail.",
     "response": {
         "code": 200,
         "body": {
@@ -13,7 +13,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

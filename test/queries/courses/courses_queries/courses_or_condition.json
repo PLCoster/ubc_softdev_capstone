@@ -1,6 +1,6 @@
 {
     "title": "SELECT inst, dept, audit FROM courses WHERE inst = \"*bentall*\" OR audit > 7",
-    "query": "In courses dataset courses, find entries whose Instructor includes \"bentall\" or Audit is greater than 7; show Instructor, Department and Audit.",
+    "queryString": "In courses dataset courses, find entries whose Instructor includes \"bentall\" or Audit is greater than 7; show Instructor, Department and Audit.",
     "response": {
         "code": 200,
         "body": {
@@ -293,7 +293,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": {

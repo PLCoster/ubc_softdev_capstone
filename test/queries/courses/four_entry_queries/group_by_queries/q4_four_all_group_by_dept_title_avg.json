@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, title, avg FROM coursesFourEntries GROUP BY dept, title, avg",
-    "query": "In courses dataset coursesFourEntries grouped by Department, Title and Average, find all entries; show Department, Title and Average.",
+    "queryString": "In courses dataset coursesFourEntries grouped by Department, Title and Average, find all entries; show Department, Title and Average.",
     "response": {
         "code": 200,
         "body": {
@@ -28,7 +28,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

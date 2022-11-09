@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, avg WHERE avg > 97",
-    "query": "In courses dataset courses, find entries whose Average is greater than 97; show Department and Average; sort in ascending order by Average.",
+    "queryString": "In courses dataset courses, find entries whose Average is greater than 97; show Department and Average; sort in ascending order by Average.",
     "response": {
         "code": 200,
         "body": {
@@ -55,7 +55,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "GT": { "courses_avg": 97 } },

@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, year FROM coursesFourEntries GROUP BY dept, year",
-    "query": "In courses dataset coursesFourEntries grouped by Department and Year, find all entries; show Department and Year.",
+    "queryString": "In courses dataset coursesFourEntries grouped by Department and Year, find all entries; show Department and Year.",
     "response": {
         "code": 200,
         "body": {
@@ -24,7 +24,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

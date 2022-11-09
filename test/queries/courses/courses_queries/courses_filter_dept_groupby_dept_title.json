@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, title FROM courses WHERE dept=\"math\" GROUP BY dept, title",
-    "query": "In courses dataset courses grouped by Department and Title, find entries whose Department is \"math\"; show Department and Title.",
+    "queryString": "In courses dataset courses grouped by Department and Title, find entries whose Department is \"math\"; show Department and Title.",
     "response": {
         "code": 200,
         "body": {
@@ -106,7 +106,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "IS": { "courses_dept": "math" } },

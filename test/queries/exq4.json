@@ -1,10 +1,19 @@
 {
     "title": "A query with invalid sort key",
-    "query": "In rooms dataset abc, find entries whose Seats is greater than 80; show Seats and Address; sort in ascending order by Average2.",
+    "queryString": "In rooms dataset abc, find entries whose Seats is greater than 80; show Seats and Address; sort in ascending order by Average2.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "abc",
+        "KIND": "rooms",
+        "WHERE": { "GT": { "rooms_seats": 80 } },
+        "OPTIONS": {
+            "COLUMNS": ["rooms_seats", "rooms_address"],
+            "ORDER": { "dir": "UP", "keys": ["Average2"] }
         }
     }
 }

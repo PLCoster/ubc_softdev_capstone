@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM coursesFourEntries ORDER BY dept, avg ASC",
-    "query": "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year; sort in ascending order by Department and Average.",
+    "queryString": "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year; sort in ascending order by Department and Average.",
     "response": {
         "code": 200,
         "body": {
@@ -56,7 +56,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

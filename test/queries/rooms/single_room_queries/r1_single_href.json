@@ -1,6 +1,6 @@
 {
     "title": "SELECT href FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Link.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Link.",
     "response": {
         "code": 200,
         "body": {
@@ -11,7 +11,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

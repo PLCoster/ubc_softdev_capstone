@@ -1,11 +1,11 @@
 {
     "title": "SELECT type FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Type.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Type.",
     "response": {
         "code": 200,
         "body": { "result": [{ "roomsSingleRoom_type": "Tiered Large Group" }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

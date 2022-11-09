@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM coursesTwoEntries, WHERE (pass > 10 AND avg < 85) OR dept=\"adhe\", ORDER BY id ASC",
-    "query": "In courses dataset coursesTwoEntries, find entries whose Pass is greater than 10 and Average is less than 85 or Department is \"adhe\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "queryString": "In courses dataset coursesTwoEntries, find entries whose Pass is greater than 10 and Average is less than 85 or Department is \"adhe\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 200,
         "body": {
@@ -30,7 +30,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesTwoEntries",
         "KIND": "courses",
         "WHERE": {

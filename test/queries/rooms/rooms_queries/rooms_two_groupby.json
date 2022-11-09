@@ -1,6 +1,6 @@
 {
     "title": "SELECT fullname, type FROM rooms GROUPBY fullname, type",
-    "query": "In rooms dataset rooms grouped by Full Name and Type, find all entries; show Full Name and Type.",
+    "queryString": "In rooms dataset rooms grouped by Full Name and Type, find all entries; show Full Name and Type.",
     "response": {
         "code": 200,
         "body": {
@@ -312,7 +312,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "rooms",
         "KIND": "rooms",
         "WHERE": {},

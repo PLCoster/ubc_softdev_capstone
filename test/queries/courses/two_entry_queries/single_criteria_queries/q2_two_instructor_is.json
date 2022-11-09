@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM coursesTwoEntries, WHERE instructor='smulders, dave', ORDER BY id ASC",
-    "query": "In courses dataset coursesTwoEntries, find entries whose Instructor is \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "queryString": "In courses dataset coursesTwoEntries, find entries whose Instructor is \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 200,
         "body": {
@@ -19,7 +19,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesTwoEntries",
         "KIND": "courses",
         "WHERE": { "IS": { "coursesTwoEntries_instructor": "smulders, dave" } },

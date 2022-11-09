@@ -1,11 +1,11 @@
 {
     "title": "SELECT uuid FROM coursesSingleEntry",
-    "query": "In courses dataset coursesSingleEntry, find all entries; show UUID.",
+    "queryString": "In courses dataset coursesSingleEntry, find all entries; show UUID.",
     "response": {
         "code": 200,
         "body": { "result": [{ "coursesSingleEntry_uuid": "17255" }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesSingleEntry",
         "KIND": "courses",
         "WHERE": {},

@@ -1,11 +1,11 @@
 {
     "title": "SELECT address FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Address.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Address.",
     "response": {
         "code": 200,
         "body": { "result": [{ "roomsSingleRoom_address": "2202 Main Mall" }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

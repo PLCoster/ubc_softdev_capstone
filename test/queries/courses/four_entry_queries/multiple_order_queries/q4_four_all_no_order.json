@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM coursesFourEntries",
-    "query": "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.",
+    "queryString": "In courses dataset coursesFourEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.",
     "response": {
         "code": 200,
         "body": {
@@ -56,7 +56,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

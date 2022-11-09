@@ -1,6 +1,6 @@
 {
     "title": "S fn,add,seats,MIN(seats),Max(seats) F rooms W seats>50 & add='*Mall*' GROUPBY fn,add,seats OB mS",
-    "query": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes \"Mall\"; show Full Name, Address, minSeats, maxSeats, sumSeats and Type, where minSeats is the MIN of Seats, sumSeats is the SUM of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats, maxSeats and sumSeats.",
+    "queryString": "In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes \"Mall\"; show Full Name, Address, minSeats, maxSeats, sumSeats and Type, where minSeats is the MIN of Seats, sumSeats is the SUM of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats, maxSeats and sumSeats.",
     "response": {
         "code": 200,
         "body": {
@@ -280,7 +280,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "rooms",
         "KIND": "rooms",
         "WHERE": {

@@ -1,11 +1,11 @@
 {
     "title": "SELECT * FROM coursesSingleEntry",
-    "query": "In courses dataset coursesSingleEntry, find all entries; show Year.",
+    "queryString": "In courses dataset coursesSingleEntry, find all entries; show Year.",
     "response": {
         "code": 200,
         "body": { "result": [{ "coursesSingleEntry_year": 2010 }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesSingleEntry",
         "KIND": "courses",
         "WHERE": {},

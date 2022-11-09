@@ -1,11 +1,11 @@
 {
     "title": "SELECT name FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Name.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Name.",
     "response": {
         "code": 200,
         "body": { "result": [{ "roomsSingleRoom_name": "AERL_120" }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

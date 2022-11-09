@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM roomsTwoRooms WHERE lat>49.26372",
-    "query": "In rooms dataset roomsTwoRooms, find entries whose Latitude is greater than 49.26372; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "queryString": "In rooms dataset roomsTwoRooms, find entries whose Latitude is greater than 49.26372; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -21,7 +21,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsTwoRooms",
         "KIND": "rooms",
         "WHERE": { "GT": { "roomsTwoRooms_lat": 49.26372 } },

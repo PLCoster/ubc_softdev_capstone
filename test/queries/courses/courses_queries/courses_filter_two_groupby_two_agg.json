@@ -1,6 +1,6 @@
 {
     "title": "S dept,title,AVG(avg),SUM(pass) F courses W title='*biol*' GB dept,title OB sumPass,avgGrade DESC",
-    "query": "In courses dataset courses grouped by Department and Title, find entries whose Title includes \"biol\"; show Department, Title, avgGrade and sumPass, where avgGrade is the AVG of Average and sumPass is the SUM of Pass; sort in descending order by sumPass and avgGrade.",
+    "queryString": "In courses dataset courses grouped by Department and Title, find entries whose Title includes \"biol\"; show Department, Title, avgGrade and sumPass, where avgGrade is the AVG of Average and sumPass is the SUM of Pass; sort in descending order by sumPass and avgGrade.",
     "response": {
         "code": 200,
         "body": {
@@ -254,7 +254,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "INC": { "courses_title": "biol" } },

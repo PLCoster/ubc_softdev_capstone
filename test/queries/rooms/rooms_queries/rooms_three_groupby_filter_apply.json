@@ -1,6 +1,6 @@
 {
     "title": "S fullname, address, type, MIN(SEATS) F rooms W address='*MALL*' GB fullname, address, type",
-    "query": "In rooms dataset rooms grouped by Full Name, Short Name and Type, find entries whose Address includes \"Mall\"; show Full Name, Short Name, Type and minSeats, where minSeats is the MIN of Seats.",
+    "queryString": "In rooms dataset rooms grouped by Full Name, Short Name and Type, find entries whose Address includes \"Mall\"; show Full Name, Short Name, Type and minSeats, where minSeats is the MIN of Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -314,7 +314,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "rooms",
         "KIND": "rooms",
         "WHERE": { "INC": { "rooms_address": "Mall" } },

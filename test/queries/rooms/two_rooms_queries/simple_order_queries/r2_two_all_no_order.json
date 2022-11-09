@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM roomsTwoRooms",
-    "query": "In rooms dataset roomsTwoRooms, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "queryString": "In rooms dataset roomsTwoRooms, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -34,7 +34,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsTwoRooms",
         "KIND": "rooms",
         "WHERE": {},

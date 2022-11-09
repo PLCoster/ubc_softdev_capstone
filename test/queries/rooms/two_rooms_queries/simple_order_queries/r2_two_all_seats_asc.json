@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM roomsTwoRooms ORDER BY seats ASC",
-    "query": "In rooms dataset roomsTwoRooms, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats; sort in ascending order by Seats.",
+    "queryString": "In rooms dataset roomsTwoRooms, find all entries; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats; sort in ascending order by Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -34,7 +34,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsTwoRooms",
         "KIND": "rooms",
         "WHERE": {},

@@ -1,6 +1,6 @@
 {
     "title": "Complex courses query with: 2GB, 1F, 5D, 3A, 3S",
-    "query": "In courses dataset courses grouped by Department and Title, find entries whose Title includes \"biol\"; show Department, Title, avgGrade, minGrade and maxGrade, where avgGrade is the AVG of Average, minGrade is the MIN of Average and maxGrade is the MAX of Average; sort in descending order by avgGrade, minGrade and maxGrade.",
+    "queryString": "In courses dataset courses grouped by Department and Title, find entries whose Title includes \"biol\"; show Department, Title, avgGrade, minGrade and maxGrade, where avgGrade is the AVG of Average, minGrade is the MIN of Average and maxGrade is the MAX of Average; sort in descending order by avgGrade, minGrade and maxGrade.",
     "response": {
         "code": 200,
         "body": {
@@ -295,7 +295,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "INC": { "courses_title": "biol" } },

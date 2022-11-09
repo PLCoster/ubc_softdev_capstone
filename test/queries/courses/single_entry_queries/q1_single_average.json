@@ -1,11 +1,11 @@
 {
     "title": "SELECT average FROM coursesSingleEntry",
-    "query": "In courses dataset coursesSingleEntry, find all entries; show Average.",
+    "queryString": "In courses dataset coursesSingleEntry, find all entries; show Average.",
     "response": {
         "code": 200,
         "body": { "result": [{ "coursesSingleEntry_avg": 86.65 }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesSingleEntry",
         "KIND": "courses",
         "WHERE": {},

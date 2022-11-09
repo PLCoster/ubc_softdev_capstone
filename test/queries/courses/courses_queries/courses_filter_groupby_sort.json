@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, title, avg FROM courses WHERE avg > 90 GROUP BY dept, title, avg, SORT BY avg DESC",
-    "query": "In courses dataset courses grouped by Department, Title and Average, find entries whose Average is greater than 95; show Department, Title and Average; sort in descending order by Average.",
+    "queryString": "In courses dataset courses grouped by Department, Title and Average, find entries whose Average is greater than 95; show Department, Title and Average; sort in descending order by Average.",
     "response": {
         "code": 200,
         "body": {
@@ -623,7 +623,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "courses",
         "KIND": "courses",
         "WHERE": { "GT": { "courses_avg": 95 } },

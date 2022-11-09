@@ -1,6 +1,6 @@
 {
     "title": "SELECT furniture FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Furniture.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Furniture.",
     "response": {
         "code": 200,
         "body": {
@@ -9,7 +9,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM roomsTwoRooms WHERE lon>=-123.25099",
-    "query": "In rooms dataset roomsTwoRooms, find entries whose Longitude is not less than -123.25099; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "queryString": "In rooms dataset roomsTwoRooms, find entries whose Longitude is not less than -123.25099; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -21,7 +21,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsTwoRooms",
         "KIND": "rooms",
         "WHERE": { "NOT": { "LT": { "roomsTwoRooms_lon": -123.25099 } } },

@@ -1,6 +1,6 @@
 {
     "title": "SELECT id, COUNT(audit) FROM coursesFourEntries GROUP BY id",
-    "query": "In courses dataset coursesFourEntries grouped by ID, find all entries; show ID and auditCount, where auditCount is the COUNT of Audit.",
+    "queryString": "In courses dataset coursesFourEntries grouped by ID, find all entries; show ID and auditCount, where auditCount is the COUNT of Audit.",
     "response": {
         "code": 200,
         "body": {
@@ -10,7 +10,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

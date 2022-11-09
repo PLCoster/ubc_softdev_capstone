@@ -1,6 +1,6 @@
 {
     "title": "SELECT dept, MAX(pass) FROM coursesFourEntries GROUP BY dept",
-    "query": "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and maxPass, where maxPass is the MAX of Pass.",
+    "queryString": "In courses dataset coursesFourEntries grouped by Department, find all entries; show Department and maxPass, where maxPass is the MAX of Pass.",
     "response": {
         "code": 200,
         "body": {
@@ -10,7 +10,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "coursesFourEntries",
         "KIND": "courses",
         "WHERE": {},

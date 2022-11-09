@@ -1,11 +1,11 @@
 {
     "title": "SELECT seats FROM roomsSingleRoom",
-    "query": "In rooms dataset roomsSingleRoom, find all entries; show Seats.",
+    "queryString": "In rooms dataset roomsSingleRoom, find all entries; show Seats.",
     "response": {
         "code": 200,
         "body": { "result": [{ "roomsSingleRoom_seats": 144 }] }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsSingleRoom",
         "KIND": "rooms",
         "WHERE": {},

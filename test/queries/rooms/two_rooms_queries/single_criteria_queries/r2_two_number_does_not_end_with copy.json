@@ -1,6 +1,6 @@
 {
     "title": "SELECT * FROM roomsTwoRooms WHERE number!='*5'",
-    "query": "In rooms dataset roomsTwoRooms, find entries whose Number does not end with \"5\"; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
+    "queryString": "In rooms dataset roomsTwoRooms, find entries whose Number does not end with \"5\"; show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats.",
     "response": {
         "code": 200,
         "body": {
@@ -21,7 +21,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "roomsTwoRooms",
         "KIND": "rooms",
         "WHERE": { "NOT": { "END": { "roomsTwoRooms_number": "5" } } },

@@ -1,6 +1,6 @@
 {
     "title": "SELECT fullname, lat, lon FROM rooms GROUPBY fullname, lat, lon, ORDER BY lat, lon ASC",
-    "query": "In rooms dataset rooms grouped by Full Name, Latitude and Longitude, find all entries; show Full Name, Latitude and Longitude; sort in ascending order by Latitude and Longitude.",
+    "queryString": "In rooms dataset rooms grouped by Full Name, Latitude and Longitude, find all entries; show Full Name, Latitude and Longitude; sort in ascending order by Latitude and Longitude.",
     "response": {
         "code": 200,
         "body": {
@@ -193,7 +193,7 @@
             ]
         }
     },
-    "EBNFQuery": {
+    "queryAST": {
         "ID": "rooms",
         "KIND": "rooms",
         "WHERE": {},
