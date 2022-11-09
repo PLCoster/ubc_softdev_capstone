@@ -39,7 +39,7 @@ const columnKeysAndParsers = {
  * Must use the browser"s global document object {@link https://developer.mozilla.org/en-US/docs/Web/API/Document}
  * to read DOM information.
  *
- * @returns query object adhering to the query EBNF
+ * @returns query AST object adhering to the query EBNF
  */
 CampusExplorer.buildQuery = () => {
     // Get currently active form
@@ -266,7 +266,7 @@ function parseOrder(id, orderForm) {
             ? "UP"
             : "DOWN";
 
-    // "Old" EBNF order syntax
+    // "Old" Query AST order syntax
     if (dir === "UP" && keys.length === 1) {
         return keys[0];
     } else {

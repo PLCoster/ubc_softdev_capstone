@@ -16,8 +16,8 @@ import TestUtil from "./TestUtil";
 // except 'filename' which is injected when the file is read.
 export interface ITestQuery {
     title: string;
-    query: any; // make any to allow testing structurally invalid queries
-    EBNFQuery?: any; // as above
+    queryString: any; // make any to allow testing structurally invalid queries
+    queryAST?: any; // as above
     response: InsightResponse;
     filename: string; // This is injected when reading the file
 }
@@ -430,7 +430,9 @@ describe("InsightFacade PerformQuery", () => {
                     let response: InsightResponse;
 
                     try {
-                        response = await insightFacade.performQuery(test.query);
+                        response = await insightFacade.performQuery(
+                            test.queryString,
+                        );
                     } catch (err) {
                         response = err;
                     } finally {
@@ -453,15 +455,15 @@ describe("InsightFacade PerformQuery", () => {
             }
         });
 
-        describe("Dynamic InsightFacade PerformQuery tests with EBNF AST Queries", () => {
+        describe("Dynamic InsightFacade PerformQuery tests with AST Queries", () => {
             for (const test of testQueries) {
-                if (test.EBNFQuery) {
+                if (test.queryAST !== undefined) {
                     it(`[${test.filename}] ${test.title}`, async () => {
                         let response: InsightResponse;
 
                         try {
                             response = await insightFacade.performQuery(
-                                test.EBNFQuery,
+                                test.queryAST,
                             );
                         } catch (err) {
                             response = err;

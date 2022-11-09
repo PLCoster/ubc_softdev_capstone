@@ -1,4 +1,4 @@
-import { InsightCourseDataObject, InsightQueryAST } from "./IInsightFacade";
+import { InsightCourseDataObject, InsightDataQuery } from "./IInsightFacade";
 
 import Log from "../Util";
 
@@ -38,7 +38,7 @@ const sortFuncs: { [key in OrderDirection]: sortFunctionCreator } = {
     },
 };
 
-// Class that takes a queryAST and a dataset, applies the query and returns
+// Class that takes a DataQuery and a dataset, applies the query and returns
 // the appropriately filtered and sorted dataset
 export default class DatasetQuerier {
     constructor() {
@@ -46,7 +46,7 @@ export default class DatasetQuerier {
     }
 
     public applyQuery(
-        queryAST: InsightQueryAST,
+        queryAST: InsightDataQuery,
         dataset: InsightCourseDataObject[],
     ): InsightCourseDataObject[] {
         // Apply the filter to the dataset:
@@ -82,7 +82,7 @@ export default class DatasetQuerier {
     // Then Applies any Aggregation operations to the group
     // Returns a dataset containing a single representative member from each group
     private groupAndAggregateData(
-        queryAST: InsightQueryAST,
+        queryAST: InsightDataQuery,
         dataset: InsightCourseDataObject[],
     ): InsightCourseDataObject[] {
         const dataGroups: { [key: string]: InsightCourseDataObject[] } = {};

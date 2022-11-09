@@ -43,44 +43,44 @@ export interface InsightCourseDataObject {
     [key: string]: string | number;
 }
 
-export enum InsightEBNFQueryOrderDir {
+export enum InsightASTQueryOrderDir {
     UP = "UP",
     DOWN = "DOWN",
 }
 
-export interface InsightEBNFQueryOrderObject {
-    dir: InsightEBNFQueryOrderDir;
+export interface InsightASTQueryOrderObject {
+    dir: InsightASTQueryOrderDir;
     keys: string[];
 }
 
-export interface InsightEBNFQuery {
+export interface InsightASTQuery {
     ID: string;
     KIND: InsightDatasetKind;
     WHERE: any;
     OPTIONS: {
         COLUMNS: string[];
-        ORDER?: string | InsightEBNFQueryOrderObject;
+        ORDER?: string | InsightASTQueryOrderObject;
     };
     TRANSFORMATIONS?: {
         GROUP: string[];
         APPLY?: Array<{
-            [key: string]: { [key in InsightAggregatorKind]: string };
+            [key: string]: { [key in InsightAggregatorKind]?: string };
         }>;
     };
 }
 
-export interface InsightQueryASTApplyObject {
+export interface InsightDataQueryApplyObject {
     name: string;
     operation: IAggregator;
     colName: string;
 }
 
-export interface InsightQueryAST {
+export interface InsightDataQuery {
     id: string;
     kind: InsightDatasetKind;
     filter: IFilter;
     groupby: string[];
-    apply: InsightQueryASTApplyObject[];
+    apply: InsightDataQueryApplyObject[];
     display: string[];
     order: { direction: OrderDirection; keys: string[] };
 }
@@ -160,7 +160,7 @@ export interface IInsightFacade {
      * 200: the query was successfully answered. The result should be sent in JSON according in the response body.
      * 400: the query failed; body should contain {"error": "my text"} providing extra detail.
      */
-    performQuery(query: string | InsightEBNFQuery): Promise<InsightResponse>;
+    performQuery(query: string | InsightASTQuery): Promise<InsightResponse>;
 
     /**
      * List a list of datasets and their types.

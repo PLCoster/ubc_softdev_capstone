@@ -2,7 +2,7 @@ import { expect, assert } from "chai";
 
 import {
     InsightDatasetKind,
-    InsightQueryAST,
+    InsightDataQuery,
 } from "../src/controller/IInsightFacade";
 import { OrderDirection } from "../src/controller/DatasetQuerier";
 
@@ -325,7 +325,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses simple query (SELECT audit FROM courses)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -350,7 +350,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses simple query requesting three columns (SELECT uuid, avg, audit FROM courses)", () => {
         const queryCols = "UUID, Average and Audit";
         const query = `In courses dataset courses, find all entries; show ${queryCols}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -376,7 +376,7 @@ describe("QueryParser Tests", function () {
         const queryCols =
             "Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year";
         const query = `In courses dataset courses, find all entries; show ${queryCols}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -412,7 +412,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with ordering (ASC) (SELECT audit, pass FROM courses ORDER BY pass ASC)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit and Pass; sort in ascending order by Pass.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -437,7 +437,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with ordering (DESC) (SELECT audit, pass FROM courses ORDER BY pass DESC)", () => {
         const query =
             "In courses dataset courses, find all entries; show Audit and Pass; sort in descending order by Pass.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -462,7 +462,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with two order keys (SELECT fail, pass FROM courses ORDER BY pass, fail ASC)", () => {
         const order = "sort in ascending order by Pass and Fail";
         const query = `In courses dataset courses, find all entries; show Fail and Pass; ${order}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -490,7 +490,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with multiple order keys", () => {
         const order = "sort in descending order by Department, Pass and Fail";
         const query = `In courses dataset courses, find all entries; show Department, Fail and Pass; ${order}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -556,7 +556,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'is equal to' filter (SELECT audit FROM courses WHERE audit = 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is equal to 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_audit", 10),
@@ -581,7 +581,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'is not equal to' filter (SELECT audit FROM courses WHERE audit != 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is not equal to 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_audit", 10)),
@@ -606,7 +606,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'greater than' filter (SELECT audit FROM courses WHERE audit > 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is greater than 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new GTFilter("courses_audit", 10),
@@ -631,7 +631,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'not greater than' filter (SELECT audit FROM courses WHERE audit <= 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is not greater than 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new GTFilter("courses_audit", 10)),
@@ -656,7 +656,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'less than' filter (SELECT audit FROM courses WHERE audit < 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is less than 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new LTFilter("courses_audit", 10),
@@ -681,7 +681,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'not less than' filter (SELECT audit FROM courses WHERE audit >= 10)", () => {
         const query =
             "In courses dataset courses, find entries whose Audit is not less than 10; show Audit.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new LTFilter("courses_audit", 10)),
@@ -706,7 +706,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'is' filter (SELECT audit FROM courses WHERE dept = \"math\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department is "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new EQFilter("courses_dept", "math"),
@@ -731,7 +731,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'is not' filter (SELECT audit FROM courses WHERE dept != \"math\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department is not "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new EQFilter("courses_dept", "math")),
@@ -756,7 +756,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'includes' filter (SELECT audit FROM courses WHERE dept = \"*math*\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department includes "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new INCFilter("courses_dept", "math"),
@@ -781,7 +781,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with '!includes' filter (SELECT audit FROM courses WHERE dept != \"*math*\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department does not include "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new INCFilter("courses_dept", "math")),
@@ -806,7 +806,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'begins with' filter (SELECT audit FROM courses WHERE dept = \"math*\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department begins with "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new BEGFilter("courses_dept", "math"),
@@ -831,7 +831,7 @@ describe("QueryParser Tests", function () {
     it('parseQuery: Parses query with "!begins with" filter (SELECT audit FROM courses WHERE dept!="math*")', () => {
         const query =
             'In courses dataset courses, find entries whose Department does not begin with "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new BEGFilter("courses_dept", "math")),
@@ -856,7 +856,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with 'ends with' filter (SELECT audit FROM courses WHERE dept = \"*math\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department ends with "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ENDFilter("courses_dept", "math"),
@@ -881,7 +881,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses query with '!ends with' filter (SELECT audit FROM courses WHERE dept != \"*math\")", () => {
         const query =
             'In courses dataset courses, find entries whose Department does not end with "math"; show Audit.';
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new NOTFilter(new ENDFilter("courses_dept", "math")),
@@ -910,7 +910,7 @@ describe("QueryParser Tests", function () {
         const queryFilter =
             'find entries whose Department is "math" and Audit is greater than 1';
         const query = `In courses dataset courses, ${queryFilter}; show Audit.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ANDFilter(
@@ -942,7 +942,7 @@ describe("QueryParser Tests", function () {
         const queryFilter =
             'find entries whose Instructor includes "bentall" or Audit is greater than 7';
         const query = `In courses dataset courses, ${queryFilter}; show Instructor, Department and Audit.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ANDFilter(
@@ -978,7 +978,7 @@ describe("QueryParser Tests", function () {
 
         const query = `In courses dataset courses, ${queryFilter}; ${queryDisplay}; ${queryOrder}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ORFilter(
@@ -1009,7 +1009,7 @@ describe("QueryParser Tests", function () {
     it("parseQuery: Parses simple query with GROUPBY (SELECT dept FROM courses GROUP BY dept)", () => {
         const query =
             "In courses dataset courses grouped by Department, find all entries; show Department.";
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1035,7 +1035,7 @@ describe("QueryParser Tests", function () {
         const groupDisplay = "Department and Instructor";
         const query = `In courses dataset courses grouped by ${groupDisplay}, find all entries; show ${groupDisplay}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1061,7 +1061,7 @@ describe("QueryParser Tests", function () {
         const groupDisplay = "Department, Title and Instructor";
         const query = `In courses dataset courses grouped by ${groupDisplay}, find all entries; show ${groupDisplay}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1087,7 +1087,7 @@ describe("QueryParser Tests", function () {
         const qDisplayApply =
             "show Department and avgGrade, where avgGrade is the AVG of Average";
         const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1119,7 +1119,7 @@ describe("QueryParser Tests", function () {
         const qDisplayApply =
             "show Department and maxGrade, where maxGrade is the MAX of Average";
         const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1151,7 +1151,7 @@ describe("QueryParser Tests", function () {
         const qDisplayApply =
             "show Department and minYear, where minYear is the MIN of Year";
         const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1183,7 +1183,7 @@ describe("QueryParser Tests", function () {
         const qDisplayApply =
             "show Department and sumPass, where sumPass is the SUM of Pass";
         const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1215,7 +1215,7 @@ describe("QueryParser Tests", function () {
         const qDisplayApply =
             "show Department and countInst, where countInst is the COUNT of Instructor";
         const query = `In courses dataset courses grouped by Department, find all entries; ${qDisplayApply}.`;
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1255,7 +1255,7 @@ describe("QueryParser Tests", function () {
             "where minGrade is the MIN of Average and maxGrade is the MAX of Average";
         const query = `In courses dataset courses grouped by ${queryGroupFilter}; ${queryDisplay}${queryApply}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "courses",
             kind: InsightDatasetKind.Courses,
             filter: new ALLFilter(),
@@ -1301,7 +1301,7 @@ describe("QueryParser Tests", function () {
 
         const query = `In rooms dataset rooms, find all entries; ${queryDisplay}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "rooms",
             kind: InsightDatasetKind.Rooms,
             filter: new ALLFilter(),
@@ -1341,7 +1341,7 @@ describe("QueryParser Tests", function () {
             "show Full Name, Short Name, Number, Name, Address, Type, Furniture, Link, Latitude, Longitude and Seats";
         const query = `In rooms dataset rooms, ${queryFilter}; ${queryDisplay}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "rooms",
             kind: InsightDatasetKind.Rooms,
             filter: new INCFilter("rooms_fullname", "Hall"),
@@ -1384,7 +1384,7 @@ describe("QueryParser Tests", function () {
 
         const query = `In rooms dataset rooms ${queryGroup}, ${queryFilter}; ${queryDisplayApply}; ${querySort}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "rooms",
             kind: InsightDatasetKind.Rooms,
             filter: new INCFilter("rooms_fullname", "Hall"),
@@ -1425,7 +1425,7 @@ describe("QueryParser Tests", function () {
 
         const query = `In rooms dataset rooms ${qGroup}, ${qFilter}; ${qDisplay}, where ${qApply}; ${qSort}.`;
 
-        const expectedAST: InsightQueryAST = {
+        const expectedAST: InsightDataQuery = {
             id: "rooms",
             kind: InsightDatasetKind.Rooms,
             filter: new ANDFilter(

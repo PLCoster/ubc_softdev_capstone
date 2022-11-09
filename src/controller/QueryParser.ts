@@ -1,11 +1,11 @@
 import {
     InsightDatasetKind,
-    InsightQueryAST,
-    InsightQueryASTApplyObject,
+    InsightDataQuery,
+    InsightDataQueryApplyObject,
     InsightAggregatorKind,
-    InsightEBNFQueryOrderObject,
-    InsightEBNFQueryOrderDir,
-    InsightEBNFQuery,
+    InsightASTQueryOrderObject,
+    InsightASTQueryOrderDir,
+    InsightASTQuery,
 } from "./IInsightFacade";
 import { OrderDirection } from "./DatasetQuerier";
 import { QuerySectionREs } from "./helpers/queryParserRegExs";
@@ -80,7 +80,7 @@ export default class QueryParser {
         Log.trace("QueryParser::init()");
     }
 
-    public parseQuery(queryStr: string): InsightQueryAST {
+    public parseQuery(queryStr: string): InsightDataQuery {
         // Try to match queryStr as valid courses or rooms dataset query
         let queryMatchObj: RegExpMatchArray;
         let querySectionREs: QuerySectionREs;
@@ -117,7 +117,7 @@ export default class QueryParser {
             false,
         );
 
-        const queryAST: InsightQueryAST = {
+        const queryAST: InsightDataQuery = {
             id,
             kind,
             filter,
@@ -158,10 +158,10 @@ export default class QueryParser {
         return queryAST;
     }
 
-    // Translates an EBNF Query Object to InsightQueryAST for DataQuerier
-    public translateEBNFQuery(query: InsightEBNFQuery): InsightQueryAST {
+    // Translates an Query AST Object to InsightDataQuery for DataQuerier
+    public translateASTQuery(query: InsightASTQuery): InsightDataQuery {
         // First check that the Query Object is valid - will reject if invalid
-        this.validateEBNFQuery(query);
+        this.validateASTQuery(query);
 
         const { ID: id, KIND: kind } = query;
 
@@ -169,7 +169,7 @@ export default class QueryParser {
         const display = query.OPTIONS.COLUMNS;
 
         // Begin constructing QueryAST
-        const queryAST: InsightQueryAST = {
+        const queryAST: InsightDataQuery = {
             id,
             kind,
             filter,
@@ -388,11 +388,11 @@ export default class QueryParser {
         applyStr: string,
         id: string,
         querySectionREs: QuerySectionREs,
-    ): InsightQueryASTApplyObject[] {
+    ): InsightDataQueryApplyObject[] {
         const aggregators = applyStr.split(/, | and /);
 
         const aggNames = new Set<string>(); // Each aggregation must have a unique name
-        const applyDetails: InsightQueryASTApplyObject[] = [];
+        const applyDetails: InsightDataQueryApplyObject[] = [];
 
         // Extract the agg name, operation and key:
         aggregators.forEach((aggStr) => {
@@ -514,7 +514,7 @@ export default class QueryParser {
 
     // Calls rejectQuery if query has invalid Semantics:
     private astHasValidSemantics(
-        queryAST: InsightQueryAST,
+        queryAST: InsightDataQuery,
         querySectionREs: QuerySectionREs,
     ): boolean {
         // If query has GROUPBY section, can only DISPLAY grouped/agg cols:
@@ -539,15 +539,15 @@ export default class QueryParser {
     }
 
     /**
-     * Helper method to check that EBNF Query Object is valid before
+     * Helper method to check that Query AST Object is valid before
      * building the query from it.
      *
      * If the query is not valid the method throws an error by calling
      * the rejectQuery() method
      *
-     * @param query EBNF Query Object to be validated
+     * @param query Query AST Object to be validated
      */
-    private validateEBNFQuery(query: InsightEBNFQuery): boolean {
+    private validateASTQuery(query: InsightASTQuery): boolean {
         // Validate Dataset Name
         if (!query.ID || typeof query.ID !== "string") {
             this.rejectQuery(`Invalid Query: No Dataset ID was given`);
@@ -663,7 +663,11 @@ export default class QueryParser {
 
                     // Check the name of the column to be aggregated is valid
                     if (
-                        !this.validateEBNFColName(queryID, query.KIND, colName)
+                        !this.validateQueryASTColName(
+                            queryID,
+                            query.KIND,
+                            colName,
+                        )
                     ) {
                         this.rejectQuery(
                             `Invalid Query: Invalid column name for APPLY: ${colName}`,
@@ -693,7 +697,7 @@ export default class QueryParser {
 
             queryColumns.forEach((colName) => {
                 // If it is a valid column name it must be in GROUP
-                const validColName = this.validateEBNFColName(
+                const validColName = this.validateQueryASTColName(
                     query.ID,
                     query.KIND,
                     colName,
@@ -712,7 +716,9 @@ export default class QueryParser {
         } else {
             // No TRANSFORMATIONS, DISPLAY/COLUMNS must all be valid
             queryColumns.forEach((colName) => {
-                if (!this.validateEBNFColName(query.ID, query.KIND, colName)) {
+                if (
+                    !this.validateQueryASTColName(query.ID, query.KIND, colName)
+                ) {
                     this.rejectQuery(
                         `Invalid Query: Invalid column name ${colName} in COLUMNS`,
                     );
@@ -733,11 +739,11 @@ export default class QueryParser {
                     );
                 }
             } else {
-                const queryOrderObj = queryOrder as InsightEBNFQueryOrderObject;
+                const queryOrderObj = queryOrder as InsightASTQueryOrderObject;
 
                 if (
                     !queryOrderObj.dir ||
-                    !Object.values(InsightEBNFQueryOrderDir).includes(
+                    !Object.values(InsightASTQueryOrderDir).includes(
                         queryOrderObj.dir,
                     )
                 ) {
@@ -840,7 +846,7 @@ export default class QueryParser {
 
             // Check colName is valid for dataset ID and Kind
             const colName = Object.keys(whereObj[conditionKey])[0];
-            this.validateEBNFColName(datasetID, datasetKind, colName);
+            this.validateQueryASTColName(datasetID, datasetKind, colName);
 
             // Check that condition value, conditionKey and column are all
             // the same type (number or string):
@@ -880,14 +886,14 @@ export default class QueryParser {
     }
 
     /**
-     * Helper function to validate that a given column name in EBNF Query Object is valid
+     * Helper function to validate that a given column name in Query AST Object is valid
      * e.g. courses_avg is valid for a 'courses' kind dataset, where courses_furniture
      * would be invalid
      * @param datasetID the id of the dataset that is being queried
      * @param datasetKind the dataset kind of the dataset being queried (courses | rooms)
-     * @param queryColName the column name in the EBNF Query Object
+     * @param queryColName the column name in the Query AST Object
      */
-    private validateEBNFColName(
+    private validateQueryASTColName(
         datasetID: string,
         datasetKind: InsightDatasetKind,
         queryColName: string,
@@ -946,11 +952,11 @@ export default class QueryParser {
     }
 
     /**
-     * Parses the WHERE section of EBNF Query Object
+     * Parses the WHERE section of Query AST Object
      * Assumes the Query Object has been validated
      * Returns an IFilter representing the given combination of Conditions
      *
-     * @param whereObj the nested WHERE (FILTER) Object from the EBNF Query Object
+     * @param whereObj the nested WHERE (FILTER) Object from the Query AST Object
      */
     private parseWHERE(whereObj: any): IFilter {
         // If no Filter conditions, return all rows
@@ -979,13 +985,13 @@ export default class QueryParser {
     }
 
     /**
-     * Parses the ORDER section of EBNF Query Object
+     * Parses the ORDER section of Query AST Object
      * Assumes the Query Object has been validated
      * Returns a Query AST 'order' object for DatasetQuerier
      *
-     * @param orderObj the ORDER section of the EBNF Query
+     * @param orderObj the ORDER section of the Query AST
      */
-    private parseORDER(orderObj: string | InsightEBNFQueryOrderObject): {
+    private parseORDER(orderObj: string | InsightASTQueryOrderObject): {
         direction: OrderDirection;
         keys: string[];
     } {
@@ -1003,13 +1009,13 @@ export default class QueryParser {
     }
 
     /**
-     * Parses the APPLY section of EBNF Query Object
+     * Parses the APPLY section of Query AST Object
      * Assumes the Query Object has been validated
      * Returns a Query AST 'apply' Array of InsightQueryASTApplyObject for DataQuerier
      *
      * @param id id of the dataset we are applying the query to
      * @param kind the dataset kind we are applying the query to
-     * @param applyArr the APPLY section of the EBNF Query
+     * @param applyArr the APPLY section of the Query AST
      */
     private parseAPPLY(
         id: string,
@@ -1017,8 +1023,8 @@ export default class QueryParser {
         applyARR: Array<{
             [key: string]: { [key in InsightAggregatorKind]?: string };
         }>,
-    ): InsightQueryASTApplyObject[] {
-        const applyObjArr: InsightQueryASTApplyObject[] = [];
+    ): InsightDataQueryApplyObject[] {
+        const applyObjArr: InsightDataQueryApplyObject[] = [];
 
         applyARR.forEach((apply) => {
             const name = Object.keys(apply)[0];

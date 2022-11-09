@@ -2,13 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 
 import {
+    InsightResponse,
     InsightDatasetKind,
-    InsightQueryAST,
-    InsightQueryASTApplyObject,
     InsightAggregatorKind,
-    InsightEBNFQueryOrderObject,
-    InsightEBNFQueryOrderDir,
-    InsightEBNFQuery,
+    InsightASTQueryOrderObject,
+    InsightASTQueryOrderDir,
+    InsightASTQuery,
 } from "../IInsightFacade";
 import { OrderDirection } from "../DatasetQuerier";
 import { QuerySectionREs } from "./queryParserRegExs";
@@ -78,15 +77,15 @@ const queryColNameStrToKeyStr: { [key: string]: string } = (() => {
     return result;
 })();
 
-// This class translates a valid query string into an EBNF Query Object
-// Used to translate tests previously written for string queries to EBNF Queries
+// This class translates a valid query string into an Query AST Object
+// Used to translate tests previously written for string queries to AST Queries
 // SEE DRIVER SCRIPT BELOW
-export default class StringQueryToEBNFQueryTranslator {
+export default class StringQueryToASTQueryTranslator {
     constructor() {
         Log.trace("QueryParser::init()");
     }
 
-    public translateQuery(queryStr: string): InsightEBNFQuery {
+    public translateQuery(queryStr: string): InsightASTQuery {
         // Try to match queryStr as valid courses or rooms dataset query
         let queryMatchObj: RegExpMatchArray;
         let querySectionREs: QuerySectionREs;
@@ -127,7 +126,7 @@ export default class StringQueryToEBNFQueryTranslator {
             false,
         );
 
-        const EBNFQueryObject: InsightEBNFQuery = {
+        const queryAST: InsightASTQuery = {
             ID,
             KIND,
             WHERE,
@@ -135,7 +134,7 @@ export default class StringQueryToEBNFQueryTranslator {
         };
 
         if (groupStr) {
-            EBNFQueryObject.TRANSFORMATIONS = {
+            queryAST.TRANSFORMATIONS = {
                 GROUP: this.parseDisplayOrGroupby(
                     groupStr,
                     ID,
@@ -151,7 +150,7 @@ export default class StringQueryToEBNFQueryTranslator {
                 this.rejectQuery(`APPLY is only possible for GROUPBY queries`);
             }
 
-            EBNFQueryObject.TRANSFORMATIONS.APPLY = this.parseApply(
+            queryAST.TRANSFORMATIONS.APPLY = this.parseApply(
                 applyStr,
                 ID,
                 querySectionREs,
@@ -159,7 +158,7 @@ export default class StringQueryToEBNFQueryTranslator {
         }
 
         if (orderStr) {
-            EBNFQueryObject.OPTIONS.ORDER = this.parseOrder(
+            queryAST.OPTIONS.ORDER = this.parseOrder(
                 orderStr,
                 ID,
                 COLUMNS,
@@ -167,8 +166,8 @@ export default class StringQueryToEBNFQueryTranslator {
             );
         }
 
-        this.validateEBNFQuery(EBNFQueryObject);
-        return EBNFQueryObject;
+        this.validateQueryAST(queryAST);
+        return queryAST;
     }
 
     // Extracts Dataset INPUT(id) and KIND from query string
@@ -300,7 +299,7 @@ export default class StringQueryToEBNFQueryTranslator {
         id: string,
         displayKeys: string[],
         querySectionREs: QuerySectionREs,
-    ): { dir: InsightEBNFQueryOrderDir; keys: string[] } {
+    ): { dir: InsightASTQueryOrderDir; keys: string[] } {
         const orderMatchObj = orderStr.match(
             querySectionREs.sortDirectionColRE,
         );
@@ -311,8 +310,8 @@ export default class StringQueryToEBNFQueryTranslator {
 
         const ordering =
             orderMatchObj.groups.DIRECTION === "ascending"
-                ? InsightEBNFQueryOrderDir.UP
-                : InsightEBNFQueryOrderDir.DOWN;
+                ? InsightASTQueryOrderDir.UP
+                : InsightASTQueryOrderDir.DOWN;
 
         // Extract valid DataObj keys or custom Agg keys from query ORDER column names
         const orderKeys = orderMatchObj.groups.COLNAMES.split(/, | and /).map(
@@ -423,7 +422,7 @@ export default class StringQueryToEBNFQueryTranslator {
         return applyDetails;
     }
 
-    // Builds up the nested EBNF Filter Object
+    // Builds up the nested AST WHERE Object
     private buildFilters(
         filterOperatorArr: string[],
         id: string,
@@ -459,7 +458,7 @@ export default class StringQueryToEBNFQueryTranslator {
         return { [logicalFilter]: [leftFilter, rightFilter] };
     }
 
-    // Builds and returns a single EBNF Filter Condition
+    // Builds and returns a single AST Filter Condition
     private buildSingleFilter(
         filterStr: string,
         id: string,
@@ -495,15 +494,15 @@ export default class StringQueryToEBNFQueryTranslator {
     }
 
     /**
-     * Helper method to check that EBNF Query Object is valid before
+     * Helper method to check that Query AST is valid before
      * building the query from it.
      *
      * If the query is not valid the method throws an error by calling
      * the rejectQuery() method
      *
-     * @param query EBNF Query Object to be validated
+     * @param query Query AST Object to be validated
      */
-    private validateEBNFQuery(query: InsightEBNFQuery): boolean {
+    private validateQueryAST(query: InsightASTQuery): boolean {
         // Validate Dataset Name
         if (!query.ID || typeof query.ID !== "string") {
             this.rejectQuery(`Invalid Query: No Dataset ID was given`);
@@ -610,7 +609,7 @@ export default class StringQueryToEBNFQueryTranslator {
 
                     // Check the name of the column to be aggregated is valid
                     if (
-                        !this.validateEBNFColName(queryID, query.KIND, colName)
+                        !this.validateASTColName(queryID, query.KIND, colName)
                     ) {
                         this.rejectQuery(
                             `Invalid Query: Invalid column name for APPLY: ${colName}`,
@@ -640,7 +639,7 @@ export default class StringQueryToEBNFQueryTranslator {
 
             queryColumns.forEach((colName) => {
                 // If it is a valid column name it must be in GROUP
-                const validColName = this.validateEBNFColName(
+                const validColName = this.validateASTColName(
                     query.ID,
                     query.KIND,
                     colName,
@@ -659,7 +658,7 @@ export default class StringQueryToEBNFQueryTranslator {
         } else {
             // No TRANSFORMATIONS, DISPLAY/COLUMNS must all be valid
             queryColumns.forEach((colName) => {
-                if (!this.validateEBNFColName(query.ID, query.KIND, colName)) {
+                if (!this.validateASTColName(query.ID, query.KIND, colName)) {
                     this.rejectQuery(
                         `Invalid Query: Invalid column name ${colName} in COLUMNS`,
                     );
@@ -680,11 +679,11 @@ export default class StringQueryToEBNFQueryTranslator {
                     );
                 }
             } else {
-                const queryOrderObj = queryOrder as InsightEBNFQueryOrderObject;
+                const queryOrderObj = queryOrder as InsightASTQueryOrderObject;
 
                 if (
                     !queryOrderObj.dir ||
-                    !Object.values(InsightEBNFQueryOrderDir).includes(
+                    !Object.values(InsightASTQueryOrderDir).includes(
                         queryOrderObj.dir,
                     )
                 ) {
@@ -777,7 +776,7 @@ export default class StringQueryToEBNFQueryTranslator {
 
             // Check colName is valid for dataset ID and Kind
             const colName = Object.keys(whereObj[conditionKey])[0];
-            this.validateEBNFColName(datasetID, datasetKind, colName);
+            this.validateASTColName(datasetID, datasetKind, colName);
 
             // Check that condition value, conditionKey and column are all
             // the same type (number or string):
@@ -817,14 +816,14 @@ export default class StringQueryToEBNFQueryTranslator {
     }
 
     /**
-     * Helper function to validate that a given column name in EBNF Query Object is valid
+     * Helper function to validate that a given column name in Query AST Object is valid
      * e.g. courses_avg is valid for a 'courses' kind dataset, where courses_furniture
      * would be invalid
      * @param datasetID the id of the dataset that is being queried
      * @param datasetKind the dataset kind of the dataset being queried (courses | rooms)
-     * @param queryColName the column name in the EBNF Query Object
+     * @param queryColName the column name in the Query AST Object
      */
-    private validateEBNFColName(
+    private validateASTColName(
         datasetID: string,
         datasetKind: InsightDatasetKind,
         queryColName: string,
@@ -887,9 +886,9 @@ export default class StringQueryToEBNFQueryTranslator {
     }
 }
 
-// Driver script to translate all Dynamic Insight Facade Queries from String Q's to EBNF Q's
+// Driver script to translate all Dynamic Insight Facade Queries from String Q's to AST Q's
 // and add them to the query JSON, so Insight Facade can be tested with both query types
-const translator = new StringQueryToEBNFQueryTranslator();
+const translator = new StringQueryToASTQueryTranslator();
 const queryDir = path.join(__dirname, "../../../test/queries");
 
 const validQueryDirs = [queryDir];
@@ -917,20 +916,20 @@ while (validQueryDirs.length > 0) {
 }
 
 queryFilePaths.forEach((filePath) => {
-    const file = JSON.parse(fs.readFileSync(filePath, { encoding: "utf-8" }));
+    const file: {
+        title: string;
+        queryString?: string;
+        queryAST?: any;
+        response: InsightResponse;
+    } = JSON.parse(fs.readFileSync(filePath, { encoding: "utf-8" }));
 
     // Don't translate invalid queries
     if (file.response.body.hasOwnProperty("error")) {
         return;
     }
 
-    // console.log("\n =====" + filePath + "===== \n");
-    // console.log(JSON.stringify(file));
+    file.queryAST = translator.translateQuery(file.queryString);
 
-    file.EBNFQuery = translator.translateQuery(file.query);
-
-    // console.log(JSON.stringify(EBNFQuery));
-
-    // Re-save the query JSON with the added EBNF query:
+    // Re-save the query JSON with the added "queryAST" property:
     fs.writeFileSync(filePath, JSON.stringify(file));
 });
