@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: aggregation name is reserved string (dataset)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and dataset, where dataset is the AVG of Average.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and dataset, where dataset is the AVG of Average.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "dataset"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "dataset": { "AVG": "courses_avg" } }]
         }
     }
 }

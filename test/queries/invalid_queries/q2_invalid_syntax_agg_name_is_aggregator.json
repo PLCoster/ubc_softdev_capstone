@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: aggregation name is reserved string (MAX)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and MAX, where MAX is the MAX of Average.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and MAX, where MAX is the MAX of Average.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "MAX"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "MAX": { "MAX": "courses_avg" } }]
         }
     }
 }

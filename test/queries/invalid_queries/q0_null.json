@@ -1,10 +1,11 @@
 {
     "title": "A null query",
-    "query": null,
+    "queryString": null,
     "response": {
         "code": 400,
         "body": {
             "error": ""
         }
-    }
+    },
+    "queryAST": null
 }

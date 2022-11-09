@@ -1,10 +1,19 @@
 {
     "title": "Invalid Dataset Input - cannot equal a reserved string (entries)",
-    "query": "In courses dataset entries, find all entries; show Audit; sort in ascending order by Audit.",
+    "queryString": "In courses dataset entries, find all entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "entries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["entries_audit"],
+            "ORDER": "entries_audit"
         }
     }
 }

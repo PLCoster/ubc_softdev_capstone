@@ -1,10 +1,29 @@
 {
     "title": "Invalid string Criteria syntax - should be 'is' not 'is equal to'",
-    "query": "In courses dataset coursesTwoEntries, find entries whose Instructor is equal to \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "queryString": "In courses dataset coursesTwoEntries, find entries whose Instructor is equal to \"smulders, dave\"; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": { "EQ": { "courses_instructor": "smulders, dave" } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesTwoEntries_audit",
+                "coursesTwoEntries_avg",
+                "coursesTwoEntries_dept",
+                "coursesTwoEntries_fail",
+                "coursesTwoEntries_id",
+                "coursesTwoEntries_instructor",
+                "coursesTwoEntries_pass",
+                "coursesTwoEntries_title",
+                "coursesTwoEntries_uuid"
+            ],
+            "ORDER": "coursesTwoEntries_id"
         }
     }
 }

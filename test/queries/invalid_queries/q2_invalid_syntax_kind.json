@@ -1,10 +1,19 @@
 {
     "title": "Invalid Dataset Kind",
-    "query": "In badkind dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by Audit.",
+    "queryString": "In badkind dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "badkind",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["coursesTwoEntries_audit"],
+            "ORDER": "coursesTwoEntries_audit"
         }
     }
 }

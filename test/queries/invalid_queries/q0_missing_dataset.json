@@ -1,10 +1,28 @@
 {
     "title": "A query on a non-existent dataset",
-    "query": "In courses dataset nonexistent, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
+    "queryString": "In courses dataset nonexistent, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "nonexistent",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "nonexistent_audit",
+                "nonexistent_avg",
+                "nonexistent_dept",
+                "nonexistent_fail",
+                "nonexistent_id",
+                "nonexistent_instructor",
+                "nonexistent_pass",
+                "nonexistent_title",
+                "nonexistent_uuid"
+            ]
         }
     }
 }

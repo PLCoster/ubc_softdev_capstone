@@ -1,10 +1,19 @@
 {
     "title": "Invalid Order Key Semantics: SELECT audit FROM coursesTwoEntries, ORDER BY id ASC",
-    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by ID.",
+    "queryString": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["coursesTwoEntries_audit"],
+            "ORDER": "coursesTwoEntries_id"
         }
     }
 }

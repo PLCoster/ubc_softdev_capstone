@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (SUM)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and countID, where countID is the SUM of ID.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and countID, where countID is the SUM of ID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "countID"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "countID": { "SUM": "courses_id" } }]
         }
     }
 }

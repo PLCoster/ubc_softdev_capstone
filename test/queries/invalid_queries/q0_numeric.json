@@ -1,10 +1,11 @@
 {
     "title": "An invalid query (numeric type)",
-    "query": 0,
+    "queryString": 0,
     "response": {
         "code": 400,
         "body": {
             "error": ""
         }
-    }
+    },
+    "queryAST": 0
 }

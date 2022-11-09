@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: aggregation name contains a space (max grade)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and max grade, where max grade is the MAX of Average.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and max grade, where max grade is the MAX of Average.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "max grade"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "max grade": { "MAX": "courses_avg" } }]
         }
     }
 }

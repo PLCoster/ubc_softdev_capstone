@@ -1,10 +1,18 @@
 {
     "title": "Wrong dataset kind (courses dataset queried as rooms dataset)",
-    "query": "In rooms dataset courses, find all entries; show Short Name.",
+    "queryString": "In rooms dataset courses, find all entries; show Short Name.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_shortname"]
         }
     }
 }

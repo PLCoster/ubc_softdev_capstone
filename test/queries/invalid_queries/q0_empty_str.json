@@ -1,10 +1,11 @@
 {
     "title": "An empty string query",
-    "query": "",
+    "queryString": "",
     "response": {
         "code": 400,
         "body": {
             "error": ""
         }
-    }
+    },
+    "queryAST": ""
 }

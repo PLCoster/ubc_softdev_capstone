@@ -1,10 +1,19 @@
 {
     "title": "Invalid Dataset Input - cannot contain underscores",
-    "query": "In courses dataset two_entries, find all entries; show Audit; sort in ascending order by Audit.",
+    "queryString": "In courses dataset two_entries, find all entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "two_entries",
+        "KIND": "two_entries",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["two_entries_audit"],
+            "ORDER": "two_entries_audit"
         }
     }
 }

@@ -1,10 +1,24 @@
 {
     "title": "Wrong dataset kind column (ask for audit from rooms dataset)",
-    "query": "In rooms dataset rooms, find all entries; show Full Name, Audit, Short Name, Name and Number.",
+    "queryString": "In rooms dataset rooms, find all entries; show Full Name, Audit, Short Name, Name and Number.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "rooms",
+        "KIND": "rooms",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "rooms_audit",
+                "rooms_shortname",
+                "rooms_name",
+                "rooms_number"
+            ]
         }
     }
 }

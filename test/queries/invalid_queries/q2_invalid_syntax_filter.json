@@ -1,6 +1,6 @@
 {
     "title": "Invalid Filter Syntax",
-    "query": "In courses dataset coursesTwoEntries, find entries; show Audit; sort in ascending order by Audit.",
+    "queryString": "In courses dataset coursesTwoEntries, find entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {

@@ -1,10 +1,25 @@
 {
     "title": "Invalid APPLY Semantics: identical aggregation names are forbidden (avgGrade)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Average and avgGrade is the SUM of Pass.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Average and avgGrade is the SUM of Pass.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "avgGrade"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                { "avgGrade": { "AVG": "courses_avg" } },
+                { "avgGrade": { "SUM": "courses_pass" } }
+            ]
         }
     }
 }

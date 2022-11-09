@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (MAX)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and countTitle, where countTitle is the MAX of Title.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and countTitle, where countTitle is the MAX of Title.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "countTitle"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "countTitle": { "MAX": "courses_title" } }]
         }
     }
 }

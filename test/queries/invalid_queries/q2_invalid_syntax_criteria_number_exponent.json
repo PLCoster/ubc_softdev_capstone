@@ -1,10 +1,29 @@
 {
     "title": "Invalid Criteria Number - cannot be number with exponent ie 1e1",
-    "query": "In courses dataset coursesTwoEntries, find entries whose Pass is equal to 1e1; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
+    "queryString": "In courses dataset coursesTwoEntries, find entries whose Pass is equal to 1e1; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": { "EQ": { "coursesTwoEntries_pass": "1e1" } },
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesTwoEntries_audit",
+                "coursesTwoEntries_avg",
+                "coursesTwoEntries_dept",
+                "coursesTwoEntries_fail",
+                "coursesTwoEntries_id",
+                "coursesTwoEntries_instructor",
+                "coursesTwoEntries_pass",
+                "coursesTwoEntries_title",
+                "coursesTwoEntries_uuid"
+            ],
+            "ORDER": "coursesTwoEntries_id"
         }
     }
 }

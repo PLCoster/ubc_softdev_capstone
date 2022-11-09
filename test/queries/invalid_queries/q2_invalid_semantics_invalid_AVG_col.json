@@ -1,10 +1,22 @@
 {
     "title": "Invalid APPLY Semantics: NUMBER Aggregation used on STRING column (AVG)",
-    "query": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Department.",
+    "queryString": "In courses dataset courses grouped by Department, find all entries; show Department and avgGrade, where avgGrade is the AVG of Department.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "courses",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "avgGrade"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [{ "avgGrade": { "AVG": "courses_dept" } }]
         }
     }
 }

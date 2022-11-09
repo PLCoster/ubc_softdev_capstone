@@ -1,10 +1,19 @@
 {
     "title": "Invalid Order Syntax",
-    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort by Audit.",
+    "queryString": "In courses dataset coursesTwoEntries, find all entries; show Audit; sort by Audit.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["coursesTwoEntries_audit"],
+            "ORDER": { "keys": ["coursesTwoEntries_audit"] }
         }
     }
 }

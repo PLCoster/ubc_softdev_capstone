@@ -1,10 +1,19 @@
 {
     "title": "Invalid Dataset Input - cannot contain spaces",
-    "query": "In courses dataset two entries, find all entries; show Audit; sort in ascending order by Audit.",
+    "queryString": "In courses dataset two entries, find all entries; show Audit; sort in ascending order by Audit.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "two entries",
+        "KIND": "two entries",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": ["two entries_audit"],
+            "ORDER": "two entries_audit"
         }
     }
 }

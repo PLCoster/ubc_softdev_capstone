@@ -1,10 +1,29 @@
 {
-    "title": "Invalid Key Syntax - non-existant Key name (Subject)",
-    "query": "In courses dataset coursesTwoEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Subject and UUID; sort in ascending order by ID.",
+    "title": "Invalid Key Syntax - non-existent Key name (Subject)",
+    "queryString": "In courses dataset coursesTwoEntries, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Subject and UUID; sort in ascending order by ID.",
     "response": {
         "code": 400,
         "body": {
             "error": ""
+        }
+    },
+    "queryAST": {
+        "ID": "coursesTwoEntries",
+        "KIND": "courses",
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "coursesTwoEntries_audit",
+                "coursesTwoEntries_avg",
+                "coursesTwoEntries_dept",
+                "coursesTwoEntries_fail",
+                "coursesTwoEntries_id",
+                "coursesTwoEntries_instructor",
+                "coursesTwoEntries_pass",
+                "coursesTwoEntries_subject",
+                "coursesTwoEntries_uuid"
+            ],
+            "ORDER": "coursesTwoEntries_id"
         }
     }
 }
