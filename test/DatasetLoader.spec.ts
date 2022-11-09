@@ -87,8 +87,17 @@ describe("DatasetLoader Tests", function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
     });
 
-    after(function () {
+    after(async function () {
         Log.test(`After: ${this.test.parent.title}`);
+
+        // Clear dataset cache after testing
+        const deletionError = await TestUtil.deleteCacheAsync(
+            datasetLoader.getCachePath(),
+        );
+
+        if (deletionError) {
+            expect.fail(deletionError);
+        }
     });
 
     afterEach(function () {

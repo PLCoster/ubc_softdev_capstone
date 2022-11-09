@@ -28,21 +28,11 @@ describe("Server Tests", function () {
         // facade = new InsightFacade();
         server = new Server(4321);
 
-        // Check if caching directory exists, delete it if it does:
-        try {
-            await fs.access(CACHE_PATH);
-            Log.trace("Deleting Dataset Cache Prior to Server Tests");
-            await fs.rmdir(CACHE_PATH, { recursive: true }).catch((err) => {
-                const errMessage = `ERROR WHEN TRYING TO DELETE EXISTING CACHE PRIOR TO TESTING: ${err}`;
-                Log.error(errMessage);
-                expect.fail(errMessage);
-            });
-            Log.trace("Dataset Cache Deleted");
-        } catch (err) {
-            // fs.access throws an error if directory does not exist
-            Log.trace(
-                "Confirmed DatasetLoader Cache is Empty Before Running Tests",
-            );
+        // Clear dataset cache prior to testing
+        const deletionError = await TestUtil.deleteCacheAsync(CACHE_PATH);
+
+        if (deletionError) {
+            expect.fail(deletionError);
         }
 
         // Start up the Server
@@ -69,6 +59,13 @@ describe("Server Tests", function () {
             Log.test(`Server closed after running Server tests`);
         } catch (err) {
             Log.error(`ERROR WHEN TRYING TO STOP SERVER AFTER TESTING: ${err}`);
+        }
+
+        // Clear dataset cache after testing
+        const deletionError = await TestUtil.deleteCacheAsync(CACHE_PATH);
+
+        if (deletionError) {
+            expect.fail(deletionError);
         }
     });
 

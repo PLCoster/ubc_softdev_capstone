@@ -7,7 +7,6 @@ import Log from "../src/Util";
 import { ITestQuery } from "./InsightFacade.spec";
 
 export default class TestUtil {
-
     /**
      * Wraps readFile in a promise.
      * @param path The location of the file to read.
@@ -30,8 +29,9 @@ export default class TestUtil {
      * @param path The path to the sample query JSON files.
      * @param schema The path to the schema used to validate the test JSON files.
      */
-    public static async readTestQueries(path: string = "test/queries",
-                                        schema: string = "test/query.schema.json",
+    public static async readTestQueries(
+        path: string = "test/queries",
+        schema: string = "test/query.schema.json",
     ): Promise<ITestQuery[]> {
         const methodName: string = "TestUtil::readTestQueries --";
         const extName: string = ".json";
@@ -80,11 +80,35 @@ export default class TestUtil {
                 rawQuery["filename"] = file;
                 testQueries.push(rawQuery);
             } catch (err) {
-                Log.error(`${methodName} ${skipFile} does not conform to the query schema.`);
+                Log.error(
+                    `${methodName} ${skipFile} does not conform to the query schema.`,
+                );
                 throw new Error(`In ${file} ${err}`);
             }
         }
 
         return testQueries;
+    }
+
+    public static async deleteCacheAsync(cachePath: string): Promise<string> {
+        let error;
+        try {
+            await fs.promises.access(cachePath);
+            Log.trace("Deleting Dataset Cache");
+            await fs.promises
+                .rmdir(cachePath, { recursive: true })
+                .catch((err) => {
+                    const errMessage = `ERROR WHEN TRYING TO DELETE EXISTING CACHE PRIOR TO TESTING: ${err}`;
+                    Log.error(errMessage);
+                    error = errMessage;
+                });
+            Log.trace("Dataset Cache Deleted");
+        } catch (err) {
+            // fs.access throws an error if directory does not exist
+            Log.trace(
+                "Confirmed DatasetLoader Cache is Empty Before Running Tests",
+            );
+        }
+        return error;
     }
 }
