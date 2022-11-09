@@ -6,7 +6,7 @@ import {
 } from "../src/controller/IInsightFacade";
 import { OrderDirection } from "../src/controller/DatasetQuerier";
 
-import QueryParser from "../src/controller/QueryParser";
+import QueryStringParser from "../src/controller/QueryStringParser";
 import {
     IFilter,
     ALLFilter,
@@ -30,7 +30,7 @@ import {
 import Log from "../src/Util";
 
 describe("QueryParser Tests", function () {
-    const queryParser = new QueryParser();
+    const queryParser = new QueryStringParser();
 
     beforeEach(function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
@@ -49,12 +49,12 @@ describe("QueryParser Tests", function () {
             "In courses dataset cour_ses, find all entries; show Audit.";
 
         const errMessage = `DATASET INPUT (cour_ses) cannot contain underscore or equal RESERVED strings`;
-        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: Invalid Query: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -68,12 +68,12 @@ describe("QueryParser Tests", function () {
             "In courses dataset dataset, find all entries; show Audit.";
 
         const errMessage = `DATASET INPUT (dataset) cannot contain underscore or equal RESERVED strings`;
-        const expectedErr = `queryParser.parseQuery ERROR: Invalid Query: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: Invalid Query: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -87,12 +87,12 @@ describe("QueryParser Tests", function () {
             "In courses dataset courses, find all entries; show Seats.";
 
         const errMessage = `Invalid column name in DISPLAY: Seats`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -105,12 +105,12 @@ describe("QueryParser Tests", function () {
         const query = "In rooms dataset rooms, find all entries; show Audit.";
 
         const errMessage = `Invalid column name in DISPLAY: Audit`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -124,12 +124,12 @@ describe("QueryParser Tests", function () {
             "In rooms dataset rooms grouped by Department, find all entries; show Department.";
 
         const errMessage = `Invalid Query: incorrect query syntax`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -143,12 +143,12 @@ describe("QueryParser Tests", function () {
             "In courses dataset courses grouped by Full Name, find all entries; show Full Name.";
 
         const errMessage = `Invalid Query: incorrect query syntax`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -163,12 +163,12 @@ describe("QueryParser Tests", function () {
         const query = `In rooms dataset rooms grouped by Full Name, find all entries; ${queryDisplayApply}.`;
 
         const errMessage = `Invalid Query: incorrect query syntax`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -183,12 +183,12 @@ describe("QueryParser Tests", function () {
         const query = `In courses dataset courses grouped by Department, find all entries; ${queryDisplayApply}.`;
 
         const errMessage = `Invalid Query: incorrect query syntax`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -203,12 +203,12 @@ describe("QueryParser Tests", function () {
 
         const errMessage =
             "Invalid DISPLAY semantics when GROUPING - courses_audit not in GROUPBY or AGG";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -224,12 +224,12 @@ describe("QueryParser Tests", function () {
 
         const errMessage =
             "Invalid ORDER semantics - column maxSeats not selected in DISPLAY";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -244,12 +244,12 @@ describe("QueryParser Tests", function () {
 
         const errMessage =
             "Invalid DISPLAY semantics when GROUPING - maxAvg not in GROUPBY or AGG";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -264,12 +264,12 @@ describe("QueryParser Tests", function () {
         const query = `In courses dataset courses grouped by Department, find all entries; ${queryDisplaySort}`;
         const errMessage =
             "Invalid ORDER semantics - column maxSeats not selected in DISPLAY";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -287,12 +287,12 @@ describe("QueryParser Tests", function () {
 
         const errMessage =
             "Multiple Identical Aggregation Names found: minGrade";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -308,12 +308,12 @@ describe("QueryParser Tests", function () {
         const query = `${queryDatasetGroupBy}, find all entries; show Department and maxID, ${queryApply}.`;
 
         const errMessage = "Invalid Query: incorrect query syntax";
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -337,7 +337,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -362,7 +362,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -399,7 +399,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -424,7 +424,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -449,7 +449,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -477,7 +477,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -505,7 +505,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -520,12 +520,12 @@ describe("QueryParser Tests", function () {
             "In courses dataset courses, find all entries; show Audit; sort in ascending order by Pass.";
 
         const errMessage = `Invalid ORDER semantics - column courses_pass not selected in DISPLAY`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -539,12 +539,12 @@ describe("QueryParser Tests", function () {
         const query = `In courses dataset courses, find all entries; show Department, Fail and Pass; ${order}.`;
 
         const errMessage = `Invalid ORDER semantics - column courses_audit not selected in DISPLAY`;
-        const expectedErr = `queryParser.parseQuery ERROR: ${errMessage}`;
+        const expectedErr = `queryStringParser.parseStringQuery ERROR: ${errMessage}`;
 
         let actualAST;
         let errorMessage;
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             errorMessage = err.message;
         } finally {
@@ -568,7 +568,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -593,7 +593,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -618,7 +618,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -643,7 +643,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -668,7 +668,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -693,7 +693,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -718,7 +718,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -743,7 +743,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -768,7 +768,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -793,7 +793,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -818,7 +818,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -843,7 +843,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -868,7 +868,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -893,7 +893,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -925,7 +925,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -957,7 +957,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -996,7 +996,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1021,7 +1021,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1047,7 +1047,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1073,7 +1073,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1105,7 +1105,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1137,7 +1137,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1169,7 +1169,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1201,7 +1201,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1236,7 +1236,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1284,7 +1284,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1325,7 +1325,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1365,7 +1365,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1402,7 +1402,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
@@ -1466,7 +1466,7 @@ describe("QueryParser Tests", function () {
         let actualAST;
 
         try {
-            actualAST = queryParser.parseQuery(query);
+            actualAST = queryParser.parseQueryString(query);
         } catch (err) {
             assert.fail(
                 `No error should be thrown on valid query - ERROR: ${err.message}`,
