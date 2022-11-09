@@ -59,7 +59,10 @@ const roomAttrNameToQueryKeyTranslator: {
 };
 
 // Path to store cached datasets after loading
-export const CACHE_PATH = path.join(__dirname, "../../.cache/");
+export const CACHE_PATH =
+    process.env.NODE_ENV === "production"
+        ? path.join(__dirname, "../../production_cache/")
+        : path.join(__dirname, "../../.cache/");
 
 /**
  * Class responsible for loading, storing, saving to disk and deleting InsightFacade Datasets
@@ -109,8 +112,12 @@ export default class DatasetLoader {
                                     this.datasets[id] = data;
                                 });
 
+                                const numDatasetsLoaded = Object.keys(
+                                    this.loadedInsightDatasets,
+                                ).length;
+
                                 Log.trace(
-                                    "DatasetLoader::Loaded all Cached Datasets from Disk",
+                                    `DatasetLoader::Loaded ${numDatasetsLoaded} Cached Datasets from Disk`,
                                 );
 
                                 return resolve(true);
