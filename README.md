@@ -1,18 +1,34 @@
 # UBC CampusExplorer
 
-This application forms the Capstone project of the [UBCx Software Development MicroMasters Course](https://courses.edx.org/dashboard/programs/a78e76d2-7e0b-4865-8013-0e037ebdc0f9/). It is a full-stack web application allowing users to query and receive information from the UBC course catalogue and rooms catalogue. This querying can be done directly with the backend REST API (plaintext EBNF query or query object) or via the frontend web page UI.
+This application forms the Capstone project of the [UBCx Software Development MicroMasters Course](https://www.edx.org/micromasters/ubcx-software-development). It is a full-stack web application allowing users to query and receive information from the UBC course catalogue and rooms catalogue. This querying can be done directly with the backend REST API (plaintext EBNF query or query object) or via the frontend web page UI.
 
-## Running AutoTest
+![alt text](./CampusExplorer.JPG)
 
-To run AutoTest:
+The application was built in 4 sprints, and the requirements and result of each sprint can be seen on the corresponding repository branches:
 
-1. Make a local commit on your machine and push it to your GitHub repository (or edit a file directly using the GitHub web editor).
+-   [Sprint 0 / Deliverable 0: Black Box Testing](https://github.com/PLCoster/ubc_softdev_capstone/tree/d0)
+-   [Sprint 1 / Deliverable 1: Basic Queries](https://github.com/PLCoster/ubc_softdev_capstone/tree/d1)
+-   [Sprint 2 / Deliverable 2: Advanced Queries](https://github.com/PLCoster/ubc_softdev_capstone/tree/d2)
+-   [Sprint 3 / Deliverable 3: REST Frontend](https://github.com/PLCoster/ubc_softdev_capstone/tree/d3)
 
-1. Go to that commit in the GitHub web interface.
+The complete project was built using the following technologies:
 
-1. In the comments textbox at the bottom of the commit page, add a `@ubcbot #d0` (or use whatever `#dX` you wish to invoke). AutoTest will comment back on your commit once it has analyzed it. For more details, please see the AutoTest instructions.
+### Front-End:
 
-## Configuring your environment
+-   Vanilla **[Javascript]** for reading and submitting queries to the API and for displaying queries.
+-   **[Karma](https://karma-runner.github.io/6.4/index.html)** along with **[Mocha](https://mochajs.org/)** and **[Chai](https://www.chaijs.com/)** for front-end testing.
+
+### Back-End:
+
+-   **[TypeScript](https://www.typescriptlang.org/)** with **[yarn](https://yarnpkg.com/)** for package management.
+-   **[restify](http://restify.com/)** Node.js web framework for the RESTful API.
+-   **[JSZip](https://www.npmjs.com/package/jszip)** to extract zipped courses / rooms datasets.
+-   **[parse5](https://www.npmjs.com/package/parse5)** to parse XML rooms datasets.
+-   **[Mocha](https://mochajs.org/)** test framework with **[Chai](https://www.chaijs.com/)** assertions.
+
+## Local Setup / Usage
+
+### Configuring your environment
 
 To start using this repository, you need to get your computer configured so you can build and execute the code. To do this, follow these steps; the specifics of each step (especially the first two) will vary based on which operating system your computer has:
 
@@ -21,8 +37,6 @@ To start using this repository, you need to get your computer configured so you 
 1. Install Node (version 14.16.X), which will also install NPM (you should be able to execute `node --version` and `npm --version` on the command line).
 
 1. [Install Yarn](https://yarnpkg.com/en/docs/install). You should be able to execute `yarn --version` afterwards.
-
-1. Clone the project on [https://github.com/secapstone](https://github.com/secapstone). You can find your team ID and clone the repo by visiting your project in GitHub and getting the clone target by clicking on the green button on your project repository.
 
 ## Project commands
 
@@ -34,8 +48,8 @@ Once your environment is configured you need to further prepare the project's to
 
 1. `yarn build` to compile your project. You must run this command after making changes to your TypeScript files.
 
-1. `yarn test` to run the test suite.
+1. `yarn test` to run the backend test suite.
 
-## Running and testing from an IDE
+1. `yarn test:frontend` to run the frontend test suite.
 
-You do not need to use any specific IDE for this capstone, but WebStorm should be automatically configured the first time you open the repository, should you choose to use it. For other IDEs and editors, you'll want to set up test and debug tasks and specify that the schema of all files in `test/queries` should follow `test/query.schema.json`.
+1. `yarn start` to start the backend server locally. The app can then be viewed in the browser at [http://localhost:4321](http://localhost:4321)
