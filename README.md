@@ -15,7 +15,7 @@ The complete project was built using the following technologies:
 
 ### Front-End:
 
--   Vanilla **[Javascript]** for reading and submitting queries to the API and for displaying queries.
+-   Vanilla **Javascript** DOM manipulation for reading and submitting queries to the API and for displaying queries.
 -   **[Karma](https://karma-runner.github.io/6.4/index.html)** along with **[Mocha](https://mochajs.org/)** and **[Chai](https://www.chaijs.com/)** for front-end testing.
 
 ### Back-End:
