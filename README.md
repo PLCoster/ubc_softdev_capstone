@@ -1,4 +1,4 @@
-# UBC CampusExplorer - Sprint 0
+# UBC CampusExplorer - Sprint 1
 
 ## Basic Queries
 
