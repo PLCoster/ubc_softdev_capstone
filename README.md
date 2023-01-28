@@ -1,6 +1,6 @@
 # UBC CampusExplorer
 
-This application forms the Capstone project of the [UBCx Software Development MicroMasters Course](https://www.edx.org/micromasters/ubcx-software-development). It is a full-stack web application allowing users to query and receive information from the UBC course catalogue and rooms catalogue. This querying can be done directly with the backend REST API (plaintext EBNF query or query object) or via the frontend web page UI.
+This application forms the Capstone project of the [UBCx Software Development MicroMasters Course](https://www.edx.org/micromasters/ubcx-software-development). It is a full-stack web application allowing users to query and receive information from the UBC course catalogue and rooms catalogue. This querying can be done directly with the backend REST API (plaintext EBNF query or `InsightASTQuery` object) or via the frontend UI input form.
 
 ![alt text](./CampusExplorer.JPG)
 
@@ -38,7 +38,7 @@ To start using this repository, you need to get your computer configured so you 
 
 1. [Install Yarn](https://yarnpkg.com/en/docs/install). You should be able to execute `yarn --version` afterwards.
 
-## Project commands
+### Project commands
 
 Once your environment is configured you need to further prepare the project's tooling and dependencies. In the project folder:
 
