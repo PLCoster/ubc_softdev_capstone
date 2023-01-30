@@ -183,8 +183,9 @@ function buildSingleCondition(id, conditionType, conditionObj) {
             ? false
             : not || conditionType === "none";
 
-    // IS conditional WildCard checking:
-    if (filter === "IS") {
+    // IS conditional WildCard checking - string data types only:
+    // !!! ideally UI would prevent data column / query type mismatches
+    if (filter === "IS" && typeof value === "string") {
         const startWC = value.startsWith("*");
         const endWC = value.endsWith("*");
 
