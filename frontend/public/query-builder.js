@@ -45,7 +45,13 @@ CampusExplorer.buildQuery = () => {
     // Get currently active form
     const form = document.querySelector(".tab-panel.active form");
 
-    const id = form.getAttribute("data-type"); // currently ID and KIND are equal
+    // "plain", "courses" or "rooms" currently
+    const id = form.getAttribute("data-type");
+
+    if (id === "plain") {
+        // Plaintext query - send string input hack via CodeMirror
+        return document.querySelector('span[role="presentation"]').textContent;
+    }
 
     const query = { ID: id, KIND: id, WHERE: {}, OPTIONS: { COLUMNS: [] } };
 
@@ -84,7 +90,6 @@ CampusExplorer.buildQuery = () => {
         query.TRANSFORMATIONS.APPLY = queryApply;
     }
 
-    console.log("BUILT QUERY: ", query);
     return query;
 };
 
