@@ -9,15 +9,18 @@ export class App {
         Log.info("App::initServer( " + port + " ) - start");
 
         const server = new Server(port);
-        server.start().then(function (val: boolean) {
-            Log.info("App::initServer() - started: " + val);
-        }).catch(function (err: Error) {
-            Log.error("App::initServer() - ERROR: " + err.message);
-        });
+        server
+            .start()
+            .then(function (val: boolean) {
+                Log.info("App::initServer() - started: " + val);
+            })
+            .catch(function (err: Error) {
+                Log.error("App::initServer() - ERROR: " + err.message);
+            });
     }
 }
 
-// This ends up starting the whole system and listens on a hardcoded port (4321)
+// This ends up starting the whole system and listens on a hardcoded port (8080)
 Log.info("App - starting");
 const app = new App();
-app.initServer(4321);
+app.initServer(Number(process.env.PORT) || 8080);
