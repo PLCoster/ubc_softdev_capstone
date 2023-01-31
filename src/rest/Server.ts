@@ -83,11 +83,15 @@ export default class Server {
                     // http://localhost:4321/echo/hello
                     that.rest.get("/echo/:msg", Server.echo);
 
-                    // API Endpoints
-                    that.rest.get("/datasets", Server.getLoadedDatasets);
-                    that.rest.put("/dataset/:id/:kind", Server.loadDataset);
+                    // Production API Endpoints - allow querying only
                     that.rest.post("/query", Server.queryDataset);
-                    that.rest.del("/dataset/:id", Server.deleteDatasetByID);
+
+                    // Non-Production API Endpoints
+                    if (process.env.NODE_ENV !== "production") {
+                        that.rest.get("/datasets", Server.getLoadedDatasets);
+                        that.rest.put("/dataset/:id/:kind", Server.loadDataset);
+                        that.rest.del("/dataset/:id", Server.deleteDatasetByID);
+                    }
 
                     // This must be the last endpoint!
                     that.rest.get("/.*", Server.getStatic);
