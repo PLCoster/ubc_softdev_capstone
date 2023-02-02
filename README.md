@@ -53,7 +53,7 @@ In courses dataset courses grouped by Department and Title, find entries whose T
 4. A complex rooms dataset query, to find the Full Name, Address, minimum and maximum number of seats in rooms of each type, for rooms with at least 50 seats in buildings with an address containing "Mall" :
 
 ```
-In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes \"Mall\"; show Full Name, Address, minSeats, maxSeats and Type, where minSeats is the MIN of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats.
+In rooms dataset rooms grouped by Full Name, Address and Type, find entries whose Seats is greater than 50 and Address includes "Mall"; show Full Name, Address, minSeats, maxSeats and Type, where minSeats is the MIN of Seats and maxSeats is the MAX of Seats; sort in ascending order by minSeats.
 ```
 
 ### AST Query Syntax (REST API / Frontend UI)
