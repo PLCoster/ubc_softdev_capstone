@@ -190,7 +190,3 @@ Once your environment is configured you need to further prepare the project's to
 1. `yarn test:frontend` to run the frontend test suite.
 
 1. `yarn start` to start the backend server locally. The app can then be viewed in the browser at [http://localhost:8080](http://localhost:8080)
-
-```
-
-```
