@@ -35,7 +35,7 @@ Plaintext queries follow the expanded EBNF query syntax shown in the Sprint 2 RE
 1. A basic courses dataset query for all data rows, showing all columns:
 
 ```
-In courses dataset courses, final all entries; show find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.
+In courses dataset courses, find all entries; show Audit, Average, Department, Fail, ID, Instructor, Pass, Title, UUID and Year.
 ```
 
 2. A courses dataset query with FILTER and ORDER clauses:
